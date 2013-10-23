@@ -35,7 +35,9 @@ public class Main {
 		}
 		
 		window.close();
-
+		
+		//test
+		System.out.println("this is a test message");
 	}
 
 }
