@@ -20,7 +20,7 @@ public class Main {
 		window.setFramerateLimit(60);
 		
 		boolean RUNNING = true;
-		
+		//comment here
 		while (RUNNING) {
 			
 			for (Event event : window.pollEvents()) {
@@ -37,7 +37,7 @@ public class Main {
 		window.close();
 		
 		//test
-		System.out.println("this is a test message");
+		System.out.print("this is a test message, a new change in the message and i changed it to .print from .println");
 	}
 
 }
