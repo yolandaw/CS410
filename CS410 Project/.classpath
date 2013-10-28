@@ -3,6 +3,10 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/jsfml.jar"/>
-	<classpathentry kind="lib" path="lib/jgit.jar"/>
+	<classpathentry kind="lib" path="lib/jgit.jar" sourcepath="lib/jgit.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/CS410 Project/javadoc/jgit javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
