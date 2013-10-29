@@ -18,36 +18,38 @@ public class Main {
 	 * @throws NoHeadException 
 	 */
 	public static void main(String[] args) throws IOException, NoHeadException, GitAPIException {
-		LogGatherer logGather = new LogGatherer();
-		logGather.openDirectory();
+		//quinn test start
+		LogGatherer lg = new LogGatherer("C:/Users/Quinn/Documents/Homework/CPSC 410/CS410/test/.git", "CS410 Project/src/main/Main.java");
+		String[] strArray = lg.rawCode();
+		for(int i=0; i<lg.numLinesOfCode(); i++){
+			System.out.print(lg.getAuthor(i).getName() + ": " + strArray[i]);
+		}
+		//quinn test end
 		
-//		RenderWindow window = new RenderWindow();
-//		
-//		VideoMode mode = new VideoMode(800, 600);
-//		
-//		window.create(mode, "Test");
-//		
-//		window.setFramerateLimit(60);
-//		
-//		boolean RUNNING = true;
-//		//comment here
-//		while (RUNNING) {
-//			
-//			for (Event event : window.pollEvents()) {
-//				
-//				if (event.type == Event.Type.CLOSED) {
-//					RUNNING = false;
-//				}
-//			}
-//			
-//			window.clear();
-//			window.display();
-//		}
-//		
-//		window.close();
-//		
-//		//test
-//		System.out.print("this is a test message, a new change in the message and i changed it to .print from .println");
+		RenderWindow window = new RenderWindow();
+		
+		VideoMode mode = new VideoMode(800, 600);
+		
+		window.create(mode, "Test");
+		
+		window.setFramerateLimit(60);
+		
+		boolean RUNNING = true;
+
+		while (RUNNING) {
+			
+			for (Event event : window.pollEvents()) {
+				
+				if (event.type == Event.Type.CLOSED) {
+					RUNNING = false;
+				}
+			}
+			
+			window.clear();
+			window.display();
+		}
+		
+		window.close();
 	}
 
 }

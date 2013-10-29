@@ -2,83 +2,83 @@ package main;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.eclipse.jgit.api.BlameCommand;
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.diff.RawText;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
-public class LogGatherer {
+public class LogGatherer{
 
-	public void openDirectory() throws IOException, NoHeadException, GitAPIException{
+	private Repository repository;
+	private BlameResult rawBlameResult;
+
+	public LogGatherer(String localGitFolderPath, String filePath) throws GitAPIException, IOException{
+		repository = openDirectory(localGitFolderPath);
+		rawBlameResult = rawBlameResult(repository, filePath);
+		closeRepository(repository);
+	}
+
+	private Repository openDirectory(String localGitFolderPath) throws IOException, NoHeadException, GitAPIException{
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
-		Repository repository = builder.setGitDir(new File("C:/Users/Quinn/Documents/Homework/CPSC 410/CS410/test/.git"))
+		Repository repository = builder.setGitDir(new File(localGitFolderPath))
 				.readEnvironment() // scan environment GIT_* variables
 				.findGitDir() // scan up the file system tree
 				.build();
-
-		System.out.println("Having repository: " + repository.getDirectory());
-
-		showLog(repository);
-
-		repository.close();
+		System.out.println("Opening directory: " + repository.getDirectory());
+		return repository;
 	}
 
-	public void showLog(Repository repo) throws NoHeadException, GitAPIException, IOException{
-		Repository repository = repo;
+	private void closeRepository(Repository repository){
+		this.repository.close();
+	}
 
-		Iterable<RevCommit> logs = new Git(repository).log()
-				.all()
-				.call();
-		int count = 0;
-		for(RevCommit rev : logs) {
-			System.out.println("Commit: " + rev /*+ ", name: " + rev.getName() + ", id: " + rev.getId().getName()*/);
-			count++;
-		}
-		System.out.println("Had " + count + " commits overall on current branch");
-
-		logs = new Git(repository).log()
-				// for all log.all()
-				.addPath("README.md")
-				.call();
-		count = 0;
-		for(RevCommit rev : logs) {
-			System.out.println("Commit: " + rev /*+ ", name: " + rev.getName() + ", id: " + rev.getId().getName()*/);
-			count++;
-		}
-		System.out.println("Had " + count + " commits on README.md");
-
-		logs = new Git(repository).log()
-				// for all log.all()
-				.addPath("pom.xml")
-				.call();
-		count = 0;
-		for(RevCommit rev : logs) {
-			System.out.println("Commit: " + rev /*+ ", name: " + rev.getName() + ", id: " + rev.getId().getName()*/);
-			count++;
-		}
-		System.out.println("Had " + count + " commits on pom.xml");
-
-		//blame start
-		Git git = new Git(repository);
-
+	private BlameResult rawBlameResult(Repository repository, String filePath) throws GitAPIException, IOException{
 		BlameCommand blamer = new BlameCommand(repository);
-		blamer.setFilePath("CS410 Project/src/main/Main.java");
-		BlameResult result = blamer.call();	//Why does this return null??
+		blamer.setFilePath(filePath);
+		BlameResult result = blamer.call();
 		result.computeAll();
-		RawText rawCode = result.getResultContents();
-		for(int i=0; i<rawCode.size(); i++){
-			System.out.println(rawCode.getString(i) + " // author: " + result.getSourceAuthor(i).getName());	
-		}
-
-		//blame end
-
-		repository.close();
+		return result;
 	}
+
+	public PersonIdent getAuthor(int codeLineNumber){
+		return rawBlameResult.getSourceAuthor(codeLineNumber);	
+	}
+
+
+	public int getCommitTime(int codeLineNumber){
+		return rawBlameResult.getSourceCommit(codeLineNumber).getCommitTime();
+	}
+
+	public String getCommitMessage(int codeLineNumber){
+		return rawBlameResult.getSourceCommit(codeLineNumber).getFullMessage();
+	}
+
+	public String getCommitID(int codeLineNumber){
+		return rawBlameResult.getSourceCommit(codeLineNumber).getName().substring(0, 7);	
+	}
+
+
+	public int numLinesOfCode(){
+		return rawBlameResult.getResultContents().size();
+	}
+
+	public String[] rawCode() throws GitAPIException, IOException{
+		RawText rawCode = rawBlameResult.getResultContents();
+		String[] stringArray = new String[rawCode.size()];
+		for(int i=0; i<rawCode.size(); i++){
+			stringArray[i] = rawCode.getString(i);	
+		}
+		return stringArray;
+	}
+
+	public String rawCode(int codeLineNumber) throws GitAPIException, IOException{
+		RawText rawCode = rawBlameResult.getResultContents();
+		return rawCode.getString(codeLineNumber);	
+	}
+
 }
 
