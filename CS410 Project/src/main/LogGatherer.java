@@ -58,7 +58,7 @@ public class LogGatherer{
 	}
 
 	public String getCommitID(int codeLineNumber){
-		return rawBlameResult.getSourceCommit(codeLineNumber).getName().substring(0, 7);	
+		return rawBlameResult.getSourceCommit(codeLineNumber).getName().substring(0, 7);	//short hash?
 	}
 
 
