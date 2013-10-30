@@ -10,6 +10,8 @@ import org.jsfml.window.VideoMode;
 import org.jsfml.window.event.Event;
 
 public class Main {
+	
+	private static String localRepoUrl ="C:/Documents and Settings/user/git/CS410/.git";
 
 	/**
 	 * @param args
@@ -18,11 +20,17 @@ public class Main {
 	 * @throws NoHeadException 
 	 */
 	public static void main(String[] args) throws IOException, NoHeadException, GitAPIException {
+		/*
+		Parser parser = new Parser();
+		parser.startParsingClass(localRepoUrl, "CS410 Project/src/main/LogGatherer.java");
+		*/
+		
 		//quinn test start
-		LogGatherer lg = new LogGatherer("C:/Users/Quinn/Documents/Homework/CPSC 410/CS410/test/.git", "CS410 Project/src/main/Main.java");
+		LogGatherer lg = new LogGatherer(localRepoUrl, "CS410 Project/src/main/LogGatherer.java");
 		String[] strArray = lg.rawCode();
+		
 		for(int i=0; i<lg.numLinesOfCode(); i++){
-			System.out.print(lg.getAuthor(i).getName() + ": " + strArray[i]);
+			System.out.print(lg.getAuthor(i) + ": " + lg.rawCode(i) + " time: " + lg.getCommitTime(i));
 		}
 		//quinn test end
 		

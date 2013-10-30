@@ -15,11 +15,21 @@ public class LogGatherer{
 
 	private Repository repository;
 	private BlameResult rawBlameResult;
-
+	
+	public LogGatherer() {
+	
+	}
+	
 	public LogGatherer(String localGitFolderPath, String filePath) throws GitAPIException, IOException{
 		repository = openDirectory(localGitFolderPath);
 		rawBlameResult = rawBlameResult(repository, filePath);
 		closeRepository(repository);
+	}
+	
+	public void startGatheringLog(String localGitFolderPath, String filePath) throws NoHeadException, IOException, GitAPIException{
+		repository = openDirectory(localGitFolderPath);
+		rawBlameResult = rawBlameResult(repository, filePath);
+		closeRepository(repository);	
 	}
 
 	private Repository openDirectory(String localGitFolderPath) throws IOException, NoHeadException, GitAPIException{
@@ -59,6 +69,7 @@ public class LogGatherer{
 
 	public String getCommitID(int codeLineNumber){
 		return rawBlameResult.getSourceCommit(codeLineNumber).getName().substring(0, 7);	//short hash?
+		
 	}
 
 
