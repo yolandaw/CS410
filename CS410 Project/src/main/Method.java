@@ -26,6 +26,30 @@ public class Method {
 	public void increOwnershipSize(PersonIdent ident) {
 		ownerships.put(ident, ownerships.get(ident) + 1);
 	}
+	/*
+	 * dab
+	 */
+	
+	/*
+	public void test() {
+		abc
+	}
+	*/
+	// for test
+	public void printOwnerships() {
+		int committers = ownerships.size();
+		//for(int z=0; z < committers; z++) {
+		/*
+		 * test comment
+		 */
+		
+		/*
+		 test comment
+		 
+		 */
+		 
+		System.out.println(ownerships.entrySet().toString());
+	}
 
 	
 
