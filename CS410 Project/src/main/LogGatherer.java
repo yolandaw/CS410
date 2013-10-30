@@ -28,6 +28,7 @@ public class LogGatherer{
 	 * @throws GitAPIException
 	 * @throws IOException
 	 */
+	
 	public LogGatherer(String localGitFolderPath, String filePath) throws GitAPIException, IOException{
 		repository = openDirectory(localGitFolderPath);
 		rawBlameResult = rawBlameResult(repository, filePath);
