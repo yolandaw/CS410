@@ -4,12 +4,12 @@ import java.util.LinkedList;
 
 public class Class {
 	
-//	private LinkedList<String> classMethods = new LinkedList<String>();
     private String CLASSNAME;
-    private LinkedList<Method> classMethods = new LinkedList<Method>();
+    private LinkedList<Method> classMethods;
     
     public Class(String className) {
     	CLASSNAME = className;
+    	classMethods = new LinkedList<Method>();
     }
     
     public void addMethod(Method methodName) {
@@ -23,8 +23,4 @@ public class Class {
     public String getClassName() {
     	return CLASSNAME;
     }
-    
-    
-    
-
 }
