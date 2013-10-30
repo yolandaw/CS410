@@ -113,7 +113,10 @@ public class Parser {
 						return;
 					}else { 
 						String lineCode = parsedClass.rawCode(currentLineNum);
-						if(lineCode.contains("{")) {
+						
+						if(lineCode.contains("{") && lineCode.contains("}")) {
+						
+						}else if(lineCode.contains("{")) {
 							methodHandler++;
 						}else if (lineCode.contains("}")) {
 							methodHandler--;
@@ -130,6 +133,7 @@ public class Parser {
 						currentMethod.increOwnershipSize(ownership);
 						System.out.println(ownership.getName() + currentLineNum);
 					}
+					
 					
 				}else if(classHandler > -1 && parsedClass.rawCode(currentLineNum).contains("}")) {
 					classHandler--;
@@ -213,7 +217,7 @@ public class Parser {
 	}
 	
 	// creates the method object
-	public void methodCreator(String methodName) throws GitAPIException, IOException {
+	public void methodCreator(String methodName) {
 		
 		if(currentLine.contains("{")) {
 			methodHandler++;	
