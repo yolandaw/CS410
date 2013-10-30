@@ -23,23 +23,30 @@ public class Main {
 	 * @throws NoHeadException 
 	 */
 	public static void main(String[] args) throws IOException, NoHeadException, GitAPIException {
-		/*
+		
 		Parser parser = new Parser();
-		parser.startParsingClass(localRepoUrl, "CS410 Project/src/main/LogGatherer.java");
-		*/
+//		parser.startParsingClass(localRepoUrl, "CS410 Project/src/main/Floor.java");
 		
 		
-		File currentDir = new File(System.getProperty("user.dir")).getParentFile();
-		String gitDir = currentDir + "/.git";
+		
+//		File currentDir = new File(System.getProperty("user.dir")).getParentFile();
+//		String gitDir = currentDir + "/.git";
+	
+		
 		//quinn test start
-		//LogGatherer lg = new LogGatherer(localRepoUrl, "CS410 Project/src/main/LogGatherer.java");
-		LogGatherer lg = new LogGatherer(gitDir, "CS410 Project/src/main/Main.java");
-		String[] strArray = lg.rawCode();
+		//  String[] strArray = lg.rawCode();
+		//	LogGatherer lg = new LogGatherer(gitDir, "CS410 Project/src/main/Main.java");
+
+		
+		LogGatherer lg = new LogGatherer(localRepoUrl, "CS410 Project/src/main/LogGatherer.java");
+	
 		
 		for(int i=0; i<lg.numLinesOfCode(); i++){
-			System.out.print(lg.getAuthor(i) + ": " + lg.rawCode(i) + " time: " + lg.getCommitTime(i));
+			System.out.print(lg.getAuthor(i).getName());
+		//	System.out.print(lg.getAuthor(i).getName() + ": " + lg.rawCode(i));
 		}
-		//quinn test end
+		
+		//quinn test end		
 
 		RenderWindow window = new RenderWindow();
 		
