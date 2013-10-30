@@ -10,31 +10,30 @@ import org.eclipse.jgit.lib.PersonIdent;
 
 public class Parser {
 	
-	private LogGatherer parsedClass; //
-	private int currentLineNum; //
-	private LinkedList<String> trackingClass; 
-	private LinkedList<Class> createdClassObjects; //
-	private LinkedList<Method> createdMethodObjects; //
-	private Method currentMethod; //
-	private Class currentClass;
-	private int blockCommentHandler; //
-	private int methodHandler; //
+	private LogGatherer parsedClass;
+	private LinkedList<Class> createdClassObjects; 
+	private int currentLineNum; 
+	private Method currentMethod; 
+//	private Class currentClass;
+	private int blockCommentHandler; 
+	private int methodHandler; 
+	private int classHandler;
 	
-	
+
+	 
 	
 	public Parser(){
 		parsedClass = new LogGatherer();
 	}
+
 	
 	public void startParsingClass(String localRepoUrl, String parsingClass) throws IOException, GitAPIException {
 		parsedClass.startGatheringLog(localRepoUrl, parsingClass);
 		currentLineNum = 0;
-		trackingClass = new LinkedList<String>();
 		createdClassObjects = new LinkedList<Class>();
-		createdMethodObjects = new LinkedList<Method>();
 		blockCommentHandler = -1;
 		methodHandler = -1;
-		
+		classHandler = -1;
 		
 		
 		int codeLineNums = parsedClass.numLinesOfCode();
@@ -74,69 +73,89 @@ public class Parser {
 				return;
 			}else {
 				// the line will contain one of these: method contents, class name, variable name.
-				
+		
 				// checks whether the code line is related to a method
 				if(methodHandler == 1) {
 					if(parsedClass.rawCode(currentLineNum).contains("}")) {
 						methodHandler = -1;
-						createdMethodObjects.add(currentMethod);
+						createdClassObjects.get(classHandler).addMethod(currentMethod);
 					}
 					PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
 					currentMethod.increOwnershipSize(ownership);
 					
+				}else if(classHandler > -1 && parsedClass.rawCode(currentLineNum).contains("}")) {
+					classHandler--;
 				
-				}else if(token.equals("public") || token.equals("private")) {
-					token = tokenizer.nextToken();
+				}else {
+					
+					if((token.equals("public") || token.equals("private") || token.equals("protected"))) {
+						token = tokenizer.nextToken();
+					}
+					
+					if(token.equals("final")) {
+						token = tokenizer.nextToken();
+					}
+					
 					if(token.equals("static")) {
-						//
+						token = tokenizer.nextToken();
+					}
+					
+					if(token.equals("enum")) {
+						token = tokenizer.nextToken();
+						if(!token.equals("class")) {
+							StringTokenizer tokenizer2 = new StringTokenizer(token, "{");
+							String className = tokenizer2.nextToken();
+								
+							classCreator(className);
+							return;
+						}	
+					}
+					
+					if(token.equals("class") || token.equals("interface")) {
+						token = tokenizer.nextToken();
+						StringTokenizer tokenizer2 = new StringTokenizer(token, "{");
+						String className = tokenizer2.nextToken();
+							
+						classCreator(className);
+							
+					}else if(token.equals("abstract")) {
+						tokenizer.nextToken();
+						token = tokenizer.nextToken();
+						StringTokenizer tokenizer2 = new StringTokenizer(token, "{");
+						String className = tokenizer2.nextToken();
+							
+						classCreator(className);
 					}else {
-						if(token.equals("class")) {
-							token = tokenizer.nextToken();
-							StringTokenizer tokenizer2 = new StringTokenizer(token, "{");
-							String className = tokenizer2.nextToken();
-							
-							classCreator(className);
-							
-						}else if(token.equals("abstract") || token.equals("interface")) {
-							tokenizer.nextToken();
-							token = tokenizer.nextToken();
-							StringTokenizer tokenizer2 = new StringTokenizer(token, "{");
-							String className = tokenizer2.nextToken();
-							
-							classCreator(className);
+						// the line will contain one of these: method contents, variable name
+						token = tokenizer.nextToken();
+						if(token.contains("(")) {
+							StringTokenizer tokenizer2 = new StringTokenizer(token, "(");
+							String methodName = tokenizer2.nextToken();
 								
+							methodCreator(methodName);
+									
 						}else {
-							// the line will contain one of these: method contents, variable name
-							token = tokenizer.nextToken();
-							if(token.contains("(")) {
-								StringTokenizer tokenizer2 = new StringTokenizer(token, "(");
-								String methodName = tokenizer2.nextToken();
-								
-								methodCreator(methodName);
-								
-							}else {
-								String methodName = token;
+							String methodName = token;
+							if(tokenizer.hasMoreTokens()) {
 								token = tokenizer.nextToken();
 								if(token.contains("(")) {
 									methodCreator(methodName);
 								}else {
 									return;
 								}
-							}	
-						}
+							}
+						}	
 					}
-				}else {
-					
-					//
 				}
 			}
 		}
 	}
+	
 	// creates the class object 
 	public void classCreator(String className) {
-		trackingClass.add(className);
-		currentClass = new Class(className);
+		Class currentClass = new Class(className);
 		createdClassObjects.add(currentClass);
+		classHandler++;
 	}
 	
 	// creates the method object
