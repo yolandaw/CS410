@@ -14,14 +14,13 @@ public class Parser {
 	private LinkedList<Class> createdClassObjects; 
 	private int currentLineNum; 
 	private Method currentMethod; 
-//	private Class currentClass;
 	private int blockCommentHandler; 
 	private int methodHandler; 
 	private int classHandler;
+	private boolean lineInMethod;
+	private String currentLine;
 	
 
-	 
-	
 	public Parser(){
 		parsedClass = new LogGatherer();
 	}
@@ -34,13 +33,37 @@ public class Parser {
 		blockCommentHandler = -1;
 		methodHandler = -1;
 		classHandler = -1;
+		lineInMethod = false;
 		
-		
+
 		int codeLineNums = parsedClass.numLinesOfCode();
+
 		for(int i=0; i<codeLineNums; i++) {
 			currentLineNum = i;
-			parsingCodeLine(parsedClass.rawCode(i));
+			currentLine = parsedClass.rawCode(i);
+			parsingCodeLine(currentLine);
+			System.out.println(currentLineNum);
 		}
+		
+		// test
+		int check = createdClassObjects.size();
+		System.out.println(check);
+		int a = 0;
+		while(a < check) {
+			Class theClass = createdClassObjects.get(a);
+			System.out.println("Class Name: " + theClass.getClassName());
+		
+		    int methodSize = theClass.getListOfMethods().size();
+		    LinkedList<Method> methods = theClass.getListOfMethods();
+			for (int b=0; b < methodSize; b++) {
+				
+				Method theMethod = methods.get(b);
+				System.out.println("Method Name: " + theMethod.getMethodName());	
+				theMethod.printOwnerships();
+			}
+		    a++;
+		} // test end
+		
 		
 		// sends the createdClassObjects and createdMethodObjects to the visualization class
 		//...
@@ -49,7 +72,7 @@ public class Parser {
 	public void parsingCodeLine(String codeLine) throws GitAPIException, IOException {
 		StringTokenizer tokenizer = new StringTokenizer(codeLine);
 		
-		// checks whether the code line is empty
+		// checks whether the code line outside a method is empty
 		if(!tokenizer.hasMoreTokens()) {
 			return;
 		}else {
@@ -60,8 +83,8 @@ public class Parser {
 			}else if (token.contains("import")) {
 				return;
 			}
-			// the code line contains no actual codes such as comments: comment line, block comment, and documentation comment
-			else if(token.contains("//") || token.contains("*")) {
+			// filter the code line that is outside a method and contains no actual codes such as comments: line comment, block comment, and documentation comment
+			else if(token.contains("//")) {
 				return;
 			}else if(token.contains("/*")) {
 				blockCommentHandler = 1;
@@ -73,19 +96,43 @@ public class Parser {
 				return;
 			}else {
 				// the line will contain one of these: method contents, class name, variable name.
-		
+				
 				// checks whether the code line is related to a method
-				if(methodHandler == 1) {
-					if(parsedClass.rawCode(currentLineNum).contains("}")) {
-						methodHandler = -1;
-						createdClassObjects.get(classHandler).addMethod(currentMethod);
+				if(lineInMethod) {
+	
+					// filter the code line that is inside a method and contains no actual codes such as comment: line comment and block comment
+					if(token.contains("//")) {
+						return;
+					}else if(token.contains("/*")) {
+						blockCommentHandler = 1;
+						return;
+					}else if(token.contains("*/")) {
+						blockCommentHandler = -1;
+						return;
+					}else if(blockCommentHandler == 1) {
+						return;
+					}else { 
+						String lineCode = parsedClass.rawCode(currentLineNum);
+						if(lineCode.contains("{")) {
+							methodHandler++;
+						}else if (lineCode.contains("}")) {
+							methodHandler--;
+							if(methodHandler == -1) {
+								PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
+								currentMethod.increOwnershipSize(ownership);
+								createdClassObjects.get(classHandler).addMethod(currentMethod);
+								lineInMethod = false;	
+								return;
+							}
+						}
+
+						PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
+						currentMethod.increOwnershipSize(ownership);
+						System.out.println(ownership.getName() + currentLineNum);
 					}
-					PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
-					currentMethod.increOwnershipSize(ownership);
 					
 				}else if(classHandler > -1 && parsedClass.rawCode(currentLineNum).contains("}")) {
 					classHandler--;
-				
 				}else {
 					
 					if((token.equals("public") || token.equals("private") || token.equals("protected"))) {
@@ -127,24 +174,31 @@ public class Parser {
 						classCreator(className);
 					}else {
 						// the line will contain one of these: method contents, variable name
-						token = tokenizer.nextToken();
+						// could be the constructor
 						if(token.contains("(")) {
 							StringTokenizer tokenizer2 = new StringTokenizer(token, "(");
 							String methodName = tokenizer2.nextToken();
 								
 							methodCreator(methodName);
-									
 						}else {
-							String methodName = token;
-							if(tokenizer.hasMoreTokens()) {
-								token = tokenizer.nextToken();
-								if(token.contains("(")) {
-									methodCreator(methodName);
-								}else {
-									return;
+							token = tokenizer.nextToken();
+							if(token.contains("(")) {
+								StringTokenizer tokenizer2 = new StringTokenizer(token, "(");
+								String methodName = tokenizer2.nextToken();
+								
+								methodCreator(methodName);									
+							}else {
+								String methodName = token;
+								if(tokenizer.hasMoreTokens()) {
+									token = tokenizer.nextToken();
+									if(	token.contains("(")) {
+										methodCreator(methodName);
+									}else {
+										return;
+									}
 								}
-							}
-						}	
+							}	
+						}
 					}
 				}
 			}
@@ -159,10 +213,15 @@ public class Parser {
 	}
 	
 	// creates the method object
-	public void methodCreator(String methodName) {
-		methodHandler = 1;
+	public void methodCreator(String methodName) throws GitAPIException, IOException {
+		
+		if(currentLine.contains("{")) {
+			methodHandler++;	
+		}
+		
 		currentMethod= new Method(methodName);
 		PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
 		currentMethod.adjustOwnership(ownership, 1);
+		lineInMethod = true;
 	}
 }
