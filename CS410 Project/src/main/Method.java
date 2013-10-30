@@ -24,21 +24,27 @@ public class Method {
 	}
 	
 	public void increOwnershipSize(PersonIdent ident) {
-		ownerships.put(ident, ownerships.get(ident) + 1);
+		if(ownerships.containsKey(ident)) {
+			ownerships.put(ident, ownerships.get(ident) + 1);
+		}else {
+			ownerships.put(ident, 1);
+		}
 	}
 	/*
-	 * dab
+	 * public void test2(){
+	 * 	test comment
+	 * }
 	 */
 	
 	/*
 	public void test() {
-		abc
+		test comment
 	}
 	*/
 	// for test
 	public void printOwnerships() {
 		int committers = ownerships.size();
-		//for(int z=0; z < committers; z++) {
+		//for(int z=0; z < committers; z++) { test comment
 		/*
 		 * test comment
 		 */
