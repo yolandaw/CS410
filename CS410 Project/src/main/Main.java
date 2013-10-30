@@ -23,23 +23,17 @@ public class Main {
 	 * @throws NoHeadException 
 	 */
 	public static void main(String[] args) throws IOException, NoHeadException, GitAPIException {
-<<<<<<< HEAD
 		/*
 		Parser parser = new Parser();
 		parser.startParsingClass(localRepoUrl, "CS410 Project/src/main/LogGatherer.java");
 		*/
 		
-=======
 		
 		File currentDir = new File(System.getProperty("user.dir")).getParentFile();
 		String gitDir = currentDir + "/.git";
->>>>>>> branch 'master' of https://github.com/yolandaw/CS410.git
 		//quinn test start
-<<<<<<< HEAD
-		LogGatherer lg = new LogGatherer(localRepoUrl, "CS410 Project/src/main/LogGatherer.java");
-=======
+		//LogGatherer lg = new LogGatherer(localRepoUrl, "CS410 Project/src/main/LogGatherer.java");
 		LogGatherer lg = new LogGatherer(gitDir, "CS410 Project/src/main/Main.java");
->>>>>>> branch 'master' of https://github.com/yolandaw/CS410.git
 		String[] strArray = lg.rawCode();
 		
 		for(int i=0; i<lg.numLinesOfCode(); i++){

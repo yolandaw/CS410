@@ -15,13 +15,11 @@ public class LogGatherer{
 
 	private Repository repository;
 	private BlameResult rawBlameResult;
-<<<<<<< HEAD
 	
 	public LogGatherer() {
 	
 	}
 	
-=======
 
 	/**
 	 * 
@@ -30,7 +28,6 @@ public class LogGatherer{
 	 * @throws GitAPIException
 	 * @throws IOException
 	 */
->>>>>>> branch 'master' of https://github.com/yolandaw/CS410.git
 	public LogGatherer(String localGitFolderPath, String filePath) throws GitAPIException, IOException{
 		repository = openDirectory(localGitFolderPath);
 		rawBlameResult = rawBlameResult(repository, filePath);

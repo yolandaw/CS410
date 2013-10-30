@@ -103,7 +103,6 @@ public class Floor implements org.jsfml.graphics.Drawable {
 		
 	}
 	
-	@Override
 	public void draw(RenderTarget target, RenderStates states) {
 		target.draw(floorVertices);
 	}
