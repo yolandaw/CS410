@@ -22,7 +22,6 @@ public class Tower {
 	public Tower(String className) {
 		setTowerName(className);
 		arrayOfContributors = new String[20];
-		
 	}
 	
 	//goes through the lists of existing contributors and adds if is a new contributor 
