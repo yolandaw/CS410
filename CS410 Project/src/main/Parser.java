@@ -22,7 +22,6 @@ public class Parser {
 	private boolean isConstructor;
 	
 
-	
 	public Parser(){}
 
 	public void startParsingClass(LogGatherer gatheredLog) throws IOException, GitAPIException {

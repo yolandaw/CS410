@@ -60,9 +60,7 @@ public class Tower {
 	
 	//increases the number of floors in the tower
 	public void floorCounter(){
-		
 		numberOfFloors++;
-		
 	}
 	
     public void addFloor(Floor methodName) {

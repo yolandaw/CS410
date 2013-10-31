@@ -131,6 +131,7 @@ public class Floor implements org.jsfml.graphics.Drawable {
 	// for parsing test
 	public void printOwnerships() {
 		Set<Author> authorSet = ownerships.keySet();
+		
 		Iterator<Author> authorIter = authorSet.iterator();
 		while(authorIter.hasNext()) {
 			Author author = authorIter.next();

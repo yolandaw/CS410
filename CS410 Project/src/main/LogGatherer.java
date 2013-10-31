@@ -151,6 +151,5 @@ public class LogGatherer{
 		RawText rawCode = rawBlameResult.getResultContents();
 		return rawCode.getString(codeLineNumber);	
 	}
-
 }
 

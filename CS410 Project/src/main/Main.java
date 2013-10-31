@@ -46,6 +46,7 @@ public class Main {
 		parser.startParsingClass(lg);
 		// pass the class Object(s) (there could be nested classes, so it is Object(s)) parsed in the Parse class to the visualization class using  getParsedLog() in the Parse class
 		//...
+
 		
 	/*	
 		File currentDir = new File(System.getProperty("user.dir")).getParentFile();

@@ -5,6 +5,7 @@ public class Author {
 	private String authorName;
 	private String emailAddress;
 	
+	
 	public Author(String name, String emailaddr) {
 		authorName = name;
 		emailAddress = emailaddr;
