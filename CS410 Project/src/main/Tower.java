@@ -1,5 +1,6 @@
 package main;
 
+import java.util.LinkedList;
 import java.util.Random;
 
 
@@ -16,6 +17,7 @@ public class Tower {
 	private int numberOfFloors;
 	private int floorHeight;
 	String[] arrayOfContributors;
+	private LinkedList<Floor> classMethods = new LinkedList<Floor>();
 	
 
 	//constructing a new Tower/Class
@@ -63,6 +65,14 @@ public class Tower {
 		numberOfFloors++;
 		
 	}
+	
+    public void addMethod(Floor methodName) {
+    	classMethods.add(methodName);
+    }
+    
+    public LinkedList<Floor> getListOfMethods() {
+    	return classMethods;
+    }
 
 
 }

@@ -13,10 +13,10 @@ public class Parser {
 	private LogGatherer parsedClass; //
 	private int currentLineNum; //
 	private LinkedList<String> trackingClass; 
-	private LinkedList<Class> createdClassObjects; //
-	private LinkedList<Method> createdMethodObjects; //
-	private Method currentMethod; //
-	private Class currentClass;
+	private LinkedList<Tower> createdClassObjects; //
+	private LinkedList<Floor> createdMethodObjects; //
+	private Floor currentMethod; //
+	private Tower currentClass;
 	private int blockCommentHandler; //
 	private int methodHandler; //
 	
@@ -30,8 +30,8 @@ public class Parser {
 		parsedClass.startGatheringLog(localRepoUrl, parsingClass);
 		currentLineNum = 0;
 		trackingClass = new LinkedList<String>();
-		createdClassObjects = new LinkedList<Class>();
-		createdMethodObjects = new LinkedList<Method>();
+		createdClassObjects = new LinkedList<Tower>();
+		createdMethodObjects = new LinkedList<Floor>();
 		blockCommentHandler = -1;
 		methodHandler = -1;
 		
@@ -135,14 +135,14 @@ public class Parser {
 	// creates the class object 
 	public void classCreator(String className) {
 		trackingClass.add(className);
-		currentClass = new Class(className);
+		currentClass = new Tower(className);
 		createdClassObjects.add(currentClass);
 	}
 	
 	// creates the method object
 	public void methodCreator(String methodName) {
 		methodHandler = 1;
-		currentMethod= new Method(methodName);
+		currentMethod= new Floor(methodName);
 		PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
 		currentMethod.adjustOwnership(ownership, 1);
 	}

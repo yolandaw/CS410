@@ -1,8 +1,11 @@
 package main;
 
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
+import org.eclipse.jgit.lib.PersonIdent;
 import org.jsfml.graphics.*;
 import org.jsfml.system.Vector2f;
 
@@ -11,6 +14,7 @@ public class Floor implements org.jsfml.graphics.Drawable {
 	private String floorName;
 	private VertexArray floorVertices;
 	private int numOfLines;
+	private Map<PersonIdent, Integer> ownerships = new HashMap<PersonIdent, Integer>();
 	private int committers; //should be some list of committers?
 	private IntRect floorBoundaries;
 	
@@ -58,6 +62,14 @@ public class Floor implements org.jsfml.graphics.Drawable {
 	
 	private void setFloorName(String functionName) {
 		floorName = functionName;
+	}
+	
+	public void adjustOwnership(PersonIdent ident, int size) {
+		ownerships.put(ident, size);
+	}
+	
+	public void increOwnershipSize(PersonIdent ident) {
+		ownerships.put(ident, ownerships.get(ident) + 1);
 	}
 	
 	public void splitFloorOwnership() {
