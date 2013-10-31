@@ -43,6 +43,7 @@ public class Parser {
 			currentLine = parsedClass.rawCode(i);
 			parsingCodeLine(currentLine);
 			System.out.println(currentLineNum);
+		//	System.out.println(classHandler);
 		}
 		
 		// test
@@ -99,44 +100,43 @@ public class Parser {
 				
 				// checks whether the code line is related to a method
 				if(lineInMethod) {
-	
+						
 					// filter the code line that is inside a method and contains no actual codes such as comment: line comment and block comment
-					if(token.contains("//")) {
-						return;
-					}else if(token.contains("/*")) {
-						blockCommentHandler = 1;
-						return;
-					}else if(token.contains("*/")) {
-						blockCommentHandler = -1;
-						return;
-					}else if(blockCommentHandler == 1) {
-						return;
-					}else { 
-						String lineCode = parsedClass.rawCode(currentLineNum);
+				//	if(token.contains("//")) {
+				//		return;
+				//	}else if(token.contains("/*")) {
+				//		blockCommentHandler = 1;
+				//		return;
+				//	}else if(token.contains("*/")) {
+				//		blockCommentHandler = -1;
+				//		return;
+				//	}else if(blockCommentHandler == 1) {
+				//		return;
+				//	}else { 
+				//		String lineCode = parsedClass.rawCode(currentLineNum);
 						
-						if(lineCode.contains("{") && lineCode.contains("}")) {
+						if(currentLine.contains("{") && currentLine.contains("}")) {
 						
-						}else if(lineCode.contains("{")) {
+						}else if(currentLine.contains("{")) {
 							methodHandler++;
-						}else if (lineCode.contains("}")) {
+						}else if (currentLine.contains("}")) {
 							methodHandler--;
 							if(methodHandler == -1) {
+								lineInMethod = false;	
 								PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
 								currentMethod.increOwnershipSize(ownership);
 								createdClassObjects.get(classHandler).addMethod(currentMethod);
-								lineInMethod = false;	
 								return;
 							}
 						}
 
 						PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
 						currentMethod.increOwnershipSize(ownership);
-						System.out.println(ownership.getName() + currentLineNum);
-					}
-					
-					
-				}else if(classHandler > -1 && parsedClass.rawCode(currentLineNum).contains("}")) {
+					//	System.out.println(ownership.getName() + currentLineNum);
+				//	}	
+				}else if(classHandler > -1 && currentLine.contains("}")) {
 					classHandler--;
+			
 				}else {
 					
 					if((token.equals("public") || token.equals("private") || token.equals("protected"))) {
@@ -222,7 +222,7 @@ public class Parser {
 		if(currentLine.contains("{")) {
 			methodHandler++;	
 		}
-		
+		System.out.println("Method is created");
 		currentMethod= new Method(methodName);
 		PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
 		currentMethod.adjustOwnership(ownership, 1);
