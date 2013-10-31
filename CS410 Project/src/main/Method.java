@@ -1,14 +1,16 @@
 package main;
 
-import java.util.HashMap;
-import java.util.Map;
 
-import org.eclipse.jgit.lib.PersonIdent;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 
 public class Method {
 	
 	private String METHOD_NAME;
-	private Map<PersonIdent, Integer> ownerships = new HashMap<PersonIdent, Integer>(); 
+	private Map<Author, Integer> ownerships = new HashMap<Author, Integer>(); 
 
 	
 	public Method(String methodName) {
@@ -19,44 +21,33 @@ public class Method {
 		return METHOD_NAME;
 	}
 	
-	public void adjustOwnership(PersonIdent ident, int size) {
-		ownerships.put(ident, size);
+	public void adjustOwnership(Author author, int size) {
+		ownerships.put(author, size);
 	}
 	
-	public void increOwnershipSize(PersonIdent ident) {
-		if(ownerships.containsKey(ident)) {
-			ownerships.put(ident, ownerships.get(ident) + 1);
-		}else {
-			ownerships.put(ident, 1);
+	public void increOwnershipSize(Author author) {	
+		Iterator<Author> itr = ownerships.keySet().iterator();
+		Author existAuthor;
+	
+		
+		while(itr.hasNext()) {
+			existAuthor = (Author) itr.next();
+			if(existAuthor.getEmailAddr().equals(author.getEmailAddr())) {
+				ownerships.put(existAuthor, ownerships.get(existAuthor) + 1);
+				return;
+			}
+		}
+		adjustOwnership(author, 1);
+	}
+	
+
+	// for parsing test
+	public void printOwnerships() {
+		Set<Author> authorSet = ownerships.keySet();
+		Iterator<Author> authorIter = authorSet.iterator();
+		while(authorIter.hasNext()) {
+			Author author = authorIter.next();
+			System.out.println("Author Name: " + author.getAuthorName() + ", Ownership size: " + ownerships.get(author) + ".");
 		}
 	}
-	/*
-	 * public void test2(){
-	 * 	test comment
-	 * }
-	 */
-	
-	/*
-	public void test() {
-		test comment
-	}
-	*/
-	// for test
-	public void printOwnerships() {
-		int committers = ownerships.size();
-		//for(int z=0; z < committers; z++) { test comment
-		/*
-		 * test comment
-		 */
-		
-		/*
-		 test comment
-		 
-		 */
-		 
-		System.out.println(ownerships.entrySet().toString());
-	}
-
-	
-
 }
