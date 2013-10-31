@@ -19,6 +19,7 @@ public class Parser {
 	private Method currentMethod; 
 	private int methodHandler; 
 	private boolean lineInMethod;
+	private boolean isConstructor;
 	
 
 	public Parser(){}
@@ -31,6 +32,7 @@ public class Parser {
 		methodHandler = -1;
 		classHandler = -1;
 		lineInMethod = false;
+		isConstructor = false;
 		
 
 		int codeLineNums = parsedClass.numLinesOfCode();
@@ -153,7 +155,7 @@ public class Parser {
 					Author author = new Author(ownership.getName(), ownership.getEmailAddress());
 					currentMethod.increOwnershipSize(author);	
 								
-				}else if(classHandler > -1 && currentLine.contains("}")) {
+				}else if(classHandler > -1 && currentLine.contains("}") && !currentLine.contains("{")) {
 					classHandler--;
 			
 				}else {
@@ -199,6 +201,9 @@ public class Parser {
 						// the line will contain one of these: method contents, variable name
 						// the method could be the constructor
 						if(token.contains("(")) {
+							if(currentLine.contains("{") && currentLine.contains("}")) {
+								isConstructor = true;
+							}
 							StringTokenizer tokenizer2 = new StringTokenizer(token, "(");
 							String methodName = tokenizer2.nextToken();
 								
@@ -206,6 +211,9 @@ public class Parser {
 						}else {
 							token = tokenizer.nextToken();
 							if(token.contains("(")) {
+								if(currentLine.contains("{") && currentLine.contains("}")) {
+									isConstructor = true;
+								}
 								StringTokenizer tokenizer2 = new StringTokenizer(token, "(");
 								String methodName = tokenizer2.nextToken();
 								
@@ -247,6 +255,13 @@ public class Parser {
 		PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
 		Author author = new Author(ownership.getName(), ownership.getEmailAddress());
 		currentMethod.adjustOwnership(author, 1);
+		
+		if(isConstructor) {
+			createdClassObjects.get(classHandler).addMethod(currentMethod);
+			isConstructor = false;
+			lineInMethod = false;
+			methodHandler = -1;
+		}
 	}
 	
 	public LinkedList<Class> getParsedLog() {
