@@ -5,14 +5,27 @@ import java.io.File;
 import java.io.IOException;
 
 
+
+
+
+
+
+
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.jsfml.graphics.*;
+import org.jsfml.system.Vector2f;
+import org.jsfml.system.Vector2i;
+import org.jsfml.window.Mouse;
 import org.jsfml.window.VideoMode;
+import org.jsfml.window.Mouse.Button;
 import org.jsfml.window.event.Event;
+import org.jsfml.window.event.MouseEvent;
 
 
 public class Main {
+	
+	private static String localRepoUrl ="C:/Documents and Settings/user/git/CS410/.git";
 
 	/**
 	 * @param args
@@ -21,14 +34,21 @@ public class Main {
 	 * @throws NoHeadException 
 	 */
 	public static void main(String[] args) throws IOException, NoHeadException, GitAPIException {
+		/*
+		Parser parser = new Parser();
+		parser.startParsingClass(localRepoUrl, "CS410 Project/src/main/LogGatherer.java");
+		*/
+		
 		
 		File currentDir = new File(System.getProperty("user.dir")).getParentFile();
 		String gitDir = currentDir + "/.git";
 		//quinn test start
+		//LogGatherer lg = new LogGatherer(localRepoUrl, "CS410 Project/src/main/LogGatherer.java");
 		LogGatherer lg = new LogGatherer(gitDir, "CS410 Project/src/main/Main.java");
 		String[] strArray = lg.rawCode();
+		
 		for(int i=0; i<lg.numLinesOfCode(); i++){
-			System.out.print(lg.getAuthor(i).getName() + ": " + strArray[i]);
+			System.out.print(lg.getAuthor(i) + ": " + lg.rawCode(i) + " time: " + lg.getCommitTime(i));
 		}
 		//quinn test end
 
@@ -42,6 +62,11 @@ public class Main {
 		
 		Color backGroundColor = new Color (178,224,250);
 		
+		View changingView = new View(window.getDefaultView().getCenter(),window.getDefaultView().getSize());
+		int centerX = window.getSize().x/2;
+		int centerY = window.getSize().y/2;
+		float newMouseX = 0;
+		
 		Floor floor1 = new Floor("foo");
 		Floor floor2 = new Floor("bar");
 		Floor floor3 = new Floor("boo");
@@ -54,7 +79,11 @@ public class Main {
 		floor3.splitFloorOwnership();
 		floor4.setFloorPosition(window.getSize().x/2, floor3.getFloorBoundaries().top-floor3.getFloorBoundaries().height);
 		floor4.splitFloorOwnership();
+		
 		boolean RUNNING = true;
+		boolean scrollMode = false;
+		double scrollXVelocity = 0;
+		Vector2i clickedMousePos = new Vector2i(0,0);
 
 		while (RUNNING) {
 			
@@ -64,7 +93,42 @@ public class Main {
 					RUNNING = false;
 				}
 				
+				if (event.type == Event.Type.MOUSE_BUTTON_PRESSED) {
+					scrollMode = true;
+					window.setMouseCursorVisible(false);
+					clickedMousePos = Mouse.getPosition(window);
+					Mouse.setPosition(new Vector2i(centerX, centerY), window);
+				}
+				
+				if (event.type == Event.Type.MOUSE_BUTTON_RELEASED) {
+					scrollMode = false;
+					window.setMouseCursorVisible(true);
+					Mouse.setPosition(clickedMousePos, window);
+				}
+				
+				if (event.type == Event.Type.MOUSE_MOVED && scrollMode) {
+					MouseEvent mEvent = event.asMouseEvent();
+					newMouseX =  mEvent.position.x;
+					scrollXVelocity = newMouseX - centerX;
+				}
+				
 			}
+			
+			if (scrollXVelocity > 0) {
+				scrollXVelocity = scrollXVelocity - (scrollXVelocity * 0.1);
+			} else {
+				if (scrollXVelocity < 0) {
+					scrollXVelocity = scrollXVelocity + (scrollXVelocity * -0.1);
+				}
+			}
+
+			if (Mouse.isButtonPressed(Button.LEFT) && scrollMode) {
+				Mouse.setPosition(new Vector2i(centerX, centerY), window);
+			}
+			
+			changingView.move((float) scrollXVelocity, 0);
+
+			window.setView(changingView);
 
 			window.clear(backGroundColor);
 			window.draw(floor1);
