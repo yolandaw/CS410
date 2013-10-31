@@ -1,8 +1,13 @@
 package main;
 
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
+import org.eclipse.jgit.lib.PersonIdent;
 import org.jsfml.graphics.*;
 import org.jsfml.system.Vector2f;
 
@@ -11,6 +16,7 @@ public class Floor implements org.jsfml.graphics.Drawable {
 	private String floorName;
 	private VertexArray floorVertices;
 	private int numOfLines;
+	private Map<Author, Integer> ownerships = new HashMap<Author, Integer>(); 
 	private int committers; //should be some list of committers?
 	private IntRect floorBoundaries;
 	
@@ -60,6 +66,25 @@ public class Floor implements org.jsfml.graphics.Drawable {
 		floorName = functionName;
 	}
 	
+	public void adjustOwnership(Author author, int size) {
+		ownerships.put(author, size);
+	}
+	
+	public void increOwnershipSize(Author author) {	
+		Iterator<Author> itr = ownerships.keySet().iterator();
+		Author existAuthor;
+	
+		
+		while(itr.hasNext()) {
+			existAuthor = (Author) itr.next();
+			if(existAuthor.getEmailAddr().equals(author.getEmailAddr())) {
+				ownerships.put(existAuthor, ownerships.get(existAuthor) + 1);
+				return;
+			}
+		}
+		adjustOwnership(author, 1);
+	}
+	
 	public void splitFloorOwnership() {
 		floorVertices.clear();
 		
@@ -102,6 +127,17 @@ public class Floor implements org.jsfml.graphics.Drawable {
 		}
 		
 	}
+	
+	// for parsing test
+	public void printOwnerships() {
+		Set<Author> authorSet = ownerships.keySet();
+		Iterator<Author> authorIter = authorSet.iterator();
+		while(authorIter.hasNext()) {
+			Author author = authorIter.next();
+			System.out.println("Author Name: " + author.getAuthorName() + ", Ownership size: " + ownerships.get(author) + ".");
+		}
+	}
+	
 	
 	public void draw(RenderTarget target, RenderStates states) {
 		target.draw(floorVertices);
