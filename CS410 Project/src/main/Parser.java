@@ -35,7 +35,6 @@ public class Parser {
 		lineInMethod = false;
 		isConstructor = false;
 		
-
 		int codeLineNums = parsedClass.numLinesOfCode();
 
 		for(int i=0; i<codeLineNums; i++) {
@@ -56,10 +55,10 @@ public class Parser {
 		    int methodSize = methods.size();
 		    
 			for (int b=0; b < methodSize; b++) {
-				
 				Floor theMethod = methods.get(b);
 				System.out.println("Method Name: " + theMethod.getFloorName());	
 				theMethod.printOwnerships();
+				System.out.println(" ");
 			}
 		    a++;
 		} // parsing test end
