@@ -123,24 +123,39 @@ public class Parser {
 								// only check first most character and the last most character since it can be }String.contains("}"); {
 								// case 1: both '{' and '}' can be in the same line
 								if(currentLine.contains("{") && currentLine.contains("}")) {
-							
-									int lastindex = currentLine.length() - 1;
-								
-									if(currentLine.charAt(0) == '}') {
+																
+									if(token.charAt(0) == '}') {
 										result--;
+									}else if(token.charAt(0) == '{') {
+										result++;
 									}
+									
+									while(tokenizer.hasMoreTokens()) {
+										token = tokenizer.nextToken();
+									}
+									int lastIndex = token.length() - 1;
 								
-									if (currentLine.charAt(lastindex) == '{') {
+									if (token.charAt(lastIndex) == '}') {
+										result--;
+									}else if(token.charAt(lastIndex) == '{') {
 										result++;
 									}
 								// case2: only one of '{' and '}' is in the line  
 								}else {
-									StringTokenizer tokenizer2 = new StringTokenizer(currentLine);
-									String token2 = tokenizer2.nextToken();
-									if(token2.charAt(0) == '}') {
+									if(token.charAt(0) == '}') {
 										result--;
-									}else {
+									}else if (token.charAt(0) == '{') {
 										result++;
+									}else {
+										while(tokenizer.hasMoreTokens()) {
+											token = tokenizer.nextToken();
+										}
+										int lastIndex = token.length() - 1;
+										if(token.charAt(lastIndex) == '}') {
+											result--;
+										}else if(token.charAt(lastIndex) == '{') {
+											result++;
+										}
 									}
 								}
 								
@@ -183,7 +198,7 @@ public class Parser {
 					classHandler--;
 			
 				}else {
-					
+									
 					if((token.equals("public") || token.equals("private") || token.equals("protected"))) {
 						token = tokenizer.nextToken();
 					}
