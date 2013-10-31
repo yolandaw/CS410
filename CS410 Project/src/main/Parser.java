@@ -42,8 +42,10 @@ public class Parser {
 			currentLineNum = i;
 			currentLine = parsedClass.rawCode(i);
 			parsingCodeLine(currentLine);
-			System.out.println(currentLineNum);
+		//	System.out.println(currentLineNum);
 		//	System.out.println(classHandler);
+			System.out.print(lineInMethod + " ");
+			System.out.println(currentLineNum+1 + "   " + methodHandler);
 		}
 		
 		// test
@@ -79,9 +81,9 @@ public class Parser {
 		}else {
 			String token = tokenizer.nextToken();
 			
-			if(token.contains("package")) {
+			if(token.contains("package") && !lineInMethod) {
 				return;
-			}else if (token.contains("import")) {
+			}else if (token.contains("import") && !lineInMethod) {
 				return;
 			}
 			// filter the code line that is outside a method and contains no actual codes such as comments: line comment, block comment, and documentation comment
@@ -115,9 +117,47 @@ public class Parser {
 				//	}else { 
 				//		String lineCode = parsedClass.rawCode(currentLineNum);
 						
-						if(currentLine.contains("{") && currentLine.contains("}")) {
+						if(currentLine.contains("{") || currentLine.contains("}")) {
+								int result = 0;
+							
+								// only check first most character and the last most character since it can be }String.contains("}"); {
+								// case 1: both '{' and '}' can be in the same line
+								if(currentLine.contains("{") && currentLine.contains("}")) {
+							
+									int lastindex = currentLine.length() - 1;
+								
+									if(currentLine.charAt(0) == '}') {
+										result--;
+									}
+								
+									if (currentLine.charAt(lastindex) == '{') {
+										result++;
+									}
+								// case2: only one of '{' and '}' is in the line  
+								}else {
+									StringTokenizer tokenizer2 = new StringTokenizer(currentLine);
+									String token2 = tokenizer2.nextToken();
+									if(token2.charAt(0) == '}') {
+										result--;
+									}else {
+										result++;
+									}
+								}
+								
+								methodHandler += result;
+								
+								if(methodHandler == -1) {
+									lineInMethod = false;	
+									PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
+									currentMethod.increOwnershipSize(ownership);
+									createdClassObjects.get(classHandler).addMethod(currentMethod);
+									return;
+								}
+						}
+							
+							
 						
-						}else if(currentLine.contains("{")) {
+				/*		}else if(currentLine.contains("{")) {
 							methodHandler++;
 						}else if (currentLine.contains("}")) {
 							methodHandler--;
@@ -133,7 +173,12 @@ public class Parser {
 						PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
 						currentMethod.increOwnershipSize(ownership);
 					//	System.out.println(ownership.getName() + currentLineNum);
-				//	}	
+				//	}	*/
+						
+								PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
+								currentMethod.increOwnershipSize(ownership);
+						
+								
 				}else if(classHandler > -1 && currentLine.contains("}")) {
 					classHandler--;
 			
