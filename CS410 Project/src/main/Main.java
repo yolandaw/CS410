@@ -47,9 +47,9 @@ public class Main {
 		LogGatherer lg = new LogGatherer(gitDir, "CS410 Project/src/main/Main.java");
 		String[] strArray = lg.rawCode();
 		
-		for(int i=0; i<lg.numLinesOfCode(); i++){
-			System.out.print(lg.getAuthor(i) + ": " + lg.rawCode(i) + " time: " + lg.getCommitTime(i));
-		}
+		//for(int i=0; i<lg.numLinesOfCode(); i++){
+		//	System.out.print(lg.getAuthor(i) + ": " + lg.rawCode(i) + " time: " + lg.getCommitTime(i));
+		//}
 		//quinn test end
 
 		RenderWindow window = new RenderWindow();
@@ -94,16 +94,20 @@ public class Main {
 				}
 				
 				if (event.type == Event.Type.MOUSE_BUTTON_PRESSED) {
-					scrollMode = true;
-					window.setMouseCursorVisible(false);
-					clickedMousePos = Mouse.getPosition(window);
-					Mouse.setPosition(new Vector2i(centerX, centerY), window);
+					if (event.asMouseButtonEvent().button == Button.LEFT) {
+						scrollMode = true;
+						window.setMouseCursorVisible(false);
+						clickedMousePos = Mouse.getPosition(window);
+						Mouse.setPosition(new Vector2i(centerX, centerY), window);
+					}
 				}
 				
 				if (event.type == Event.Type.MOUSE_BUTTON_RELEASED) {
-					scrollMode = false;
-					window.setMouseCursorVisible(true);
-					Mouse.setPosition(clickedMousePos, window);
+					if (event.asMouseButtonEvent().button == Button.LEFT) {
+						scrollMode = false;
+						window.setMouseCursorVisible(true);
+						Mouse.setPosition(clickedMousePos, window);
+					}
 				}
 				
 				if (event.type == Event.Type.MOUSE_MOVED && scrollMode) {
