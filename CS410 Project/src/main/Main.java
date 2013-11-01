@@ -25,7 +25,7 @@ import org.jsfml.window.event.MouseEvent;
 
 public class Main {
 	
-	private static String localRepoUrl ="C:/Documents and Settings/user/git/CS410/.git";
+	private static String localRepoUrl = "";
 
 	/**
 	 * @param args
@@ -34,6 +34,9 @@ public class Main {
 	 * @throws NoHeadException 
 	 */
 	public static void main(String[] args) throws IOException, NoHeadException, GitAPIException {
+		
+		File currentDir = new File(System.getProperty("user.dir")).getParentFile();
+		localRepoUrl = currentDir + "/.git";
 		
 		LogGatherer lg = new LogGatherer();
 		Parser parser = new Parser();
