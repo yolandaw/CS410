@@ -150,7 +150,7 @@ public class Parser {
 							lineInMethod = false;	
 							
 							PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
-							Author author = new Author(ownership.getName(), ownership.getEmailAddress());
+							Author author = getUniqueAuthor(ownership);
 							currentMethod.increOwnershipSize(author);
 							
 							createdClassObjects.get(classHandler).addFloor(currentMethod);
@@ -158,7 +158,7 @@ public class Parser {
 						}
 					}
 					PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
-					Author author = new Author(ownership.getName(), ownership.getEmailAddress());
+					Author author = getUniqueAuthor(ownership);
 					currentMethod.increOwnershipSize(author);	
 								
 				}else if(classHandler > -1 && currentLine.contains("}") && !currentLine.contains("{")) {
@@ -259,15 +259,7 @@ public class Parser {
 		lineInMethod = true;
 		
 		PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
-		Author author = new Author("Empty", "Empty");
-		
-		if (!allAuthors.containsKey(ownership.getEmailAddress())) {
-			author = new Author(ownership.getName(), ownership.getEmailAddress());
-			
-			allAuthors.put(ownership.getEmailAddress(), author);
-		} else {
-			author = allAuthors.get(ownership.getEmailAddress());
-		}
+		Author author = getUniqueAuthor(ownership);
 		
 		currentMethod.adjustOwnership(author, 1);
 		
@@ -281,5 +273,22 @@ public class Parser {
 	
 	public LinkedList<Tower> getParsedLog() {
 		return createdClassObjects;	
+	}
+	
+	private Author getUniqueAuthor(PersonIdent ownership) {
+		Author author = new Author("Empty", "Empty");
+		String uniqueEmail = ownership.getEmailAddress();
+		
+		if (!allAuthors.containsKey(uniqueEmail)) {
+			author = new Author(ownership.getName(), uniqueEmail);
+			if (uniqueEmail == "") {
+				author.setUnknownAuthorColor();
+			}
+			allAuthors.put(uniqueEmail, author);
+		} else {
+			author = allAuthors.get(uniqueEmail);
+		}
+		
+		return author;
 	}
 }

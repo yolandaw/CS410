@@ -31,6 +31,10 @@ public class Author implements org.jsfml.graphics.Drawable {
 		return authorColor;
 	}
 	
+	public void setUnknownAuthorColor() {
+		authorColor = new Color(255,255,255);
+	}
+	
 	private void generateAuthorColor() {
 		Random randInt = new Random();
 		authorColor = new Color(randInt.nextInt(255),randInt.nextInt(255),randInt.nextInt(255));
