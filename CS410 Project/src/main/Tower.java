@@ -17,14 +17,13 @@ public class Tower {
 	private int numberOfFloors;
 	private int floorHeight;
 	String[] arrayOfContributors;
-	private LinkedList<Floor> classMethods = new LinkedList<Floor>();
+	private LinkedList<Floor> towerFloors = new LinkedList<Floor>();
 	
 
 	//constructing a new Tower/Class
 	public Tower(String className) {
 		setTowerName(className);
 		arrayOfContributors = new String[20];
-		
 	}
 	
 	//goes through the lists of existing contributors and adds if is a new contributor 
@@ -61,18 +60,18 @@ public class Tower {
 	
 	//increases the number of floors in the tower
 	public void floorCounter(){
-		
 		numberOfFloors++;
-		
 	}
 	
-    public void addMethod(Floor methodName) {
-    	classMethods.add(methodName);
+    public void addFloor(Floor methodName) {
+    	towerFloors.add(methodName);
     }
     
-    public LinkedList<Floor> getListOfMethods() {
-    	return classMethods;
+    public LinkedList<Floor> getListOfFloor() {
+    	return towerFloors;
     }
-
-
+    
+    public String getTowerName() {
+    	return towerName;
+    }
 }

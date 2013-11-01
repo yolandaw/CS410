@@ -34,12 +34,21 @@ public class Main {
 	 * @throws NoHeadException 
 	 */
 	public static void main(String[] args) throws IOException, NoHeadException, GitAPIException {
-		/*
+		
+		LogGatherer lg = new LogGatherer();
 		Parser parser = new Parser();
-		parser.startParsingClass(localRepoUrl, "CS410 Project/src/main/LogGatherer.java");
-		*/
 		
+		// pass the each class from the list of existing classes: in this case just passing the 'Class' class
+		// repeat this using loop for each passed class:
+		// 1.start gathering the log for the class
+		lg.startGatheringLog(localRepoUrl, "CS410 Project/src/main/Parser.java");
+		// 2.pass the gathered log information for the class to be parsed
+		parser.startParsingClass(lg);
+		// pass the class Object(s) (there could be nested classes, so it is Object(s)) parsed in the Parse class to the visualization class using  getParsedLog() in the Parse class
+		//...
+
 		
+	/*	
 		File currentDir = new File(System.getProperty("user.dir")).getParentFile();
 		String gitDir = currentDir + "/.git";
 		//quinn test start
@@ -51,6 +60,7 @@ public class Main {
 		//	System.out.print(lg.getAuthor(i) + ": " + lg.rawCode(i) + " time: " + lg.getCommitTime(i));
 		//}
 		//quinn test end
+*/
 
 		RenderWindow window = new RenderWindow();
 		

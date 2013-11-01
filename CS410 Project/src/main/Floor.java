@@ -2,8 +2,10 @@ package main;
 
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import org.eclipse.jgit.lib.PersonIdent;
 import org.jsfml.graphics.*;
@@ -14,7 +16,7 @@ public class Floor implements org.jsfml.graphics.Drawable {
 	private String floorName;
 	private VertexArray floorVertices;
 	private int numOfLines;
-	private Map<PersonIdent, Integer> ownerships = new HashMap<PersonIdent, Integer>();
+	private Map<Author, Integer> ownerships = new HashMap<Author, Integer>(); 
 	private int committers; //should be some list of committers?
 	private IntRect floorBoundaries;
 	
@@ -64,12 +66,23 @@ public class Floor implements org.jsfml.graphics.Drawable {
 		floorName = functionName;
 	}
 	
-	public void adjustOwnership(PersonIdent ident, int size) {
-		ownerships.put(ident, size);
+	public void adjustOwnership(Author author, int size) {
+		ownerships.put(author, size);
 	}
 	
-	public void increOwnershipSize(PersonIdent ident) {
-		ownerships.put(ident, ownerships.get(ident) + 1);
+	public void increOwnershipSize(Author author) {	
+		Iterator<Author> itr = ownerships.keySet().iterator();
+		Author existAuthor;
+	
+		
+		while(itr.hasNext()) {
+			existAuthor = (Author) itr.next();
+			if(existAuthor.getEmailAddr().equals(author.getEmailAddr())) {
+				ownerships.put(existAuthor, ownerships.get(existAuthor) + 1);
+				return;
+			}
+		}
+		adjustOwnership(author, 1);
 	}
 	
 	public void splitFloorOwnership() {
@@ -115,7 +128,18 @@ public class Floor implements org.jsfml.graphics.Drawable {
 		
 	}
 	
-	@Override
+	// for parsing test
+	public void printOwnerships() {
+		Set<Author> authorSet = ownerships.keySet();
+		
+		Iterator<Author> authorIter = authorSet.iterator();
+		while(authorIter.hasNext()) {
+			Author author = authorIter.next();
+			System.out.println("Author Name: " + author.getAuthorName() + ", Ownership size: " + ownerships.get(author) + ".");
+		}
+	}
+	
+	
 	public void draw(RenderTarget target, RenderStates states) {
 		target.draw(floorVertices);
 	}

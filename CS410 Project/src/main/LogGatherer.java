@@ -15,12 +15,14 @@ public class LogGatherer{
 
 	private Repository repository;
 	private BlameResult rawBlameResult;
-	
-	public LogGatherer() {
-	
-	}
-	
 
+	
+	/**
+	 * Basic constructor
+	 */
+	public LogGatherer() {}
+	
+	
 	/**
 	 * 
 	 * @param localGitFolderPath the path to the local .git repository ex: "C:/Users/Quinn/Documents/Homework/CPSC 410/CS410/test/.git"
@@ -28,17 +30,12 @@ public class LogGatherer{
 	 * @throws GitAPIException
 	 * @throws IOException
 	 */
-	public LogGatherer(String localGitFolderPath, String filePath) throws GitAPIException, IOException{
+	public void startGatheringLog(String localGitFolderPath, String filePath) throws NoHeadException, IOException, GitAPIException {
 		repository = openDirectory(localGitFolderPath);
 		rawBlameResult = rawBlameResult(repository, filePath);
 		closeRepository(repository);
 	}
 	
-	public void startGatheringLog(String localGitFolderPath, String filePath) throws NoHeadException, IOException, GitAPIException{
-		repository = openDirectory(localGitFolderPath);
-		rawBlameResult = rawBlameResult(repository, filePath);
-		closeRepository(repository);	
-	}
 
 	/**
 	 * 
@@ -154,6 +151,5 @@ public class LogGatherer{
 		RawText rawCode = rawBlameResult.getResultContents();
 		return rawCode.getString(codeLineNumber);	
 	}
-
 }
 
