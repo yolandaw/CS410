@@ -3,13 +3,16 @@ package main;
 import java.util.LinkedList;
 import java.util.Random;
 
+import org.jsfml.graphics.RenderStates;
+import org.jsfml.graphics.RenderTarget;
+
 
 
 //Builds the class tower with name and information of number of floors and number of contributors
 //calls the Floor class functions to build internal floors?
 
 
-public class Tower {
+public class Tower implements org.jsfml.graphics.Drawable {
 	
 	private String towerName;
 	private int towerHeight;
@@ -74,4 +77,30 @@ public class Tower {
     public String getTowerName() {
     	return towerName;
     }
+    
+    // can add other floor updates in here
+    public void updateFloors() {
+    	
+    	int i = 0;
+    	towerFloors.get(0).setFloorPosition(400, 600);
+    	Floor previousFloor = null;
+    	for (Floor f: towerFloors) {
+    		f.updateNumOfLines();
+    		
+    		if (previousFloor != null) {
+    			f.setFloorPosition(400, previousFloor.getFloorBoundaries().top-previousFloor.getFloorBoundaries().height);
+    		}
+    		f.splitFloorOwnership();
+    		previousFloor = f;
+    		i++;
+    	}
+    }
+
+	@Override
+	public void draw(RenderTarget window, RenderStates renderStates) {
+		for (Floor f: towerFloors) {
+			window.draw(f);
+		}
+	}
+	
 }

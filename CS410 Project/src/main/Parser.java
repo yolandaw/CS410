@@ -1,7 +1,11 @@
 package main;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -11,7 +15,8 @@ import org.eclipse.jgit.lib.PersonIdent;
 public class Parser {
 	 
 	private LogGatherer parsedClass;
-	private LinkedList<Tower> createdClassObjects; 
+	private LinkedList<Tower> createdClassObjects;
+	private Map<String,Author> allAuthors;
 	private int currentLineNum; 
 	private String currentLine;
 	private int blockCommentHandler; 
@@ -28,6 +33,7 @@ public class Parser {
 		parsedClass = gatheredLog;
 		currentLineNum = 0;
 		createdClassObjects = new LinkedList<Tower>();
+		allAuthors = new HashMap<String, Author>();
 		blockCommentHandler = -1;
 		methodHandler = -1;
 		classHandler = -1;
@@ -253,7 +259,16 @@ public class Parser {
 		lineInMethod = true;
 		
 		PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
-		Author author = new Author(ownership.getName(), ownership.getEmailAddress());
+		Author author = new Author("Empty", "Empty");
+		
+		if (!allAuthors.containsKey(ownership.getEmailAddress())) {
+			author = new Author(ownership.getName(), ownership.getEmailAddress());
+			
+			allAuthors.put(ownership.getEmailAddress(), author);
+		} else {
+			author = allAuthors.get(ownership.getEmailAddress());
+		}
+		
 		currentMethod.adjustOwnership(author, 1);
 		
 		if(isConstructor) {

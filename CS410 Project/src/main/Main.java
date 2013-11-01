@@ -11,6 +11,8 @@ import java.io.IOException;
 
 
 
+import java.util.LinkedList;
+
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.jsfml.graphics.*;
@@ -64,7 +66,7 @@ public class Main {
 		//}
 		//quinn test end
 */
-
+		LinkedList<Tower> towers = parser.getParsedLog();
 		RenderWindow window = new RenderWindow();
 		
 		VideoMode mode = new VideoMode(800, 600);
@@ -80,18 +82,9 @@ public class Main {
 		int centerY = window.getSize().y/2;
 		float newMouseX = 0;
 		
-		Floor floor1 = new Floor("foo");
-		Floor floor2 = new Floor("bar");
-		Floor floor3 = new Floor("boo");
-		Floor floor4 = new Floor("abc");
-		floor1.setFloorPosition(window.getSize().x/2, window.getSize().y); // should be set based on a buildings(class) position field?
-		floor1.splitFloorOwnership();
-		floor2.setFloorPosition(window.getSize().x/2, floor1.getFloorBoundaries().top-floor1.getFloorBoundaries().height);
-		floor2.splitFloorOwnership();
-		floor3.setFloorPosition(window.getSize().x/2, floor2.getFloorBoundaries().top-floor2.getFloorBoundaries().height);
-		floor3.splitFloorOwnership();
-		floor4.setFloorPosition(window.getSize().x/2, floor3.getFloorBoundaries().top-floor3.getFloorBoundaries().height);
-		floor4.splitFloorOwnership();
+		for (Tower t: towers) {
+			t.updateFloors();
+		}
 		
 		boolean RUNNING = true;
 		boolean scrollMode = false;
@@ -148,10 +141,9 @@ public class Main {
 			window.setView(changingView);
 
 			window.clear(backGroundColor);
-			window.draw(floor1);
-			window.draw(floor2);
-			window.draw(floor3);
-			window.draw(floor4);
+			for (Tower t: towers) {
+				window.draw(t);
+			}
 			window.display();
 		}
 		
