@@ -20,7 +20,9 @@ public class LogGatherer{
 	/**
 	 * Basic constructor
 	 */
-	public LogGatherer() {}
+	public LogGatherer(){
+		
+	}
 	
 	
 	/**

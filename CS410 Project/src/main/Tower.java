@@ -6,11 +6,8 @@ import java.util.Random;
 import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTarget;
 
-
-
 //Builds the class tower with name and information of number of floors and number of contributors
 //calls the Floor class functions to build internal floors?
-
 
 public class Tower implements org.jsfml.graphics.Drawable {
 	

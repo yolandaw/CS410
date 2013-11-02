@@ -1,10 +1,8 @@
 package main;
 
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.jsfml.graphics.*;
