@@ -1,23 +1,12 @@
 package main;
 
-
 import java.io.File;
 import java.io.IOException;
-
-
-
-
-
-
-
-
 import java.nio.file.FileSystems;
 import java.util.LinkedList;
-
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.jsfml.graphics.*;
-import org.jsfml.system.Vector2f;
 import org.jsfml.system.Vector2i;
 import org.jsfml.window.Mouse;
 import org.jsfml.window.VideoMode;

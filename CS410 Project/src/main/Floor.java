@@ -25,6 +25,7 @@ public class Floor implements org.jsfml.graphics.Drawable {
 	private Texture texture;
 	private IntRect tilePosition;
 	
+	
 	public Floor(String functionName) {
 		setFloorName(functionName);
 		floorBoundaries = new IntRect(0, 0, 0, 0);
