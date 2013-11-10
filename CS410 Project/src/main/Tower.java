@@ -1,8 +1,10 @@
 package main;
 
+import java.nio.file.FileSystems;
 import java.util.LinkedList;
 import java.util.Random;
 
+import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTarget;
 
@@ -90,6 +92,8 @@ public class Tower implements org.jsfml.graphics.Drawable {
     		if (previousFloor != null) {
     			f.setFloorPosition(400, previousFloor.getFloorBoundaries().top-previousFloor.getFloorBoundaries().height);
     		}
+    		
+    		f.setTexture(FileSystems.getDefault().getPath("resources","texture.png"),new IntRect(0, 0, 32, 24));
     		f.splitFloorOwnership();
     		previousFloor = f;
     		i++;

@@ -11,6 +11,7 @@ import java.io.IOException;
 
 
 
+import java.nio.file.FileSystems;
 import java.util.LinkedList;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -81,16 +82,25 @@ public class Main {
 		int centerX = window.getSize().x/2;
 		int centerY = window.getSize().y/2;
 		float newMouseX = 0;
-		
-		for (Tower t: towers) {
-			t.updateFloors();
-		}
+		float newMouseY = 0;
+		CityModel city = new CityModel(window);
+		city.setTowers(towers);
 		
 		boolean RUNNING = true;
 		boolean scrollMode = false;
 		double scrollXVelocity = 0;
+		double scrollYVelocity = 0;
 		Vector2i clickedMousePos = new Vector2i(0,0);
-
+		Floor foo = new Floor("foo");
+		Author lenox = new Author("Lenox", "learn");
+		Author asd = new Author("asd", "asd");
+		foo.setFloorBoundaries(200, 600, 100, 300);
+		foo.adjustOwnership(lenox, 5);
+		foo.adjustOwnership(asd, 10);
+		foo.updateNumOfLines();
+		foo.setTexture(FileSystems.getDefault().getPath("resources","texture.png"),new IntRect(0, 0, 32, 24));
+		foo.splitFloorOwnership();
+		
 		while (RUNNING) {
 			
 			for (Event event : window.pollEvents()) {
@@ -119,7 +129,9 @@ public class Main {
 				if (event.type == Event.Type.MOUSE_MOVED && scrollMode) {
 					MouseEvent mEvent = event.asMouseEvent();
 					newMouseX =  mEvent.position.x;
+					newMouseY =  mEvent.position.y;
 					scrollXVelocity = newMouseX - centerX;
+					scrollYVelocity = newMouseY - centerY;
 				}
 				
 			}
@@ -131,19 +143,26 @@ public class Main {
 					scrollXVelocity = scrollXVelocity + (scrollXVelocity * -0.1);
 				}
 			}
+			
+			if (scrollYVelocity > 0) {
+				scrollYVelocity = scrollYVelocity - (scrollYVelocity * 0.1);
+			} else {
+				if (scrollYVelocity < 0) {
+					scrollYVelocity = scrollYVelocity + (scrollYVelocity * -0.1);
+				}
+			}
 
 			if (Mouse.isButtonPressed(Button.LEFT) && scrollMode) {
 				Mouse.setPosition(new Vector2i(centerX, centerY), window);
 			}
 			
-			changingView.move((float) scrollXVelocity, 0);
+			changingView.move((float) scrollXVelocity, (float) scrollYVelocity);
 
 			window.setView(changingView);
 
 			window.clear(backGroundColor);
-			for (Tower t: towers) {
-				window.draw(t);
-			}
+			window.draw(foo);
+			city.drawCity();
 			window.display();
 		}
 		
