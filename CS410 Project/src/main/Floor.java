@@ -24,18 +24,16 @@ public class Floor implements org.jsfml.graphics.Drawable {
 	private int depth;
 	private Texture texture;
 	private IntRect tilePosition;
-	private Boolean textured;
 	
 	public Floor(String functionName) {
 		setFloorName(functionName);
 		floorBoundaries = new IntRect(0, 0, 0, 0);
 		setFloorDimensions(100, 30);
-		floorVertices = new VertexArray(PrimitiveType.TRIANGLES);
+		floorVertices = new VertexArray(PrimitiveType.QUADS);
 		setDepth(15);
 		texture = new Texture();
 		texture.setRepeated(true);
 		tilePosition = new IntRect(0,0,0,0);
-		textured = false;
 	}
 	
 	public void setFloorBoundaries(int left, int top, int width, int height) {
@@ -88,7 +86,6 @@ public class Floor implements org.jsfml.graphics.Drawable {
 		try {
 			texture.loadFromFile(path,position);
 			setTilePosition(position);
-			textured = true;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -125,7 +122,7 @@ public class Floor implements org.jsfml.graphics.Drawable {
 		float xMapping = 0;
 		float yMapping = 0;
 		
-		if (textured) {
+		if (tilePosition.width != 0 && tilePosition.height != 0) {
 			xMapping = Math.round(floorBoundaries.width/tilePosition.width) * tilePosition.width;
 			yMapping = Math.round(floorBoundaries.height/tilePosition.height) * tilePosition.height;
 		}
@@ -146,11 +143,8 @@ public class Floor implements org.jsfml.graphics.Drawable {
 
 			floorVertices.add(new Vertex(new Vector2f(tempX, floorBoundaries.top),authorColor,bottomLeft));
 			floorVertices.add(new Vertex(new Vector2f(tempX, floorBoundaries.top-floorBoundaries.height),authorColor,topLeft));
-			floorVertices.add(new Vertex(new Vector2f((float) (tempX+(floorBoundaries.width*percentOwnership)), floorBoundaries.top),authorColor,bottomRight));
-			
-			floorVertices.add(new Vertex(new Vector2f((float) (tempX+(floorBoundaries.width*percentOwnership)), floorBoundaries.top),authorColor,bottomRight));
-			floorVertices.add(new Vertex(new Vector2f(tempX, floorBoundaries.top-floorBoundaries.height),authorColor,topLeft));
 			floorVertices.add(new Vertex(new Vector2f((float) (tempX+(floorBoundaries.width*percentOwnership)), floorBoundaries.top-floorBoundaries.height),authorColor,topRight));
+			floorVertices.add(new Vertex(new Vector2f((float) (tempX+(floorBoundaries.width*percentOwnership)), floorBoundaries.top),authorColor,bottomRight));
 			
 			// top of floor
 			addTopOfFloor(authorColor, tempX, percentOwnership);
@@ -168,11 +162,8 @@ public class Floor implements org.jsfml.graphics.Drawable {
 		
 		floorVertices.add(new Vertex(new Vector2f(leftSideX, floorBoundaries.top - floorBoundaries.height),lighterColor));
 		floorVertices.add(new Vertex(new Vector2f(leftSideX + depth, floorBoundaries.top - floorBoundaries.height - depth),lighterColor));
-		floorVertices.add(new Vertex(new Vector2f((float) (leftSideX+(floorBoundaries.width*widthPercent)), floorBoundaries.top - floorBoundaries.height),lighterColor));
-		
-		floorVertices.add(new Vertex(new Vector2f((float) (leftSideX+(floorBoundaries.width*widthPercent)), floorBoundaries.top - floorBoundaries.height),lighterColor));
-		floorVertices.add(new Vertex(new Vector2f(leftSideX + depth, floorBoundaries.top-floorBoundaries.height - depth),lighterColor));
 		floorVertices.add(new Vertex(new Vector2f((float) (leftSideX+(floorBoundaries.width*widthPercent)) + depth, floorBoundaries.top-floorBoundaries.height - depth),lighterColor));
+		floorVertices.add(new Vertex(new Vector2f((float) (leftSideX+(floorBoundaries.width*widthPercent)), floorBoundaries.top - floorBoundaries.height),lighterColor));
 	}
 	
 	private void addSideOfFloor(Color authorColor, float rightSideX) {
@@ -182,9 +173,6 @@ public class Floor implements org.jsfml.graphics.Drawable {
 		floorVertices.add(new Vertex(new Vector2f(rightSideX, floorBoundaries.top),darkerColor));
 		floorVertices.add(new Vertex(new Vector2f(rightSideX, floorBoundaries.top - floorBoundaries.height),darkerColor));
 		floorVertices.add(new Vertex(new Vector2f(rightSideX + depth, floorBoundaries.top - floorBoundaries.height - depth),darkerColor));
-		
-		floorVertices.add(new Vertex(new Vector2f(rightSideX + depth, floorBoundaries.top - floorBoundaries.height - depth),darkerColor));
-		floorVertices.add(new Vertex(new Vector2f(rightSideX, floorBoundaries.top),darkerColor));
 		floorVertices.add(new Vertex(new Vector2f(rightSideX + depth, floorBoundaries.top - depth),darkerColor));
 	}
 	
