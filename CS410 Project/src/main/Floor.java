@@ -119,13 +119,7 @@ public class Floor implements org.jsfml.graphics.Drawable {
 		Vector2f topRight = new Vector2f(0, 0);
 		Vector2f bottomRight = new Vector2f(0, 0);
 		Vector2f bottomLeft = new Vector2f(0, 0);
-		float xMapping = 0;
-		float yMapping = 0;
-		
-		if (tilePosition.width != 0 && tilePosition.height != 0) {
-			xMapping = Math.round(floorBoundaries.width/tilePosition.width) * tilePosition.width;
-			yMapping = Math.round(floorBoundaries.height/tilePosition.height) * tilePosition.height;
-		}
+		Vector2f textCoord = calculateTextureCoords();
 		
 		for (Map.Entry<Author, Integer> entry: ownerships.entrySet()) {
 			float percentOwnership = (float) entry.getValue()/numOfLines;
@@ -137,9 +131,9 @@ public class Floor implements org.jsfml.graphics.Drawable {
 			
 			// texture coordinates
 			topLeft = new Vector2f(0, 0);
-			topRight = new Vector2f(xMapping*percentOwnership, 0);
-			bottomRight = new Vector2f(xMapping*percentOwnership, yMapping);
-			bottomLeft = new Vector2f(0, yMapping);
+			topRight = new Vector2f(textCoord.x*percentOwnership, 0);
+			bottomRight = new Vector2f(textCoord.x*percentOwnership, textCoord.y);
+			bottomLeft = new Vector2f(0, textCoord.y);
 
 			floorVertices.add(new Vertex(new Vector2f(tempX, floorBoundaries.top),authorColor,bottomLeft));
 			floorVertices.add(new Vertex(new Vector2f(tempX, floorBoundaries.top-floorBoundaries.height),authorColor,topLeft));
@@ -157,23 +151,49 @@ public class Floor implements org.jsfml.graphics.Drawable {
 	}
 	
 	private void addTopOfFloor(Color authorColor, float leftSideX, float widthPercent) {
-		float lighten = (float) 1.2;
+		float lighten = (float) 1.3;
 		Color lighterColor = new Color((int) (authorColor.r * lighten),(int) (authorColor.g * lighten),(int) (authorColor.b * lighten), 255);
 		
-		floorVertices.add(new Vertex(new Vector2f(leftSideX, floorBoundaries.top - floorBoundaries.height),lighterColor));
-		floorVertices.add(new Vertex(new Vector2f(leftSideX + depth, floorBoundaries.top - floorBoundaries.height - depth),lighterColor));
-		floorVertices.add(new Vertex(new Vector2f((float) (leftSideX+(floorBoundaries.width*widthPercent)) + depth, floorBoundaries.top-floorBoundaries.height - depth),lighterColor));
-		floorVertices.add(new Vertex(new Vector2f((float) (leftSideX+(floorBoundaries.width*widthPercent)), floorBoundaries.top - floorBoundaries.height),lighterColor));
+		Vector2f textCoord = calculateTextureCoords();
+		
+		Vector2f topLeft = new Vector2f(0, 0);
+		Vector2f topRight = new Vector2f(textCoord.x*widthPercent, 0);
+		Vector2f bottomRight = new Vector2f(textCoord.x*widthPercent, depth);
+		Vector2f bottomLeft = new Vector2f(0, depth);
+		
+		floorVertices.add(new Vertex(new Vector2f(leftSideX, floorBoundaries.top - floorBoundaries.height),lighterColor,bottomLeft));
+		floorVertices.add(new Vertex(new Vector2f(leftSideX + depth, floorBoundaries.top - floorBoundaries.height - depth),lighterColor,topLeft));
+		floorVertices.add(new Vertex(new Vector2f((float) (leftSideX+(floorBoundaries.width*widthPercent)) + depth, floorBoundaries.top-floorBoundaries.height - depth),lighterColor,topRight));
+		floorVertices.add(new Vertex(new Vector2f((float) (leftSideX+(floorBoundaries.width*widthPercent)), floorBoundaries.top - floorBoundaries.height),lighterColor,bottomRight));
 	}
 	
 	private void addSideOfFloor(Color authorColor, float rightSideX) {
 		float darken = (float) 0.8;
 		Color darkerColor = new Color((int) (authorColor.r * darken),(int) (authorColor.g * darken),(int) (authorColor.b * darken), 255);
 		
-		floorVertices.add(new Vertex(new Vector2f(rightSideX, floorBoundaries.top),darkerColor));
-		floorVertices.add(new Vertex(new Vector2f(rightSideX, floorBoundaries.top - floorBoundaries.height),darkerColor));
-		floorVertices.add(new Vertex(new Vector2f(rightSideX + depth, floorBoundaries.top - floorBoundaries.height - depth),darkerColor));
-		floorVertices.add(new Vertex(new Vector2f(rightSideX + depth, floorBoundaries.top - depth),darkerColor));
+		Vector2f textCoord = calculateTextureCoords();
+		
+		Vector2f topLeft = new Vector2f(0, 0);
+		Vector2f topRight = new Vector2f(depth, 0);
+		Vector2f bottomRight = new Vector2f(depth, textCoord.y);
+		Vector2f bottomLeft = new Vector2f(0, textCoord.y);
+		
+		floorVertices.add(new Vertex(new Vector2f(rightSideX, floorBoundaries.top),darkerColor,bottomLeft));
+		floorVertices.add(new Vertex(new Vector2f(rightSideX, floorBoundaries.top - floorBoundaries.height),darkerColor,topLeft));
+		floorVertices.add(new Vertex(new Vector2f(rightSideX + depth, floorBoundaries.top - floorBoundaries.height - depth),darkerColor,topRight));
+		floorVertices.add(new Vertex(new Vector2f(rightSideX + depth, floorBoundaries.top - depth),darkerColor,bottomRight));
+	}
+	
+	private Vector2f calculateTextureCoords() {
+		float xMapping = 0;
+		float yMapping = 0;
+		
+		if (tilePosition.width != 0 && tilePosition.height != 0) {
+			xMapping = Math.round(floorBoundaries.width/tilePosition.width) * tilePosition.width;
+			yMapping = Math.round(floorBoundaries.height/tilePosition.height) * tilePosition.height;
+		}
+		
+		return new Vector2f(xMapping, yMapping);
 	}
 	
 	// for parsing test
