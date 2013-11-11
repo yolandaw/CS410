@@ -68,20 +68,9 @@ public class Main {
 		CityModel city = new CityModel(window);
 		city.setTowers(towers);
 		CityController controller = new CityController(city);
-//		Floor foo = new Floor("foo");
-//		Author lenox = new Author("Lenox", "learn");
-//		Author asd = new Author("asd", "asd");
-//		foo.setFloorBoundaries(200, 600, 100, 300);
-//		foo.adjustOwnership(lenox, 5);
-//		foo.adjustOwnership(asd, 10);
-//		foo.updateNumOfLines();
-//		foo.setTexture(FileSystems.getDefault().getPath("resources","texture.png"),new IntRect(0, 0, 32, 24));
-//		foo.splitFloorOwnership();
 		
 		while (window.isOpen()) {
-			
 			controller.updateModel();
-//			window.draw(foo);
 			city.drawCity();
 			window.display();
 		}
