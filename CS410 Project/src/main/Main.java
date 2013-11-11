@@ -67,95 +67,27 @@ public class Main {
 		
 		Color backGroundColor = new Color (178,224,250);
 		
-		View changingView = new View(window.getDefaultView().getCenter(),window.getDefaultView().getSize());
-		int centerX = window.getSize().x/2;
-		int centerY = window.getSize().y/2;
-		float newMouseX = 0;
-		float newMouseY = 0;
 		CityModel city = new CityModel(window);
 		city.setTowers(towers);
+		CityController controller = new CityController(city);
+//		Floor foo = new Floor("foo");
+//		Author lenox = new Author("Lenox", "learn");
+//		Author asd = new Author("asd", "asd");
+//		foo.setFloorBoundaries(200, 600, 100, 300);
+//		foo.adjustOwnership(lenox, 5);
+//		foo.adjustOwnership(asd, 10);
+//		foo.updateNumOfLines();
+//		foo.setTexture(FileSystems.getDefault().getPath("resources","texture.png"),new IntRect(0, 0, 32, 24));
+//		foo.splitFloorOwnership();
 		
-		boolean RUNNING = true;
-		boolean scrollMode = false;
-		double scrollXVelocity = 0;
-		double scrollYVelocity = 0;
-		Vector2i clickedMousePos = new Vector2i(0,0);
-		Floor foo = new Floor("foo");
-		Author lenox = new Author("Lenox", "learn");
-		Author asd = new Author("asd", "asd");
-		foo.setFloorBoundaries(200, 600, 100, 300);
-		foo.adjustOwnership(lenox, 5);
-		foo.adjustOwnership(asd, 10);
-		foo.updateNumOfLines();
-		foo.setTexture(FileSystems.getDefault().getPath("resources","texture.png"),new IntRect(0, 0, 32, 24));
-		foo.splitFloorOwnership();
-		
-		while (RUNNING) {
+		while (window.isOpen()) {
 			
-			for (Event event : window.pollEvents()) {
-				
-				if (event.type == Event.Type.CLOSED) {
-					RUNNING = false;
-				}
-				
-				if (event.type == Event.Type.MOUSE_BUTTON_PRESSED) {
-					if (event.asMouseButtonEvent().button == Button.LEFT) {
-						scrollMode = true;
-						window.setMouseCursorVisible(false);
-						clickedMousePos = Mouse.getPosition(window);
-						Mouse.setPosition(new Vector2i(centerX, centerY), window);
-					}
-				}
-				
-				if (event.type == Event.Type.MOUSE_BUTTON_RELEASED) {
-					if (event.asMouseButtonEvent().button == Button.LEFT) {
-						scrollMode = false;
-						window.setMouseCursorVisible(true);
-						Mouse.setPosition(clickedMousePos, window);
-					}
-				}
-				
-				if (event.type == Event.Type.MOUSE_MOVED && scrollMode) {
-					MouseEvent mEvent = event.asMouseEvent();
-					newMouseX =  mEvent.position.x;
-					newMouseY =  mEvent.position.y;
-					scrollXVelocity = newMouseX - centerX;
-					scrollYVelocity = newMouseY - centerY;
-				}
-				
-			}
-			
-			if (scrollXVelocity > 0) {
-				scrollXVelocity = scrollXVelocity - (scrollXVelocity * 0.1);
-			} else {
-				if (scrollXVelocity < 0) {
-					scrollXVelocity = scrollXVelocity + (scrollXVelocity * -0.1);
-				}
-			}
-			
-			if (scrollYVelocity > 0) {
-				scrollYVelocity = scrollYVelocity - (scrollYVelocity * 0.1);
-			} else {
-				if (scrollYVelocity < 0) {
-					scrollYVelocity = scrollYVelocity + (scrollYVelocity * -0.1);
-				}
-			}
-
-			if (Mouse.isButtonPressed(Button.LEFT) && scrollMode) {
-				Mouse.setPosition(new Vector2i(centerX, centerY), window);
-			}
-			
-			changingView.move((float) scrollXVelocity, (float) scrollYVelocity);
-
-			window.setView(changingView);
-
+			controller.updateModel();
 			window.clear(backGroundColor);
-			window.draw(foo);
+//			window.draw(foo);
 			city.drawCity();
 			window.display();
 		}
-		
-		window.close();
 	}
 
 }

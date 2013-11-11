@@ -44,6 +44,11 @@ public class CityModel {
 		window.setView(currentView);
 	}
 	
+	public void moveCurrentView(float x, float y) {
+		currentView.move(x, y);
+		window.setView(currentView);
+	}
+	
 	public View getCurrentView() {
 		return currentView;
 	}
