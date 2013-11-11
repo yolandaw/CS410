@@ -65,8 +65,6 @@ public class Main {
 		
 		window.setFramerateLimit(60);
 		
-		Color backGroundColor = new Color (178,224,250);
-		
 		CityModel city = new CityModel(window);
 		city.setTowers(towers);
 		CityController controller = new CityController(city);
@@ -83,7 +81,6 @@ public class Main {
 		while (window.isOpen()) {
 			
 			controller.updateModel();
-			window.clear(backGroundColor);
 //			window.draw(foo);
 			city.drawCity();
 			window.display();

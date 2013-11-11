@@ -1,6 +1,9 @@
 package main;
 
+import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.RenderWindow;
+import org.jsfml.graphics.View;
+import org.jsfml.system.Vector2f;
 import org.jsfml.system.Vector2i;
 import org.jsfml.window.Mouse;
 import org.jsfml.window.Mouse.Button;
@@ -75,8 +78,8 @@ public class CityController {
 			}
 		}
 		
-		model.moveCurrentView((float) scrollXVelocity, (float) scrollYVelocity);
-		
+		moveModelView((float) scrollXVelocity, (float) scrollYVelocity);
+		constrainModelViewToWorld();
 		resetMousePosition();
 	}
 	
@@ -84,5 +87,36 @@ public class CityController {
 		if (Mouse.isButtonPressed(Button.LEFT) && scrollMode) {
 			Mouse.setPosition(new Vector2i(window.getSize().x/2, window.getSize().y/2), window);
 		}
+	}
+	
+	private void moveModelView(float x, float y) {
+		model.getCurrentView().move(x, y);
+	}
+	
+	private void constrainModelViewToWorld() {
+		View resetView = model.getCurrentView();
+		Vector2f resetCenter = resetView.getCenter();
+		float currentLeftX = resetView.getCenter().x - (resetView.getSize().x/2);
+		float currentTopY = resetView.getCenter().y - (resetView.getSize().y/2);
+		IntRect worldDimensions = model.getWorldDimensions();
+		
+		if (currentLeftX < model.getWorldDimensions().left) {
+			resetCenter = new Vector2f(worldDimensions.left + (resetView.getSize().x/2), resetCenter.y);
+		} else {
+			if (currentLeftX + resetView.getSize().x > worldDimensions.left + worldDimensions.width) {
+				resetCenter = new Vector2f(worldDimensions.left + worldDimensions.width - (resetView.getSize().x/2), resetCenter.y);
+			}
+		}
+		
+		if (currentTopY < model.getWorldDimensions().top) {
+			resetCenter = new Vector2f(resetCenter.x, worldDimensions.top + (resetView.getSize().y/2));
+		} else {
+			if (currentTopY + resetView.getSize().y > worldDimensions.top + worldDimensions.height) {
+				resetCenter = new Vector2f(resetCenter.x, worldDimensions.top + worldDimensions.height-(resetView.getSize().y/2));
+			}
+		}
+		
+		resetView = new View(resetCenter, resetView.getSize());
+		model.setCurrentView(resetView);
 	}
 }
