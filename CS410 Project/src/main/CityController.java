@@ -46,7 +46,9 @@ public class CityController {
 				if (event.asMouseButtonEvent().button == Button.LEFT) {
 					scrollMode = false;
 					window.setMouseCursorVisible(true);
-					Mouse.setPosition(leftClickedMousePos, window);
+					if (leftClickedMousePos != null) {
+						Mouse.setPosition(leftClickedMousePos, window);
+					}
 				}
 			}
 			

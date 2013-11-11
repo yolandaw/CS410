@@ -96,7 +96,7 @@ public class CityModel {
 	
 	private void createGrassMid() {
 		grassMid = new VertexArray(PrimitiveType.QUADS);
-		Color grassMidColor = new Color(67, 152, 120, 255);
+		Color grassMidColor = new Color(81, 158, 110, 255);
 		
 		grassMid.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.height/2), grassMidColor));
 		grassMid.add(new Vertex(new Vector2f(worldDimensions.left + worldDimensions.width, worldDimensions.height/2), grassMidColor));
