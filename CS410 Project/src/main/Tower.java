@@ -1,15 +1,19 @@
 package main;
 
+import java.nio.file.FileSystems;
 import java.util.LinkedList;
 import java.util.Random;
 
+import org.jsfml.graphics.IntRect;
+import org.jsfml.graphics.RenderStates;
+import org.jsfml.graphics.RenderTarget;
 
 
 //Builds the class tower with name and information of number of floors and number of contributors
 //calls the Floor class functions to build internal floors?
 
 
-public class Tower {
+public class Tower implements org.jsfml.graphics.Drawable {
 	
 	private String towerName;
 	private int towerHeight;
@@ -18,7 +22,7 @@ public class Tower {
 	private int floorHeight;
 	String[] arrayOfContributors;
 	private LinkedList<Floor> towerFloors = new LinkedList<Floor>();
-	
+	private String cityName;
 
 	//constructing a new Tower/Class
 	public Tower(String className) {
@@ -73,5 +77,40 @@ public class Tower {
     
     public String getTowerName() {
     	return towerName;
+    }
+    
+ // can add other floor updates in here
+    public void updateFloors() {
+    	
+    	int i = 0;
+    	towerFloors.get(0).setFloorPosition(400, 600);
+    	Floor previousFloor = null;
+    	for (Floor f: towerFloors) {
+    		f.updateNumOfLines();
+    		
+    		if (previousFloor != null) {
+    			f.setFloorPosition(400, previousFloor.getFloorBoundaries().top-previousFloor.getFloorBoundaries().height);
+    		}
+    		
+    		f.setTexture(FileSystems.getDefault().getPath("resources","texture.png"),new IntRect(0, 0, 32, 24));
+    		f.splitFloorOwnership();
+    		previousFloor = f;
+    		i++;
+    	}
+    }
+
+	
+	public void draw(RenderTarget window, RenderStates renderStates) {
+		for (Floor f: towerFloors) {
+			window.draw(f);
+		}
+	}
+    
+    public void setCityName(String packageName) {
+    	cityName = packageName;
+    }
+    
+    public String getCityName() {
+    	return cityName;
     }
 }

@@ -1,7 +1,11 @@
 package main;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -9,25 +13,51 @@ import org.eclipse.jgit.lib.PersonIdent;
 
 
 public class Parser {
-	 
-	private LogGatherer parsedClass;
-	private LinkedList<Tower> createdClassObjects; 
-	private int currentLineNum; 
-	private String currentLine;
-	private int blockCommentHandler; 
-	private int classHandler;
-	private Floor currentMethod; 
-	private int methodHandler; 
-	private boolean lineInMethod;
-	private boolean isConstructor;
 	
-
+	// The gathered log information that is going to be parsed
+	private LogGatherer parsedClass;
+	// The created list of class objects through parsing the log
+	private LinkedList<Tower> createdClassObjects;
+	// Stores all the created authors
+	private Map<String,Author> allAuthors;
+	// The current line number that is being parsed
+	private int currentLineNum; 
+	// The current line information that is being parsed
+	private String currentLine;
+	// The block comment handler that excludes block comments when parsing
+	private int blockCommentHandler; 
+	// The class handler is used for checking the nested class
+	private int classHandler;
+	// The current method that is created and is being parsed
+	private Floor currentMethod;
+	// The method handler is used for checking whether currently parsing inside a method
+	private int methodHandler; 
+	// The lineInMethod is used for checking whether the currently parsing line is inside the method or not
+	private boolean lineInMethod;
+	// The isConstructor is used for checking whether the currently created method is basic constructor 
+	private boolean isConstructor;
+	// The name of the package that parsed class belongs to 
+	private String cityName;
+	
+	
+	/**
+	 * Basic constructor
+	 */
 	public Parser(){}
 
+	
+	/**
+	 * Start parsing the gathered Log
+	 * 
+	 * @param gatheredLog: The gathered log information
+	 * @throws IOException
+	 * @throws GitAPIException
+	 */
 	public void startParsingClass(LogGatherer gatheredLog) throws IOException, GitAPIException {
 		parsedClass = gatheredLog;
 		currentLineNum = 0;
 		createdClassObjects = new LinkedList<Tower>();
+		allAuthors = new HashMap<String, Author>();
 		blockCommentHandler = -1;
 		methodHandler = -1;
 		classHandler = -1;
@@ -49,7 +79,8 @@ public class Parser {
 		while(a < check) {
 			Tower theClass = createdClassObjects.get(a);
 			System.out.println("Class Name: " + theClass.getTowerName());
-		
+			System.out.println(" ");
+			
 		    LinkedList<Floor> methods = theClass.getListOfFloor();
 		    int methodSize = methods.size();
 		    
@@ -57,13 +88,22 @@ public class Parser {
 				Floor theMethod = methods.get(b);
 				System.out.println("Method Name: " + theMethod.getFloorName());	
 				theMethod.printOwnerships();
+				System.out.println("Method access type: " + theMethod.getAccessType());
 				System.out.println(" ");
 			}
 		    a++;
 		} // parsing test end
 	}
 	
-	public void parsingCodeLine(String codeLine) throws GitAPIException, IOException {
+
+	/**
+	 * Parse the line to create matching class, method objects, and to compute the ownerships of each method 
+	 * 
+	 * @param codeLine: one line of the code lines gathered from the log 
+	 * @throws IOException
+	 * @throws GitAPIException
+	 */
+	private void parsingCodeLine(String codeLine) throws GitAPIException, IOException {
 		StringTokenizer tokenizer = new StringTokenizer(codeLine);
 		
 		// checks whether the code line outside a method is empty
@@ -73,6 +113,11 @@ public class Parser {
 			String token = tokenizer.nextToken();
 			
 			if(token.contains("package") && !lineInMethod) {
+				token = tokenizer.nextToken();
+				
+				StringTokenizer tempTokenizer = new StringTokenizer(token, ";");
+				cityName = tempTokenizer.nextToken();
+				
 				return;
 			}else if (token.contains("import") && !lineInMethod) {
 				return;
@@ -144,7 +189,7 @@ public class Parser {
 							lineInMethod = false;	
 							
 							PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
-							Author author = new Author(ownership.getName(), ownership.getEmailAddress());
+							Author author = getUniqueAuthor(ownership);
 							currentMethod.increOwnershipSize(author);
 							
 							createdClassObjects.get(classHandler).addFloor(currentMethod);
@@ -152,7 +197,7 @@ public class Parser {
 						}
 					}
 					PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
-					Author author = new Author(ownership.getName(), ownership.getEmailAddress());
+					Author author = getUniqueAuthor(ownership);
 					currentMethod.increOwnershipSize(author);	
 								
 				}else if(classHandler > -1 && currentLine.contains("}") && !currentLine.contains("{")) {
@@ -236,24 +281,35 @@ public class Parser {
 		}
 	}
 	
-	// creates the class object 
-	public void classCreator(String className) {
+	/**
+	 * Creates a new class object
+	 * 
+	 * @param className: The name of the new class/tower object
+	 */
+	private void classCreator(String className) {
 		Tower currentClass = new Tower(className);
+		currentClass.setCityName(cityName);
 		createdClassObjects.add(currentClass);
 		classHandler++;
 	}
 	
-	// creates the method object
-	public void methodCreator(String methodName) {
+	/**
+	 * Creates a new method object
+	 * 
+	 * @param methodName: The name of the new method/floor object
+	 */
+	private void methodCreator(String methodName) {
 		
 		if(currentLine.contains("{")) {
 			methodHandler++;	
 		}
 		currentMethod= new Floor(methodName);
 		lineInMethod = true;
+		currentMethod.setAccessType(3);
 		
 		PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
-		Author author = new Author(ownership.getName(), ownership.getEmailAddress());
+		Author author = getUniqueAuthor(ownership);
+		
 		currentMethod.adjustOwnership(author, 1);
 		
 		if(isConstructor) {
@@ -262,9 +318,42 @@ public class Parser {
 			lineInMethod = false;
 			methodHandler = -1;
 		}
+		
+		// adding the feature for each method: public/private/protected
+		if(currentLine.contains("protected")) {
+			currentMethod.setAccessType(2);
+			
+		}else if(currentLine.contains("private")) {
+			currentMethod.setAccessType(1);
+			
+		}else {
+			// method type in this case is public
+			currentMethod.setAccessType(0);	
+		}
 	}
 	
+	/**
+	 * 
+	 * @return: The created Class Objects through parsing the Log
+	 */
 	public LinkedList<Tower> getParsedLog() {
 		return createdClassObjects;	
+	}
+	
+	private Author getUniqueAuthor(PersonIdent ownership) {
+		Author author = new Author("Empty", "Empty");
+		String uniqueEmail = ownership.getEmailAddress();
+		
+		if (!allAuthors.containsKey(uniqueEmail)) {
+			author = new Author(ownership.getName(), uniqueEmail);
+			if (uniqueEmail == "") {
+				author.setUnknownAuthorColor();
+			}
+			allAuthors.put(uniqueEmail, author);
+		} else {
+			author = allAuthors.get(uniqueEmail);
+		}
+		
+		return author;
 	}
 }

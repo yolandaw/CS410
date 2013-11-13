@@ -1,13 +1,16 @@
 package main;
 
 
+import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.eclipse.jgit.lib.PersonIdent;
 import org.jsfml.graphics.*;
 import org.jsfml.system.Vector2f;
 
@@ -17,17 +20,23 @@ public class Floor implements org.jsfml.graphics.Drawable {
 	private VertexArray floorVertices;
 	private int numOfLines;
 	private Map<Author, Integer> ownerships = new HashMap<Author, Integer>(); 
-	private int committers; //should be some list of committers?
 	private IntRect floorBoundaries;
+	private int depth;
+	private Texture texture;
+	private IntRect tilePosition;
+	// 0 = public, 1 = private, 2 = protected
+	private int accessModifierType;
 	
 	
 	public Floor(String functionName) {
 		setFloorName(functionName);
-		committers = 5;
 		floorBoundaries = new IntRect(0, 0, 0, 0);
 		setFloorDimensions(100, 30);
-		floorVertices = new VertexArray(PrimitiveType.TRIANGLES);
-		setNumOfLines(1000);
+		floorVertices = new VertexArray(PrimitiveType.QUADS);
+		setDepth(15);
+		texture = new Texture();
+		texture.setRepeated(true);
+		tilePosition = new IntRect(0,0,0,0);
 	}
 	
 	public void setFloorBoundaries(int left, int top, int width, int height) {
@@ -46,16 +55,18 @@ public class Floor implements org.jsfml.graphics.Drawable {
 		return floorBoundaries;
 	}
 	
-	public void incrementNumOfLines() {
-		numOfLines++;
+	public void getNumOfOwners() {
+		ownerships.size();
 	}
 	
 	public int getNumOfLines() {
 		return numOfLines;
 	}
 	
-	public void setNumOfLines(int newNumOfLines) {
-		numOfLines = newNumOfLines;
+	public void updateNumOfLines() {
+		for (Map.Entry<Author, Integer> entry: ownerships.entrySet()) {
+			numOfLines = numOfLines + entry.getValue();
+		}
 	}
 	
 	public String getFloorName() {
@@ -66,8 +77,25 @@ public class Floor implements org.jsfml.graphics.Drawable {
 		floorName = functionName;
 	}
 	
+	private void setDepth(int newDepth) {
+		depth = newDepth;
+	}
+	
 	public void adjustOwnership(Author author, int size) {
 		ownerships.put(author, size);
+	}
+	
+	public void setTexture(Path path, IntRect position) {
+		try {
+			texture.loadFromFile(path,position);
+			setTilePosition(position);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void setTilePosition(IntRect position) {
+		tilePosition = position;
 	}
 	
 	public void increOwnershipSize(Author author) {	
@@ -88,44 +116,87 @@ public class Floor implements org.jsfml.graphics.Drawable {
 	public void splitFloorOwnership() {
 		floorVertices.clear();
 		
-		while (floorVertices.size()/6 < committers) {
-			floorVertices.add(new Vertex(new Vector2f(0, 0),new Color(0,0,0)));
-		}
-		
 		float tempX = floorBoundaries.left;
-		Random randInt = new Random();
-
-		float[] test = new float[committers]; // expecting some knowledge of a committers total number of lines contributed or percent?
-		test[0] = (float) 250/numOfLines;
-		test[1] = (float) 150/numOfLines;
-		test[2] = (float) 200/numOfLines;
-		test[3] = (float) 100/numOfLines;
-		test[4] = (float) 300/numOfLines;
+		Color authorColor = new Color(0,0,0);
+		Vector2f topLeft = new Vector2f(0, 0);
+		Vector2f topRight = new Vector2f(0, 0);
+		Vector2f bottomRight = new Vector2f(0, 0);
+		Vector2f bottomLeft = new Vector2f(0, 0);
+		Vector2f textCoord = calculateTextureCoords();
 		
-		Color[] test2 = new Color[committers]; // expecting each committer to a have a unique color(or texture?) associated with them?
-		test2[0] = new Color(randInt.nextInt(255),randInt.nextInt(255),randInt.nextInt(255));
-		test2[1] = new Color(randInt.nextInt(255),randInt.nextInt(255),randInt.nextInt(255));
-		test2[2] = new Color(randInt.nextInt(255),randInt.nextInt(255),randInt.nextInt(255));
-		test2[3] = new Color(randInt.nextInt(255),randInt.nextInt(255),randInt.nextInt(255));
-		test2[4] = new Color(randInt.nextInt(255),randInt.nextInt(255),randInt.nextInt(255));
-		
-		for (int i = 0; i < committers; i++) {
+		for (Map.Entry<Author, Integer> entry: ownerships.entrySet()) {
+			float percentOwnership = (float) entry.getValue()/numOfLines;
+			authorColor = entry.getKey().getAuthorColor();
 			
-			if (tempX+(floorBoundaries.width*test[i]) > floorBoundaries.left+floorBoundaries.width) {
+			if ((int) tempX+(floorBoundaries.width*percentOwnership) > floorBoundaries.left+floorBoundaries.width) {
 				break;
 			}
+			
+			// texture coordinates
+			topLeft = new Vector2f(0, 0);
+			topRight = new Vector2f(textCoord.x*percentOwnership, 0);
+			bottomRight = new Vector2f(textCoord.x*percentOwnership, textCoord.y);
+			bottomLeft = new Vector2f(0, textCoord.y);
 
-			floorVertices.add(new Vertex(new Vector2f(tempX, floorBoundaries.top),test2[i]));
-			floorVertices.add(new Vertex(new Vector2f(tempX, floorBoundaries.top-floorBoundaries.height),test2[i]));
-			floorVertices.add(new Vertex(new Vector2f((float) (tempX+(floorBoundaries.width*test[i])), floorBoundaries.top),test2[i]));
+			floorVertices.add(new Vertex(new Vector2f(tempX, floorBoundaries.top),authorColor,bottomLeft));
+			floorVertices.add(new Vertex(new Vector2f(tempX, floorBoundaries.top-floorBoundaries.height),authorColor,topLeft));
+			floorVertices.add(new Vertex(new Vector2f((float) (tempX+(floorBoundaries.width*percentOwnership)), floorBoundaries.top-floorBoundaries.height),authorColor,topRight));
+			floorVertices.add(new Vertex(new Vector2f((float) (tempX+(floorBoundaries.width*percentOwnership)), floorBoundaries.top),authorColor,bottomRight));
 			
-			floorVertices.add(new Vertex(new Vector2f((float) (tempX+(floorBoundaries.width*test[i])), floorBoundaries.top),test2[i]));
-			floorVertices.add(new Vertex(new Vector2f(tempX, floorBoundaries.top-floorBoundaries.height),test2[i]));
-			floorVertices.add(new Vertex(new Vector2f((float) (tempX+(floorBoundaries.width*test[i])), floorBoundaries.top-floorBoundaries.height),test2[i]));
+			// top of floor
+			addTopOfFloor(authorColor, tempX, percentOwnership);
 			
-			tempX = (float) (tempX+(floorBoundaries.width*test[i]));
+			tempX = (float) (tempX+(floorBoundaries.width*percentOwnership));
 		}
 		
+		// side of floor
+		addSideOfFloor(authorColor, tempX);
+	}
+	
+	private void addTopOfFloor(Color authorColor, float leftSideX, float widthPercent) {
+		float lighten = (float) 1.3;
+		Color lighterColor = new Color((int) (authorColor.r * lighten),(int) (authorColor.g * lighten),(int) (authorColor.b * lighten), 255);
+		
+		Vector2f textCoord = calculateTextureCoords();
+		
+		Vector2f topLeft = new Vector2f(0, 0);
+		Vector2f topRight = new Vector2f(textCoord.x*widthPercent, 0);
+		Vector2f bottomRight = new Vector2f(textCoord.x*widthPercent, depth);
+		Vector2f bottomLeft = new Vector2f(0, depth);
+		
+		floorVertices.add(new Vertex(new Vector2f(leftSideX, floorBoundaries.top - floorBoundaries.height),lighterColor,bottomLeft));
+		floorVertices.add(new Vertex(new Vector2f(leftSideX + depth, floorBoundaries.top - floorBoundaries.height - depth),lighterColor,topLeft));
+		floorVertices.add(new Vertex(new Vector2f((float) (leftSideX+(floorBoundaries.width*widthPercent)) + depth, floorBoundaries.top-floorBoundaries.height - depth),lighterColor,topRight));
+		floorVertices.add(new Vertex(new Vector2f((float) (leftSideX+(floorBoundaries.width*widthPercent)), floorBoundaries.top - floorBoundaries.height),lighterColor,bottomRight));
+	}
+	
+	private void addSideOfFloor(Color authorColor, float rightSideX) {
+		float darken = (float) 0.8;
+		Color darkerColor = new Color((int) (authorColor.r * darken),(int) (authorColor.g * darken),(int) (authorColor.b * darken), 255);
+		
+		Vector2f textCoord = calculateTextureCoords();
+		
+		Vector2f topLeft = new Vector2f(0, 0);
+		Vector2f topRight = new Vector2f(depth, 0);
+		Vector2f bottomRight = new Vector2f(depth, textCoord.y);
+		Vector2f bottomLeft = new Vector2f(0, textCoord.y);
+		
+		floorVertices.add(new Vertex(new Vector2f(rightSideX, floorBoundaries.top),darkerColor,bottomLeft));
+		floorVertices.add(new Vertex(new Vector2f(rightSideX, floorBoundaries.top - floorBoundaries.height),darkerColor,topLeft));
+		floorVertices.add(new Vertex(new Vector2f(rightSideX + depth, floorBoundaries.top - floorBoundaries.height - depth),darkerColor,topRight));
+		floorVertices.add(new Vertex(new Vector2f(rightSideX + depth, floorBoundaries.top - depth),darkerColor,bottomRight));
+	}
+	
+	private Vector2f calculateTextureCoords() {
+		float xMapping = 0;
+		float yMapping = 0;
+		
+		if (tilePosition.width != 0 && tilePosition.height != 0) {
+			xMapping = Math.round(floorBoundaries.width/tilePosition.width) * tilePosition.width;
+			yMapping = Math.round(floorBoundaries.height/tilePosition.height) * tilePosition.height;
+		}
+		
+		return new Vector2f(xMapping, yMapping);
 	}
 	
 	// for parsing test
@@ -141,7 +212,16 @@ public class Floor implements org.jsfml.graphics.Drawable {
 	
 	
 	public void draw(RenderTarget target, RenderStates states) {
-		target.draw(floorVertices);
+		RenderStates state = new RenderStates(states, texture);
+		target.draw(floorVertices,state);
+	}
+	
+	public void setAccessType(int accessType) {
+		accessModifierType = accessType;
+	}
+	
+	public int getAccessType() {
+		return accessModifierType;
 	}
 	
 
