@@ -79,6 +79,7 @@ public class Parser {
 		while(a < check) {
 			Tower theClass = createdClassObjects.get(a);
 			System.out.println("Class Name: " + theClass.getTowerName());
+			System.out.println("Package Name: " + theClass.getCityName());
 			System.out.println(" ");
 			
 		    LinkedList<Floor> methods = theClass.getListOfFloor();
