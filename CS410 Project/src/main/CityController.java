@@ -1,5 +1,7 @@
 package main;
 
+import java.util.Map;
+
 import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.RenderWindow;
 import org.jsfml.graphics.View;
@@ -58,6 +60,10 @@ public class CityController {
 				scrollYVelocity = mEvent.position.y - window.getSize().y/2;
 			}
 			
+			if (event.type == Event.Type.MOUSE_MOVED) {
+				MouseEvent mEvent = event.asMouseEvent();
+				updateHoveredOverFloor(mEvent);
+			}
 		}
 		
 		scrollModelView();
@@ -83,6 +89,43 @@ public class CityController {
 		moveModelView((float) scrollXVelocity, (float) scrollYVelocity);
 		constrainModelViewToWorld();
 		resetMousePosition();
+	}
+	
+	// Towers don't have positions yet so just checking all floors each time
+	private void updateHoveredOverFloor(MouseEvent mEvent) {
+		boolean hoveredOver = false;
+		Vector2f worldCoord = window.mapPixelToCoords(mEvent.position);
+		
+		if (!scrollMode) {
+			for (Tower t: model.getTowers()) {
+				for (Floor f: t.getListOfFloor()) {
+					IntRect floorBoundaries = f.getFloorBoundaries();
+					if (worldCoord.x > floorBoundaries.left && worldCoord.x < floorBoundaries.left + floorBoundaries.width) {
+						if (worldCoord.y < floorBoundaries.top && worldCoord.y > floorBoundaries.top - floorBoundaries.height) {
+						hoveredOver = true;
+						if (model.getCurrentFloorDetails() != null) {
+							model.getCurrentFloorDetails().setHighlighted(false);
+						}
+						f.setHighlighted(true);
+						model.setCurrentFloorDetails(f);
+						model.setPosFloorDetailsMenu(worldCoord.x + 15, worldCoord.y);
+						}
+					}
+				}
+			}
+			
+			if (!hoveredOver) {
+				if (model.getCurrentFloorDetails() != null) {
+					model.getCurrentFloorDetails().setHighlighted(false);
+				}
+				model.setCurrentFloorDetails(null);
+			}
+		} else {
+			if (model.getCurrentFloorDetails() != null) {
+				model.getCurrentFloorDetails().setHighlighted(false);
+			}
+			model.setCurrentFloorDetails(null);
+		}
 	}
 	
 	private void resetMousePosition() {
