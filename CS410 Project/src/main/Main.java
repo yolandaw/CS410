@@ -1,9 +1,13 @@
 package main;
 
+import java.awt.Choice;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.util.LinkedList;
+
+import javax.swing.JFileChooser;
+
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.jsfml.graphics.*;
@@ -18,6 +22,23 @@ import org.jsfml.window.event.MouseEvent;
 public class Main {
 	
 	private static String localRepoUrl = "";
+	public static int nameCount = 0;
+		
+	private static void findJavaClass(File file, String[] fileNames){
+		for(File temp : file.listFiles()){
+			if (temp.isFile()){
+				fileNames[nameCount] = temp.getName().toLowerCase();
+				nameCount++;
+//				}
+			}
+			if(temp.isDirectory()){
+				findJavaClass(temp, fileNames);
+			}
+		}
+			
+	}
+	
+	
 
 	/**
 	 * @param args
@@ -27,6 +48,42 @@ public class Main {
 	 */
 	public static void main(String[] args) throws IOException, NoHeadException, GitAPIException {
 		
+		//file chooser pop-up
+		JFileChooser chooser = new JFileChooser();
+		
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		chooser.setCurrentDirectory(new java.io.File("."));
+		chooser.setDialogTitle("Please select your GitHub repository folder. ");
+	    chooser.setAcceptAllFileFilterUsed(false);
+		int choice = chooser.showOpenDialog(null);
+				if(choice != JFileChooser.APPROVE_OPTION)
+					return;
+		File chooseFile = chooser.getSelectedFile();
+		
+		String filePath = chooseFile.getAbsolutePath();
+		System.out.println("filePath: " + filePath);
+		
+		//look for git meta data folder
+		File repoPath = new File(filePath);
+		String gitPath = null;
+		File[] mainDirFolders = null;
+		
+		if(repoPath.isDirectory()){
+			mainDirFolders = repoPath.listFiles();
+			for(int i=0;i<mainDirFolders.length;i++){
+				System.out.println("files in mainDir :" + mainDirFolders[i].getPath());
+				if(mainDirFolders[i].getPath().endsWith(".git")){
+				gitPath = mainDirFolders[i].getAbsolutePath();
+
+				}
+			}
+		}	
+		System.out.println("Git Path: " + gitPath);
+				
+		//get all java file names
+		String [] fileNameList = null;
+//		findJavaClass(repoPath, fileNameList);
+
 		File currentDir = new File(System.getProperty("user.dir")).getParentFile();
 		localRepoUrl = currentDir + "/.git";
 		
