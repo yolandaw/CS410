@@ -93,7 +93,7 @@ public class Main {
                 // pass the each class from the list of existing classes: in this case just passing the 'Class' class
                 // repeat this using loop for each passed class:
                 // 1.start gathering the log for the class
-                lg.startGatheringLog(localRepoUrl, "CS410 Project/src/main/Parser.java");
+                lg.startGatheringLog(localRepoUrl, "CS410 Project/src/main/Floor.java");
                 // 2.pass the gathered log information for the class to be parsed
                 parser.startParsingClass(lg);
                 // pass the class Object(s) (there could be nested classes, so it is Object(s)) parsed in the Parse class to the visualization class using  getParsedLog() in the Parse class

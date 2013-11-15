@@ -40,7 +40,7 @@ public class Author implements org.jsfml.graphics.Drawable {
 		authorColor = new Color(randInt.nextInt(255),randInt.nextInt(255),randInt.nextInt(255));
 	}
 
-	@Override
+	
 	public void draw(RenderTarget window, RenderStates renderStates) {
 		// TODO Auto-generated method stub
 		
