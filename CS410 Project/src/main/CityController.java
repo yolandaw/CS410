@@ -7,6 +7,7 @@ import org.jsfml.graphics.RenderWindow;
 import org.jsfml.graphics.View;
 import org.jsfml.system.Vector2f;
 import org.jsfml.system.Vector2i;
+import org.jsfml.window.Keyboard.Key;
 import org.jsfml.window.Mouse;
 import org.jsfml.window.Mouse.Button;
 import org.jsfml.window.event.Event;
@@ -63,6 +64,36 @@ public class CityController {
 			if (event.type == Event.Type.MOUSE_MOVED) {
 				MouseEvent mEvent = event.asMouseEvent();
 				updateHoveredOverFloor(mEvent);
+			}
+			
+			if (event.type == Event.Type.KEY_PRESSED) {
+				if (event.asKeyEvent().key == Key.LEFT) {
+					scrollMode = false;
+					window.setMouseCursorVisible(false);
+					moveModelView((float) -10, (float) 0);
+					constrainModelViewToWorld();
+				}
+				
+				if (event.asKeyEvent().key == Key.RIGHT) {
+					scrollMode = false;
+					window.setMouseCursorVisible(false);
+					moveModelView((float) 10, (float) 0);
+					constrainModelViewToWorld();
+				}
+				
+				if (event.asKeyEvent().key == Key.UP) {
+					scrollMode = false;
+					window.setMouseCursorVisible(false);
+					moveModelView((float) 0, (float) -10);
+					constrainModelViewToWorld();
+				}
+				
+				if (event.asKeyEvent().key == Key.DOWN) {
+					scrollMode = false;
+					window.setMouseCursorVisible(false);
+					moveModelView((float) 0, (float) 10);
+					constrainModelViewToWorld();
+				}
 			}
 		}
 		
