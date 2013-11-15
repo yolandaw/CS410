@@ -18,6 +18,8 @@ public class Floor implements org.jsfml.graphics.Drawable {
 
         private String floorName;
         private VertexArray floorVertices;
+        private VertexArray highlightedFloorVertices;
+		private boolean highlighted;
         private int numOfLines;
         private Map<Author, Integer> ownerships = new HashMap<Author, Integer>(); 
         private IntRect floorBoundaries;
@@ -31,9 +33,10 @@ public class Floor implements org.jsfml.graphics.Drawable {
         public Floor(String functionName) {
                 setFloorName(functionName);
                 floorBoundaries = new IntRect(0, 0, 0, 0);
-                setFloorDimensions(100, 30);
+                setFloorDimensions(100, 20);
                 floorVertices = new VertexArray(PrimitiveType.QUADS);
-                setDepth(15);
+                highlightedFloorVertices = new VertexArray(PrimitiveType.QUADS);
+                setDepth(25);
                 texture = new Texture();
                 texture.setRepeated(true);
                 tilePosition = new IntRect(0,0,0,0);
@@ -71,6 +74,10 @@ public class Floor implements org.jsfml.graphics.Drawable {
         
         public String getFloorName() {
                 return floorName;
+        }
+        
+        public Map<Author,Integer> getOwnerships() {
+        	return ownerships;
         }
         
         private void setFloorName(String functionName) {
@@ -113,6 +120,24 @@ public class Floor implements org.jsfml.graphics.Drawable {
                 adjustOwnership(author, 1);
         }
         
+        public void setHighlighted(boolean isHighlighted) {
+			highlighted = isHighlighted;
+		}
+	
+		public boolean getHighlighted() {
+			return highlighted;
+		}
+	
+		public void highlightFloor() {
+			for (int i = 0; i<floorVertices.size(); i++) {
+				Vertex vertex = floorVertices.get(i);
+				Color brighter = vertex.color;
+				brighter = new Color((int) (brighter.r*1.3),(int) (brighter.g*1.3),(int) (brighter.b*1.3));
+				vertex = new Vertex(vertex.position, brighter, vertex.texCoords);
+				highlightedFloorVertices.add(vertex);
+			}
+		}
+        
         public void splitFloorOwnership() {
                 floorVertices.clear();
                 
@@ -151,6 +176,9 @@ public class Floor implements org.jsfml.graphics.Drawable {
                 
                 // side of floor
                 addSideOfFloor(authorColor, tempX);
+                
+                // create highlighted version of floor, move to Tower updateFloors method
+				highlightFloor();
         }
         
         private void addTopOfFloor(Color authorColor, float leftSideX, float widthPercent) {
@@ -194,6 +222,14 @@ public class Floor implements org.jsfml.graphics.Drawable {
                 if (tilePosition.width != 0 && tilePosition.height != 0) {
                         xMapping = Math.round(floorBoundaries.width/tilePosition.width) * tilePosition.width;
                         yMapping = Math.round(floorBoundaries.height/tilePosition.height) * tilePosition.height;
+                        
+                        if (xMapping == 0) {
+							xMapping = tilePosition.width;
+						}
+			
+						if (yMapping == 0) {
+							yMapping = tilePosition.height;
+						}
                 }
                 
                 return new Vector2f(xMapping, yMapping);
@@ -213,7 +249,11 @@ public class Floor implements org.jsfml.graphics.Drawable {
         
         public void draw(RenderTarget target, RenderStates states) {
                 RenderStates state = new RenderStates(states, texture);
-                target.draw(floorVertices,state);
+				if (highlighted) {
+					target.draw(highlightedFloorVertices,state);
+				} else {
+					target.draw(floorVertices,state);
+				}
         }
         
         public void setAccessType(int accessType) {
