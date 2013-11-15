@@ -28,6 +28,8 @@ public class Parser {
         private int blockCommentHandler; 
         // The class handler is used for checking the nested class
         private int classHandler;
+        // The class finish is used for checking the nested class
+        private int classFinishes;
         // The current method that is created and is being parsed
         private Floor currentMethod;
         // The method handler is used for checking whether currently parsing inside a method
@@ -44,7 +46,52 @@ public class Parser {
          * Basic constructor
          */
         public Parser(){}
-
+        
+     
+        
+        // testing for the nested class for parsing 
+        // The first nested class
+        public class NestedClass1 {	 
+        	
+        	/**
+        	 * test for nested class for parsing
+        	 */
+        	private boolean nestedClass1_Vari;
+        		
+        	public void nestedClass1_Method1() {
+        		int t1 = 123;
+        		int t2 = 1245;
+        	
+        	}
+        	
+        	private int nestedClass1_Method2() {
+        		return 2;
+        	}
+        	
+        	// The second nestedClass
+        	private class NestedClass2 {        
+        		
+        		int nestedClass2_Method1() {
+        			int a = 1;
+        			return a;
+        		}
+        	}
+        
+        	public boolean nestedClass1_Method3() {
+        		return true;
+        	}
+        	
+        }
+        
+        // testing for the nested class for parsing 
+        // The third nestedClass
+       public class NestedClass3 {
+        
+    	   public void nestedClass3_Method1() {
+        		int t1 = 5;
+        	}
+       
+       }
         
         /**
          * Start parsing the gathered Log
@@ -61,6 +108,7 @@ public class Parser {
                 blockCommentHandler = -1;
                 methodHandler = -1;
                 classHandler = -1;
+                classFinishes = 0;
                 lineInMethod = false;
                 isConstructor = false;
                 
@@ -202,7 +250,15 @@ public class Parser {
                                         currentMethod.increOwnershipSize(author);        
                                                                 
                                 }else if(classHandler > -1 && currentLine.contains("}") && !currentLine.contains("{")) {
-                                        classHandler--;
+                                	
+                                	classFinishes++;
+                                	
+                                	if(classHandler == 1) {
+                                		classHandler = 0;
+                                	}else {
+                                    	classHandler -= classFinishes;
+                                	}
+                                	
                         
                                 }else {
                                                                         
@@ -292,6 +348,7 @@ public class Parser {
                 currentClass.setCityName(cityName);
                 createdClassObjects.add(currentClass);
                 classHandler++;
+                classHandler += classFinishes;
         }
         
         /**
