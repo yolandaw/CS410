@@ -32,7 +32,7 @@ public class Author implements org.jsfml.graphics.Drawable {
 	}
 	
 	public void setUnknownAuthorColor() {
-		authorColor = new Color(255,255,255);
+		authorColor = new Color(220,220,220);
 	}
 	
 	private void generateAuthorColor() {

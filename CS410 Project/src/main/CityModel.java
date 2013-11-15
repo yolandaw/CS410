@@ -1,27 +1,37 @@
 package main;
 
+import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.jsfml.graphics.Color;
 import org.jsfml.graphics.ConstView;
+import org.jsfml.graphics.Font;
 import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.PrimitiveType;
+import org.jsfml.graphics.RectangleShape;
 import org.jsfml.graphics.RenderWindow;
+import org.jsfml.graphics.Text;
 import org.jsfml.graphics.Vertex;
 import org.jsfml.graphics.VertexArray;
 import org.jsfml.graphics.View;
 import org.jsfml.system.Vector2f;
+import org.jsfml.window.Mouse;
 
 public class CityModel {
 	
 	LinkedList<Tower> towers;
 	RenderWindow window;
 	View currentView;
+	Floor currentFloorDetails;
+	RectangleShape floorDetailsMenu;
 	IntRect worldDimensions;
 	VertexArray ground;
 	VertexArray grassTop;
 	VertexArray grassMid;
 	VertexArray sky;
+	Font defaultFont;
 
 	CityModel(RenderWindow newWindow) {
 		setWindow(newWindow);
@@ -32,6 +42,8 @@ public class CityModel {
 		createGrassTop();
 		createGrassMid();
 		createSky();
+		currentFloorDetails = null;
+		setUpFloorDetailsMenu();
 	}
 	
 	public void setTowers(LinkedList<Tower> newTowers) {
@@ -43,6 +55,18 @@ public class CityModel {
 	
 	public LinkedList<Tower> getTowers() {
 		return towers;
+	}
+	
+	private void setUpFloorDetailsMenu() {
+		floorDetailsMenu = new RectangleShape();
+		floorDetailsMenu.setFillColor(new Color(255,255,255,200));
+		floorDetailsMenu.setOutlineThickness(5);
+		defaultFont = new Font();
+		try {
+			defaultFont.loadFromFile(FileSystems.getDefault().getPath("resources","arial.ttf"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void setWindow(RenderWindow newWindow) {
@@ -71,6 +95,69 @@ public class CityModel {
 	
 	public View getCurrentView() {
 		return currentView;
+	}
+	
+	public void setCurrentFloorDetails(Floor newFloor) {
+		currentFloorDetails = newFloor;
+	}
+	
+	public Floor getCurrentFloorDetails() {
+		return currentFloorDetails;
+	}
+	
+	public void setPosFloorDetailsMenu(float x, float y) {
+		floorDetailsMenu.setPosition(x, y);
+	}
+	
+	private void drawFloorDetailsMenu() {
+		Map<Author, Integer> ownerships = currentFloorDetails.getOwnerships();
+		int numOfFloorAuthors = ownerships.size();
+		Vector2f menuPos = floorDetailsMenu.getPosition();
+		float menuXSize = 12;
+		float menuYRowSize = 20;
+		
+		int maxLength = currentFloorDetails.getFloorName().length();
+		int authorNameLength = 0;
+		for (Map.Entry<Author, Integer> entry: ownerships.entrySet()) {
+			authorNameLength = entry.getKey().getAuthorName().length();
+			if (maxLength < authorNameLength) {
+				maxLength = authorNameLength;
+			}
+		}
+		
+		floorDetailsMenu.setSize(new Vector2f(menuXSize * maxLength, menuYRowSize*(numOfFloorAuthors+1)));
+		window.draw(floorDetailsMenu);
+		
+		VertexArray separator = new VertexArray(PrimitiveType.LINES);
+		separator.add(new Vertex(new Vector2f(menuPos.x, menuPos.y + menuYRowSize)));
+		separator.add(new Vertex(new Vector2f(menuPos.x + floorDetailsMenu.getSize().x, menuPos.y + menuYRowSize)));
+		
+		Text text = new Text();
+		text.setFont(defaultFont);
+		text.setCharacterSize(15);
+		text.setColor(new Color(0,0,0));
+		
+		text.setStyle(2);
+		text.setString(currentFloorDetails.getFloorName());
+		text.setPosition(menuPos.x, menuPos.y);
+		window.draw(text);
+		
+		text.setStyle(0);
+		text.setCharacterSize(10);
+		int i = 0;
+		for (Map.Entry<Author, Integer> entry: ownerships.entrySet()) {
+			separator.add(new Vertex(new Vector2f(menuPos.x, menuPos.y + (menuYRowSize * (i+1)))));
+			separator.add(new Vertex(new Vector2f(menuPos.x + floorDetailsMenu.getSize().x, menuPos.y + (menuYRowSize * (i+1)))));
+			text.setString(entry.getKey().getAuthorName());
+			text.setPosition(menuPos.x, menuPos.y + (menuYRowSize * (i+1)));
+			window.draw(text);
+			text.setString(entry.getValue().toString());
+			text.setPosition(menuPos.x + ((menuXSize * maxLength)/2), menuPos.y + (menuYRowSize * (i+1)));
+			window.draw(text);
+			i++;
+			}
+		
+		window.draw(separator);
 	}
 	
 	private void createGround() {
@@ -125,5 +212,9 @@ public class CityModel {
 			window.draw(t);
 		}
 		window.draw(grassMid);
+
+		if (currentFloorDetails != null) {
+			drawFloorDetailsMenu();
+		}
 	}
 }
