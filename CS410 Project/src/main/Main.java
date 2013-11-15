@@ -24,7 +24,7 @@ public class Main {
 	private static String localRepoUrl = "";
 	public static int nameCount = 0;
 		
-	private static void findJavaClass(File file, String[] fileNames){
+/*	private static void findJavaClass(File file, String[] fileNames){
 		for(File temp : file.listFiles()){
 			if (temp.isFile()){
 				fileNames[nameCount] = temp.getName().toLowerCase();
@@ -36,7 +36,7 @@ public class Main {
 			}
 		}
 			
-	}
+	}*/
 	
 	
 
@@ -81,7 +81,7 @@ public class Main {
 		System.out.println("Git Path: " + gitPath);
 				
 		//get all java file names
-		String [] fileNameList = null;
+//		String [] fileNameList = null;
 //		findJavaClass(repoPath, fileNameList);
 
 		File currentDir = new File(System.getProperty("user.dir")).getParentFile();
