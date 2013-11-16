@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.util.LinkedList;
 import java.util.Map;
-
 import org.jsfml.graphics.Color;
 import org.jsfml.graphics.ConstView;
 import org.jsfml.graphics.Font;
@@ -17,7 +16,6 @@ import org.jsfml.graphics.Vertex;
 import org.jsfml.graphics.VertexArray;
 import org.jsfml.graphics.View;
 import org.jsfml.system.Vector2f;
-import org.jsfml.window.Mouse;
 
 public class CityModel {
 	
@@ -211,8 +209,8 @@ public class CityModel {
 		Color lightSkyColor = Color.WHITE;
 		Color darkSkyColor = new Color(87,188,244);
 		
-		sky.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.top + worldDimensions.height), lightSkyColor));
-		sky.add(new Vertex(new Vector2f(worldDimensions.left + worldDimensions.width, worldDimensions.top + worldDimensions.height), lightSkyColor));
+		sky.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.top + worldDimensions.height/2), lightSkyColor));
+		sky.add(new Vertex(new Vector2f(worldDimensions.left + worldDimensions.width, worldDimensions.top + worldDimensions.height/2), lightSkyColor));
 		sky.add(new Vertex(new Vector2f(worldDimensions.left + worldDimensions.width, worldDimensions.top), darkSkyColor));
 		sky.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.top), darkSkyColor));
 	}

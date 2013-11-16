@@ -1,26 +1,15 @@
 package main;
 
-import java.awt.Choice;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.jsfml.graphics.*;
-import org.jsfml.system.Vector2i;
-import org.jsfml.window.Mouse;
 import org.jsfml.window.VideoMode;
-import org.jsfml.window.Mouse.Button;
-import org.jsfml.window.event.Event;
-import org.jsfml.window.event.MouseEvent;
 
 
 public class Main {
