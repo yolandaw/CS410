@@ -2,14 +2,21 @@ package main;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.diff.RawText;
+import org.eclipse.jgit.dircache.DirCache;
+import org.eclipse.jgit.dircache.DirCacheTree;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.util.FS;
+import org.eclipse.jgit.util.FS.FSFactory;
 
 public class LogGatherer{
 
@@ -150,6 +157,48 @@ public class LogGatherer{
 	public String rawCode(int codeLineNumber) throws GitAPIException, IOException{
 		RawText rawCode = rawBlameResult.getResultContents();
 		return rawCode.getString(codeLineNumber);	
+	}
+	
+	/**
+	 * 
+	 * @param localGitFolder the path to the local .git repository ex: "C:/Users/Quinn/Documents/Homework/CPSC 410/CS410/test/.git"
+	 * @return a string array containing all paths in the git index
+	 * @throws NoHeadException
+	 * @throws IOException
+	 * @throws GitAPIException
+	 */
+	public String[] getIndexedFilePaths(String localGitFolder) throws NoHeadException, IOException, GitAPIException{
+		String[] entries;
+		repository = openDirectory(localGitFolder);
+		int indexEntryCount = DirCache.read(repository).getEntryCount();
+		entries = new String[indexEntryCount];
+		//System.out.println("index path entry count: " + indexEntryCount);
+		for(int i=0; i<indexEntryCount; i++){
+			//System.out.println("path " + i + ": " + DirCache.read(repository).getEntry(i).getPathString());
+			entries[i] = DirCache.read(repository).getEntry(i).getPathString();
+		}
+		repository.close();
+		return entries;
+	}
+	
+	/**
+	 * 
+	 * @param localGitFolder the path to the local .git repository ex: "C:/Users/Quinn/Documents/Homework/CPSC 410/CS410/test/.git"
+	 * @return a String ArrayList of java file paths from the git index
+	 * @throws NoHeadException
+	 * @throws IOException
+	 * @throws GitAPIException
+	 */
+	public List<String> getJavaFilePaths(String localGitFolder) throws NoHeadException, IOException, GitAPIException{
+		List<String> paths = new ArrayList<String>();
+		String[] entries = getIndexedFilePaths(localGitFolder);
+		for(String entry:entries){
+			if(entry.endsWith(".java")){
+				paths.add(entry);
+				System.out.println(entry);
+			}
+		}
+		return paths;
 	}
 }
 

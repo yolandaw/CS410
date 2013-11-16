@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -23,25 +24,6 @@ import org.jsfml.window.event.MouseEvent;
 
 
 public class Main {
-
-	private static String localRepoUrl = "";
-	public static int nameCount = 0;
-
-	/*        private static void findJavaClass(File file, String[] fileNames){
-                for(File temp : file.listFiles()){
-                        if (temp.isFile()){
-                                fileNames[nameCount] = temp.getName().toLowerCase();
-                                nameCount++;
-//                                }
-                        }
-                        if(temp.isDirectory()){
-                                findJavaClass(temp, fileNames);
-                        }
-                }
-
-        }*/
-
-
 
 	/**
 	 * @param args
@@ -95,14 +77,7 @@ public class Main {
 			}
 		}        
 		System.out.println("Git Path: " + gitPath);
-
-		//get all java file names
-		//                String [] fileNameList = null;
-		//                findJavaClass(repoPath, fileNameList);
-
-		//File currentDir = new File(System.getProperty("user.dir")).getParentFile();
-		//localRepoUrl = currentDir + "/.git";
-
+		
 		LogGatherer lg = new LogGatherer();
 		Parser parser = new Parser();
 
@@ -110,25 +85,20 @@ public class Main {
 		// repeat this using loop for each passed class:
 		// 1.start gathering the log for the class
 		lg.startGatheringLog(gitPath, "CS410 Project/src/main/Parser.java");
+
 		// 2.pass the gathered log information for the class to be parsed
 		parser.startParsingClass(lg);
 		// pass the class Object(s) (there could be nested classes, so it is Object(s)) parsed in the Parse class to the visualization class using  getParsedLog() in the Parse class
-		//...
 
-
-		/*        
-                File currentDir = new File(System.getProperty("user.dir")).getParentFile();
-                String gitDir = currentDir + "/.git";
-                //quinn test start
-                //LogGatherer lg = new LogGatherer(localRepoUrl, "CS410 Project/src/main/LogGatherer.java");
-                LogGatherer lg = new LogGatherer(gitDir, "CS410 Project/src/main/Main.java");
-                String[] strArray = lg.rawCode();
-
-                //for(int i=0; i<lg.numLinesOfCode(); i++){
-                //        System.out.print(lg.getAuthor(i) + ": " + lg.rawCode(i) + " time: " + lg.getCommitTime(i));
-                //}
-                //quinn test end
-		 */
+		//quinn test
+		//print out all the java file paths
+		List<String> paths = lg.getJavaFilePaths(gitPath);
+		
+		for(int i=0; i<paths.size(); i++){
+			System.out.println(paths.get(i));
+		}
+		//quinn test end
+		
 		LinkedList<Tower> towers = parser.getParsedLog();
 
 		RenderWindow window = new RenderWindow();
