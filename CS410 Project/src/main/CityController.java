@@ -7,6 +7,7 @@ import org.jsfml.graphics.RenderWindow;
 import org.jsfml.graphics.View;
 import org.jsfml.system.Vector2f;
 import org.jsfml.system.Vector2i;
+import org.jsfml.window.Keyboard.Key;
 import org.jsfml.window.Mouse;
 import org.jsfml.window.Mouse.Button;
 import org.jsfml.window.event.Event;
@@ -20,6 +21,11 @@ public class CityController {
 	double scrollXVelocity;
 	double scrollYVelocity;
 	Vector2i leftClickedMousePos;
+	
+	boolean scrollLeft;
+	boolean scrollRight;
+	boolean scrollUp;
+	boolean scrollDown;
 	
 	CityController(CityModel city) {
 		model = city;
@@ -64,9 +70,90 @@ public class CityController {
 				MouseEvent mEvent = event.asMouseEvent();
 				updateHoveredOverFloor(mEvent);
 			}
+			
+			if (event.type == Event.Type.KEY_PRESSED) {
+				if (event.asKeyEvent().key == Key.LEFT) {
+					scrollLeft = true;
+					scrollMode = false;
+					//moveModelView((float) -5, (float) 0);
+				}
+				
+				if (event.asKeyEvent().key == Key.RIGHT) {
+					scrollRight = true;
+					scrollMode = false;
+					//window.setMouseCursorVisible(true);
+					//scrollXVelocity = 5;
+					//moveModelView((float) 5, (float) 0);
+				}
+				
+				if (event.asKeyEvent().key == Key.UP) {
+					scrollUp = true;
+					scrollMode = false;
+					//window.setMouseCursorVisible(true);
+					//scrollYVelocity = -5;
+					//moveModelView((float) 0, (float) -5);
+				}
+				
+				if (event.asKeyEvent().key == Key.DOWN) {
+					scrollDown = true;
+					scrollMode = false;
+					//window.setMouseCursorVisible(true);
+					//scrollYVelocity = 5;
+					//moveModelView((float) 0, (float) 5);
+				}
+			}
+			
+			if (event.type == Event.Type.KEY_RELEASED) {
+				if (event.asKeyEvent().key == Key.LEFT) {
+					scrollMode = false;
+					scrollLeft = false;
+					//window.setMouseCursorVisible(true);
+					//moveModelView((float) -10, (float) 0);
+					scrollXVelocity = -5;
+				}
+				
+				if (event.asKeyEvent().key == Key.RIGHT) {
+					scrollMode = false;
+					scrollRight = false;
+					//window.setMouseCursorVisible(true);
+					scrollXVelocity = 5;
+				}
+				
+				if (event.asKeyEvent().key == Key.UP) {
+					scrollMode = false;
+					scrollUp = false;
+					//window.setMouseCursorVisible(true);
+					scrollYVelocity = -5;
+				}
+				
+				if (event.asKeyEvent().key == Key.DOWN) {
+					scrollMode = false;
+					scrollDown = false;
+					//window.setMouseCursorVisible(true);
+					scrollYVelocity = 5;
+				}
+			}
 		}
 		
 		scrollModelView();
+		
+		if(scrollUp == true){
+			moveModelView((float) 0, (float) -5);
+		}
+		
+		if(scrollDown == true){
+			moveModelView((float) 0, (float) 5);
+		}
+		
+		if(scrollRight == true){
+			moveModelView((float) 5, (float) 0);
+		}
+		
+		if(scrollLeft == true){
+			moveModelView((float) -5, (float) 0);
+		}
+		
+		constrainModelViewToWorld();
 	}
 	
 	private void scrollModelView() {
@@ -91,29 +178,34 @@ public class CityController {
 		resetMousePosition();
 	}
 	
-	// Towers don't have positions yet so just checking all floors each time
 	private void updateHoveredOverFloor(MouseEvent mEvent) {
 		boolean hoveredOver = false;
 		Vector2f worldCoord = window.mapPixelToCoords(mEvent.position);
 		
 		if (!scrollMode) {
 			for (Tower t: model.getTowers()) {
-				for (Floor f: t.getListOfFloor()) {
-					IntRect floorBoundaries = f.getFloorBoundaries();
-					if (worldCoord.x > floorBoundaries.left && worldCoord.x < floorBoundaries.left + floorBoundaries.width) {
-						if (worldCoord.y < floorBoundaries.top && worldCoord.y > floorBoundaries.top - floorBoundaries.height) {
-						hoveredOver = true;
-						if (model.getCurrentFloorDetails() != null) {
-							model.getCurrentFloorDetails().setHighlighted(false);
-						}
-						f.setHighlighted(true);
-						model.setCurrentFloorDetails(f);
-						model.setPosFloorDetailsMenu(worldCoord.x + 15, worldCoord.y);
+				Vector2i towerPos = t.getTowerPosition();
+				//check if mouse is in the x range of the tower
+				if (worldCoord.x > towerPos.x && worldCoord.x < (towerPos.x + t.getTowerWidth())) {
+					
+					//check which floor the mouse is over
+					for (Floor f: t.getListOfFloor()) {
+						IntRect floorBoundaries = f.getFloorBoundaries();
+						
+						if (worldCoord.y <= floorBoundaries.top && worldCoord.y > floorBoundaries.top - floorBoundaries.height) {
+							hoveredOver = true;
+							if (model.getCurrentFloorDetails() != null) {
+								model.getCurrentFloorDetails().setHighlighted(false);
+							}
+							f.setHighlighted(true);
+							model.setCurrentFloorDetails(f);
+							model.setPosFloorDetailsMenu(worldCoord.x + 15, worldCoord.y);
 						}
 					}
 				}
 			}
 			
+			//wasn't hovered over anything, so tear down
 			if (!hoveredOver) {
 				if (model.getCurrentFloorDetails() != null) {
 					model.getCurrentFloorDetails().setHighlighted(false);
@@ -121,6 +213,7 @@ public class CityController {
 				model.setCurrentFloorDetails(null);
 			}
 		} else {
+			//in scrollmode, so tear down
 			if (model.getCurrentFloorDetails() != null) {
 				model.getCurrentFloorDetails().setHighlighted(false);
 			}
