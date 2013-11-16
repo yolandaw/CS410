@@ -22,6 +22,11 @@ public class CityController {
 	double scrollYVelocity;
 	Vector2i leftClickedMousePos;
 	
+	boolean scrollLeft;
+	boolean scrollRight;
+	boolean scrollUp;
+	boolean scrollDown;
+	
 	CityController(CityModel city) {
 		model = city;
 		window = city.getWindow();
@@ -68,36 +73,87 @@ public class CityController {
 			
 			if (event.type == Event.Type.KEY_PRESSED) {
 				if (event.asKeyEvent().key == Key.LEFT) {
+					scrollLeft = true;
 					scrollMode = false;
-					window.setMouseCursorVisible(false);
-					moveModelView((float) -10, (float) 0);
-					constrainModelViewToWorld();
+					//moveModelView((float) -5, (float) 0);
+				}
+				
+				if (event.asKeyEvent().key == Key.RIGHT) {
+					scrollRight = true;
+					scrollMode = false;
+					//window.setMouseCursorVisible(true);
+					//scrollXVelocity = 5;
+					//moveModelView((float) 5, (float) 0);
+				}
+				
+				if (event.asKeyEvent().key == Key.UP) {
+					scrollUp = true;
+					scrollMode = false;
+					//window.setMouseCursorVisible(true);
+					//scrollYVelocity = -5;
+					//moveModelView((float) 0, (float) -5);
+				}
+				
+				if (event.asKeyEvent().key == Key.DOWN) {
+					scrollDown = true;
+					scrollMode = false;
+					//window.setMouseCursorVisible(true);
+					//scrollYVelocity = 5;
+					//moveModelView((float) 0, (float) 5);
+				}
+			}
+			
+			if (event.type == Event.Type.KEY_RELEASED) {
+				if (event.asKeyEvent().key == Key.LEFT) {
+					scrollMode = false;
+					scrollLeft = false;
+					//window.setMouseCursorVisible(true);
+					//moveModelView((float) -10, (float) 0);
+					scrollXVelocity = -5;
 				}
 				
 				if (event.asKeyEvent().key == Key.RIGHT) {
 					scrollMode = false;
-					window.setMouseCursorVisible(false);
-					moveModelView((float) 10, (float) 0);
-					constrainModelViewToWorld();
+					scrollRight = false;
+					//window.setMouseCursorVisible(true);
+					scrollXVelocity = 5;
 				}
 				
 				if (event.asKeyEvent().key == Key.UP) {
 					scrollMode = false;
-					window.setMouseCursorVisible(false);
-					moveModelView((float) 0, (float) -10);
-					constrainModelViewToWorld();
+					scrollUp = false;
+					//window.setMouseCursorVisible(true);
+					scrollYVelocity = -5;
 				}
 				
 				if (event.asKeyEvent().key == Key.DOWN) {
 					scrollMode = false;
-					window.setMouseCursorVisible(false);
-					moveModelView((float) 0, (float) 10);
-					constrainModelViewToWorld();
+					scrollDown = false;
+					//window.setMouseCursorVisible(true);
+					scrollYVelocity = 5;
 				}
 			}
 		}
 		
 		scrollModelView();
+		
+		if(scrollUp == true){
+			moveModelView((float) 0, (float) -5);
+		}
+		
+		if(scrollDown == true){
+			moveModelView((float) 0, (float) 5);
+		}
+		
+		if(scrollRight == true){
+			moveModelView((float) 5, (float) 0);
+		}
+		
+		if(scrollLeft == true){
+			moveModelView((float) -5, (float) 0);
+		}
+		
+		constrainModelViewToWorld();
 	}
 	
 	private void scrollModelView() {
