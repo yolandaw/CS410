@@ -32,12 +32,14 @@ public class CityModel {
 	VertexArray grassMid;
 	VertexArray sky;
 	Font defaultFont;
+	int grassMidHeight;
 
 	CityModel(RenderWindow newWindow) {
 		setWindow(newWindow);
 		setCurrentView(newWindow.getDefaultView());
 		towers = new LinkedList<Tower>();
 		setWorldDimensions(0, 0, window.getSize().x*2, window.getSize().y*2);
+		grassMidHeight = 30;
 		createGround();
 		createGrassTop();
 		createGrassMid();
@@ -46,11 +48,16 @@ public class CityModel {
 		setUpFloorDetailsMenu();
 	}
 	
+	//need to place towers based on package
 	public void setTowers(LinkedList<Tower> newTowers) {
 		towers = newTowers;
 		for (Tower t: towers) {
-			t.updateFloors();
-		}
+			t.setTowerDepth(25);
+			t.setFloorHeight(20);
+			t.setTowerWidth(100);
+			t.setTowerPosition(400, 600);
+			t.updateFloors(grassMidHeight);
+			}
 	}
 	
 	public LinkedList<Tower> getTowers() {
@@ -109,12 +116,8 @@ public class CityModel {
 		floorDetailsMenu.setPosition(x, y);
 	}
 	
-	private void drawFloorDetailsMenu() {
+	private int findMaxStringLength() {
 		Map<Author, Integer> ownerships = currentFloorDetails.getOwnerships();
-		int numOfFloorAuthors = ownerships.size();
-		Vector2f menuPos = floorDetailsMenu.getPosition();
-		float menuXSize = 12;
-		float menuYRowSize = 20;
 		
 		int maxLength = currentFloorDetails.getFloorName().length();
 		int authorNameLength = 0;
@@ -124,6 +127,18 @@ public class CityModel {
 				maxLength = authorNameLength;
 			}
 		}
+		
+		return maxLength;
+	}
+	
+	private void drawFloorDetailsMenu() {
+		Map<Author, Integer> ownerships = currentFloorDetails.getOwnerships();
+		int numOfFloorAuthors = ownerships.size();
+		Vector2f menuPos = floorDetailsMenu.getPosition();
+		float menuXSize = 12;
+		float menuYRowSize = 20;
+		
+		int maxLength = findMaxStringLength();
 		
 		floorDetailsMenu.setSize(new Vector2f(menuXSize * maxLength, menuYRowSize*(numOfFloorAuthors+1)));
 		window.draw(floorDetailsMenu);
@@ -177,8 +192,8 @@ public class CityModel {
 		
 		grassTop.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.height/2), grassTopColor));
 		grassTop.add(new Vertex(new Vector2f(worldDimensions.left + worldDimensions.width, worldDimensions.height/2), grassTopColor));
-		grassTop.add(new Vertex(new Vector2f(worldDimensions.left + worldDimensions.width, worldDimensions.height/2 - 30), grassTopColor));
-		grassTop.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.height/2 - 30), grassTopColor));
+		grassTop.add(new Vertex(new Vector2f(worldDimensions.left + worldDimensions.width, worldDimensions.height/2 - grassMidHeight), grassTopColor));
+		grassTop.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.height/2 - grassMidHeight), grassTopColor));
 	}
 	
 	private void createGrassMid() {
@@ -187,8 +202,8 @@ public class CityModel {
 		
 		grassMid.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.height/2), grassMidColor));
 		grassMid.add(new Vertex(new Vector2f(worldDimensions.left + worldDimensions.width, worldDimensions.height/2), grassMidColor));
-		grassMid.add(new Vertex(new Vector2f(worldDimensions.left + worldDimensions.width, worldDimensions.height/2 + 30), grassMidColor));
-		grassMid.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.height/2 + 30), grassMidColor));
+		grassMid.add(new Vertex(new Vector2f(worldDimensions.left + worldDimensions.width, worldDimensions.height/2 + grassMidHeight), grassMidColor));
+		grassMid.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.height/2 + grassMidHeight), grassMidColor));
 	}
 	
 	private void createSky() {

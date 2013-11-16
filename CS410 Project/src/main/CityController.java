@@ -177,29 +177,34 @@ public class CityController {
 		resetMousePosition();
 	}
 	
-	// Towers don't have positions yet so just checking all floors each time
 	private void updateHoveredOverFloor(MouseEvent mEvent) {
 		boolean hoveredOver = false;
 		Vector2f worldCoord = window.mapPixelToCoords(mEvent.position);
 		
 		if (!scrollMode) {
 			for (Tower t: model.getTowers()) {
-				for (Floor f: t.getListOfFloor()) {
-					IntRect floorBoundaries = f.getFloorBoundaries();
-					if (worldCoord.x > floorBoundaries.left && worldCoord.x < floorBoundaries.left + floorBoundaries.width) {
-						if (worldCoord.y < floorBoundaries.top && worldCoord.y > floorBoundaries.top - floorBoundaries.height) {
-						hoveredOver = true;
-						if (model.getCurrentFloorDetails() != null) {
-							model.getCurrentFloorDetails().setHighlighted(false);
-						}
-						f.setHighlighted(true);
-						model.setCurrentFloorDetails(f);
-						model.setPosFloorDetailsMenu(worldCoord.x + 15, worldCoord.y);
+				Vector2i towerPos = t.getTowerPosition();
+				//check if mouse is in the x range of the tower
+				if (worldCoord.x > towerPos.x && worldCoord.x < (towerPos.x + t.getTowerWidth())) {
+					
+					//check which floor the mouse is over
+					for (Floor f: t.getListOfFloor()) {
+						IntRect floorBoundaries = f.getFloorBoundaries();
+						
+						if (worldCoord.y <= floorBoundaries.top && worldCoord.y > floorBoundaries.top - floorBoundaries.height) {
+							hoveredOver = true;
+							if (model.getCurrentFloorDetails() != null) {
+								model.getCurrentFloorDetails().setHighlighted(false);
+							}
+							f.setHighlighted(true);
+							model.setCurrentFloorDetails(f);
+							model.setPosFloorDetailsMenu(worldCoord.x + 15, worldCoord.y);
 						}
 					}
 				}
 			}
 			
+			//wasn't hovered over anything, so tear down
 			if (!hoveredOver) {
 				if (model.getCurrentFloorDetails() != null) {
 					model.getCurrentFloorDetails().setHighlighted(false);
@@ -207,6 +212,7 @@ public class CityController {
 				model.setCurrentFloorDetails(null);
 			}
 		} else {
+			//in scrollmode, so tear down
 			if (model.getCurrentFloorDetails() != null) {
 				model.getCurrentFloorDetails().setHighlighted(false);
 			}

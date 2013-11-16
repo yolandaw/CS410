@@ -33,10 +33,9 @@ public class Floor implements org.jsfml.graphics.Drawable {
         public Floor(String functionName) {
                 setFloorName(functionName);
                 floorBoundaries = new IntRect(0, 0, 0, 0);
-                setFloorDimensions(100, 20);
                 floorVertices = new VertexArray(PrimitiveType.QUADS);
                 highlightedFloorVertices = new VertexArray(PrimitiveType.QUADS);
-                setDepth(25);
+                setDepth(0);
                 texture = new Texture();
                 texture.setRepeated(true);
                 tilePosition = new IntRect(0,0,0,0);
@@ -84,7 +83,7 @@ public class Floor implements org.jsfml.graphics.Drawable {
                 floorName = functionName;
         }
         
-        private void setDepth(int newDepth) {
+        public void setDepth(int newDepth) {
                 depth = newDepth;
         }
         
