@@ -1,7 +1,6 @@
 package main;
 
 import java.util.Map;
-
 import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.RenderWindow;
 import org.jsfml.graphics.View;
