@@ -100,6 +100,16 @@ public class CityController {
 					//scrollYVelocity = 5;
 					//moveModelView((float) 0, (float) 5);
 				}
+				
+				if (event.asKeyEvent().key == Key.I) {
+					scrollMode = false;
+					model.getCurrentView().zoom((float)0.98);
+				}
+				
+				if (event.asKeyEvent().key == Key.O) {
+					scrollMode = false;
+					model.getCurrentView().zoom((float)1.02);
+				}
 			}
 			
 			if (event.type == Event.Type.KEY_RELEASED) {
