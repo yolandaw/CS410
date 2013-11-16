@@ -48,12 +48,19 @@ public class CityModel {
 	
 	//need to place towers based on package
 	public void setTowers(LinkedList<Tower> newTowers) {
+		int x = 400;
 		towers = newTowers;
 		for (Tower t: towers) {
 			t.setTowerDepth(25);
 			t.setFloorHeight(20);
 			t.setTowerWidth(100);
-			t.setTowerPosition(400, 600);
+			//t.setTowerPosition(400, 600);	
+			
+			//hack to see all towers
+			t.setTowerPosition(x, 600);	
+			x=x+125;
+			//end hack to see all towers
+			
 			t.updateFloors(grassMidHeight);
 			}
 	}

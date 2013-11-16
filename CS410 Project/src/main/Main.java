@@ -69,16 +69,7 @@ public class Main {
 		
 		LogGatherer lg = new LogGatherer();
 		Parser parser = new Parser();
-
-		// pass the each class from the list of existing classes: in this case just passing the 'Class' class
-		// repeat this using loop for each passed class:
-		// 1.start gathering the log for the class
-		lg.startGatheringLog(gitPath, "CS410 Project/src/main/Parser.java");
-
-		// 2.pass the gathered log information for the class to be parsed
-		parser.startParsingClass(lg);
-		// pass the class Object(s) (there could be nested classes, so it is Object(s)) parsed in the Parse class to the visualization class using  getParsedLog() in the Parse class
-
+		
 		//quinn test
 		//print out all the java file paths
 		List<String> paths = lg.getJavaFilePaths(gitPath);
@@ -87,14 +78,36 @@ public class Main {
 			System.out.println(paths.get(i));
 		}
 		//quinn test end
-		
-		LinkedList<Tower> towers = parser.getParsedLog();
 
+		// pass the each class from the list of existing classes: in this case just passing the 'Class' class
+		// repeat this using loop for each passed class:
+		// 1.start gathering the log for the class
+		
+		
+		//hack to see all towers
+		LinkedList<Tower> towers = new LinkedList<Tower>();
+		
+		for(String path:paths){
+			System.out.println(path.toString());
+			lg.startGatheringLog(gitPath, path);
+			parser.startParsingClass(lg);
+			towers.add(parser.getParsedLog().getFirst()); //getParseLog only contains the last parsed tower
+		}
+		
+		for(Tower t:towers){
+			System.out.println(t.getTowerName());
+		}
+		//end hack to see all towers
+
+		// 2.pass the gathered log information for the class to be parsed
+		//parser.startParsingClass(lg);
+		// pass the class Object(s) (there could be nested classes, so it is Object(s)) parsed in the Parse class to the visualization class using  getParsedLog() in the Parse class
+		
 		RenderWindow window = new RenderWindow();
 
-		VideoMode mode = new VideoMode(800, 600);
+		VideoMode mode = new VideoMode(1280, 600); //can't change the height, breaks the ground
 
-		window.create(mode, "Test");
+		window.create(mode, "City Builder");
 
 		window.setFramerateLimit(60);
 
