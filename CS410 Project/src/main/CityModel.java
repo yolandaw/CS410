@@ -193,13 +193,13 @@ public class CityModel {
 	
 	private void createSky() {
 		sky = new VertexArray(PrimitiveType.QUADS);
-		Color lightSkyColor = new Color(178,224,250);
+		Color lightSkyColor = Color.WHITE;
 		Color darkSkyColor = new Color(87,188,244);
 		
-		sky.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.top + worldDimensions.height), darkSkyColor));
-		sky.add(new Vertex(new Vector2f(worldDimensions.left + worldDimensions.width, worldDimensions.top + worldDimensions.height), darkSkyColor));
-		sky.add(new Vertex(new Vector2f(worldDimensions.left + worldDimensions.width, worldDimensions.top), lightSkyColor));
-		sky.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.top), lightSkyColor));
+		sky.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.top + worldDimensions.height), lightSkyColor));
+		sky.add(new Vertex(new Vector2f(worldDimensions.left + worldDimensions.width, worldDimensions.top + worldDimensions.height), lightSkyColor));
+		sky.add(new Vertex(new Vector2f(worldDimensions.left + worldDimensions.width, worldDimensions.top), darkSkyColor));
+		sky.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.top), darkSkyColor));
 	}
 	
 	public void drawCity() {
