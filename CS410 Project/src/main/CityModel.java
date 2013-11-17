@@ -57,7 +57,7 @@ public class CityModel {
 			//t.setTowerPosition(400, 600);	
 			
 			//hack to see all towers
-			t.setTowerPosition(x, 600);	
+			t.setTowerPosition(x, worldDimensions.height/2);	
 			x=x+125;
 			//end hack to see all towers
 			
