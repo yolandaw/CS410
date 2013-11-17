@@ -101,7 +101,9 @@ public class Parser {
                 parsedClass = gatheredLog;
                 currentLineNum = 0;
                 createdClassObjects = new LinkedList<Tower>();
-                allAuthors = new HashMap<String, Author>();
+                if (allAuthors == null) {
+                	allAuthors = new HashMap<String, Author>();
+                }
                 blockCommentHandler = -1;
                 methodHandler = -1;
                 classHandler = -1;
