@@ -123,6 +123,10 @@ public class Tower implements org.jsfml.graphics.Drawable {
             return towerName;
     }
     
+    public int getTowerHeight() {
+        return towerFloors.size()*floorHeight;
+    }
+    
     
     
  // can add other floor updates in here

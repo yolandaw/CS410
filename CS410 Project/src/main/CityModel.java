@@ -36,12 +36,8 @@ public class CityModel {
 		setWindow(newWindow);
 		setCurrentView(newWindow.getDefaultView());
 		towers = new LinkedList<Tower>();
-		setWorldDimensions(0, 0, window.getSize().x*2, window.getSize().y*2);
+		setWorldDimensions(0, 0, 0, 0);
 		grassMidHeight = 30;
-		createGround();
-		createGrassTop();
-		createGrassMid();
-		createSky();
 		currentFloorDetails = null;
 		setUpFloorDetailsMenu();
 	}
@@ -50,10 +46,11 @@ public class CityModel {
 	public void setTowers(LinkedList<Tower> newTowers) {
 		int x = 400;
 		towers = newTowers;
+		
+		calculateWorldDimensions();
+		
 		for (Tower t: towers) {
 			t.setTowerDepth(25);
-			t.setFloorHeight(20);
-			t.setTowerWidth(100);
 			//t.setTowerPosition(400, 600);	
 			
 			//hack to see all towers
@@ -62,7 +59,31 @@ public class CityModel {
 			//end hack to see all towers
 			
 			t.updateFloors(grassMidHeight);
+		}
+		
+		createGround();
+		createGrassTop();
+		createGrassMid();
+		createSky();
+	}
+	
+	private void calculateWorldDimensions() {
+		int tallestTower = window.getSize().y*2;
+		int totalWidth = window.getSize().x;
+		for (Tower t: towers) {
+			t.setFloorHeight(20);
+			t.setTowerWidth(100);
+			if (t.getTowerHeight() * 2 > tallestTower) {
+				tallestTower = t.getTowerHeight() * 2;
 			}
+			totalWidth = totalWidth + t.getTowerWidth();
+		}
+		
+		if (totalWidth < window.getSize().x*2) {
+			totalWidth = window.getSize().x*2;
+		}
+		
+		setWorldDimensions(0, 0, totalWidth, tallestTower);
 	}
 	
 	public LinkedList<Tower> getTowers() {
