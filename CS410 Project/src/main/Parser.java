@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.StringTokenizer;
+
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
 
@@ -101,9 +102,7 @@ public class Parser {
                 parsedClass = gatheredLog;
                 currentLineNum = 0;
                 createdClassObjects = new LinkedList<Tower>();
-                if (allAuthors == null) {
-                	allAuthors = new HashMap<String, Author>();
-                }
+                allAuthors = new HashMap<String, Author>();
                 blockCommentHandler = -1;
                 methodHandler = -1;
                 classHandler = -1;
@@ -181,6 +180,8 @@ public class Parser {
                                 return;
                         }else if(blockCommentHandler == 1) {
                                 return;
+                        }else if(currentLine.contains("@")) {
+                        		return;
                         }else {
                                 // the line will contain one of these: method contents, class name, variable name.
                                 
