@@ -91,7 +91,9 @@ public class Main {
 			System.out.println(path.toString());
 			lg.startGatheringLog(gitPath, path);
 			parser.startParsingClass(lg);
-			towers.add(parser.getParsedLog().getFirst()); //getParseLog only contains the last parsed tower
+			
+			// adds all the towers including nested towers
+			towers.addAll(parser.getParsedLog()); 
 		}
 		
 		for(Tower t:towers){
