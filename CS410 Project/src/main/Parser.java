@@ -408,10 +408,12 @@ public class Parser {
                         author = new Author(ownership.getName(), uniqueEmail);
                         if (uniqueEmail == "") {
                                 author.setUnknownAuthorColor();
+                                allAuthors.put("UnknownEmailAddr", author);
+                        }else {
+                        	allAuthors.put(uniqueEmail, author);
                         }
-                        allAuthors.put(uniqueEmail, author);
                 } else {
-                        author = allAuthors.get(uniqueEmail);
+                	author = allAuthors.get(uniqueEmail);
                 }
                 
                 return author;
