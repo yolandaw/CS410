@@ -44,6 +44,8 @@ public class CityModel {
 	
 	//need to place towers based on package
 	public void setTowers(LinkedList<Tower> newTowers) {
+		sortTowersByPackage();
+		
 		int x = 400;
 		towers = newTowers;
 		
@@ -65,6 +67,10 @@ public class CityModel {
 		createGrassTop();
 		createGrassMid();
 		createSky();
+	}
+	
+	private void sortTowersByPackage() {
+		
 	}
 	
 	private void calculateWorldDimensions() {
