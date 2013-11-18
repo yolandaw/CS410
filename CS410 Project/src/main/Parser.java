@@ -118,6 +118,10 @@ public class Parser {
                         currentLineNum = i;
                         currentLine = parsedClass.rawCode(i);
                         parsingCodeLine(currentLine);
+                        
+                        //test
+                        //System.out.println(lineInMethod + " currentline: " + currentLine);
+                        
                 }
                 
                 // parsing test
@@ -318,9 +322,8 @@ public class Parser {
                                                                 if(currentLine.contains("{") && currentLine.contains("}")) {
                                                                         isConstructor = true;
                                                                 }
-                                                                StringTokenizer tokenizer2 = new StringTokenizer(token, "(");
-                                                                String methodName = tokenizer2.nextToken();
-                                                                
+                                                                StringTokenizer tokenizer2 = new StringTokenizer(token, "(");                                                                
+                                                                String methodName = tokenizer2.nextToken();                                                                
                                                                 methodCreator(methodName);                                                                        
                                                         }else {
                                                                 String methodName = token;
@@ -402,10 +405,18 @@ public class Parser {
         
         private Author getUniqueAuthor(PersonIdent ownership) {
                 Author author = new Author("Empty", "Empty");
-                String uniqueEmail = ownership.getEmailAddress();
+                String uniqueEmail = "UnknownEmailAddr";
+                //System.out.println(ownership);
+                if(ownership != null){
+                	uniqueEmail = ownership.getEmailAddress();
+                }
                 
                 if (!allAuthors.containsKey(uniqueEmail)) {
-                        author = new Author(ownership.getName(), uniqueEmail);
+                	String uniqueName = "UnknownName";
+                    if(ownership != null){
+                    	uniqueName = ownership.getName();
+                    }
+                        author = new Author(uniqueName, uniqueEmail);
                         if (uniqueEmail == "") {
                                 author.setUnknownAuthorColor();
                                 allAuthors.put("UnknownEmailAddr", author);
