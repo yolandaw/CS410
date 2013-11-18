@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Random;
+
 import org.jsfml.graphics.Color;
 import org.jsfml.graphics.ConstView;
 import org.jsfml.graphics.Font;
@@ -31,6 +33,7 @@ public class CityModel {
 	VertexArray sky;
 	Font defaultFont;
 	int grassMidHeight;
+	int cityDistance;
 
 	CityModel(RenderWindow newWindow) {
 		setWindow(newWindow);
@@ -40,24 +43,28 @@ public class CityModel {
 		grassMidHeight = 30;
 		currentFloorDetails = null;
 		setUpFloorDetailsMenu();
+		cityDistance = 300;
 	}
 	
 	//need to place towers based on package
 	public void setTowers(LinkedList<Tower> newTowers) {
-		sortTowersByPackage();
+		
 		
 		int x = 400;
 		towers = newTowers;
+		String currentPackage = newTowers.getFirst().getCityName();
 		
 		calculateWorldDimensions();
 		
 		for (Tower t: towers) {
-			t.setTowerDepth(25);
-			//t.setTowerPosition(400, 600);	
+			if (!t.getCityName().equals(currentPackage)) {
+				x = x + cityDistance;
+				currentPackage = t.getCityName();
+			}
 			
 			//hack to see all towers
 			t.setTowerPosition(x, worldDimensions.height/2);	
-			x=x+125;
+			x=x+t.getTowerWidth()+t.getTowerDepth();
 			//end hack to see all towers
 			
 			t.updateFloors(grassMidHeight);
@@ -69,20 +76,25 @@ public class CityModel {
 		createSky();
 	}
 	
-	private void sortTowersByPackage() {
-		
-	}
-	
 	private void calculateWorldDimensions() {
 		int tallestTower = window.getSize().y*2;
 		int totalWidth = window.getSize().x;
+		String currentPackage = towers.getFirst().getCityName();
+		
 		for (Tower t: towers) {
-			t.setFloorHeight(20);
-			t.setTowerWidth(100);
-			if (t.getTowerHeight() * 2 > tallestTower) {
-				tallestTower = t.getTowerHeight() * 2;
+			
+			setRandomTowerSize(t);
+			
+			if (t.getTowerHeight() * 3 > tallestTower) {
+				tallestTower = t.getTowerHeight() * 3;
 			}
+			
 			totalWidth = totalWidth + t.getTowerWidth();
+			
+			if (!t.getCityName().equals(currentPackage)) {
+				totalWidth = totalWidth + cityDistance;
+				currentPackage = t.getCityName();
+			}
 		}
 		
 		if (totalWidth < window.getSize().x*2) {
@@ -90,6 +102,20 @@ public class CityModel {
 		}
 		
 		setWorldDimensions(0, 0, totalWidth, tallestTower);
+	}
+	
+	private void setRandomTowerSize(Tower t) {
+		Random randInt = new Random();
+		int randomWidth;
+		int randomDepth;
+		int randomHeight;
+		
+		randomWidth = randInt.nextInt(100) + 50;
+		t.setTowerWidth(randomWidth);
+		randomDepth = randInt.nextInt(5) + 15;
+		t.setTowerDepth(randomDepth);
+		randomHeight = randInt.nextInt(20) + 20;
+		t.setFloorHeight(randomHeight);
 	}
 	
 	public LinkedList<Tower> getTowers() {
