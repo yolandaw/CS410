@@ -72,7 +72,7 @@ public class Main {
 		
 		//quinn test
 		//print out all the java file paths
-		List<String> paths = lg.getJavaFilePaths(gitPath);
+		List<String> paths = lg.getJavaFilePaths(gitPath, 5);
 		
 		for(int i=0; i<paths.size(); i++){
 			System.out.println(paths.get(i));
@@ -116,7 +116,7 @@ public class Main {
 		CityModel city = new CityModel(window);
 		city.setTowers(towers);
 		CityController controller = new CityController(city);
-
+		
 		while (window.isOpen()) {
 			controller.updateModel();
 			city.drawCity();

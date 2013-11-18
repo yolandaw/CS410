@@ -196,5 +196,29 @@ public class LogGatherer{
 		}
 		return paths;
 	}
+	
+	/**
+	 * 
+	 * @param localGitFolder path to the local .git repository
+	 * @param firstXNumberOfFiles the limit for max number of files to return
+	 * @return a String ArrayList of the first X java file paths from the git index
+	 * @throws NoHeadException
+	 * @throws IOException
+	 * @throws GitAPIException
+	 */
+	public List<String> getJavaFilePaths(String localGitFolder, int firstXNumberOfFiles) throws NoHeadException, IOException, GitAPIException{
+		List<String> paths = new ArrayList<String>();
+		String[] entries = getIndexedFilePaths(localGitFolder);
+		for(String entry:entries){
+			if(entry.endsWith(".java")){
+				paths.add(entry);
+				System.out.println(entry);
+				if(paths.size() >= firstXNumberOfFiles){
+					return paths;
+				}
+			}
+		}
+		return paths;
+	}
 }
 

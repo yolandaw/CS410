@@ -120,7 +120,7 @@ public class Parser {
                         parsingCodeLine(currentLine);
                         
                         //test
-                        //System.out.println(lineInMethod + " currentline: " + currentLine);
+                        System.out.println(lineInMethod + " currentline: " + currentLine);
                         
                 }
                 
@@ -239,6 +239,7 @@ public class Parser {
                                                 }
                                                 
                                                 methodHandler += result;
+                                                System.out.println(currentLine + "methodHand:"+ methodHandler+ " result: " + result);
                                                                 
                                                 if(methodHandler == -1) {
                                                         lineInMethod = false;        
@@ -317,6 +318,8 @@ public class Parser {
                                                                 
                                                         methodCreator(methodName);
                                                 }else {
+                                                		//test
+                                                		System.out.println(token.toString());
                                                         token = tokenizer.nextToken();
                                                         if(token.contains("(")) {
                                                                 if(currentLine.contains("{") && currentLine.contains("}")) {
@@ -329,7 +332,7 @@ public class Parser {
                                                                 String methodName = token;
                                                                 if(tokenizer.hasMoreTokens()) {
                                                                         token = tokenizer.nextToken();
-                                                                        if(        token.contains("(")) {
+                                                                        if(token.contains("(")) {
                                                                                 methodCreator(methodName);
                                                                         }else {
                                                                                 return;
@@ -362,7 +365,8 @@ public class Parser {
          * @param methodName: The name of the new method/floor object
          */
         private void methodCreator(String methodName) {
-                
+        		methodHandler = -1;
+                System.out.println("method created: " + currentLine);
                 if(currentLine.contains("{")) {
                         methodHandler++;        
                 }
