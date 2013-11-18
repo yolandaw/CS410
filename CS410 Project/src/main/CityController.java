@@ -107,7 +107,18 @@ public class CityController {
 				
 				if (event.asKeyEvent().key == Key.O) {
 					scrollMode = false;
+					View oldView = model.getCurrentView();
+					float oldX = oldView.getSize().x;
+					float oldY = oldView.getSize().y;
+					
 					model.getCurrentView().zoom((float)1.02);
+					if (model.getCurrentView().getSize().x > model.getWorldDimensions().width) {
+						model.getCurrentView().setSize(model.getWorldDimensions().width, oldY);
+					} else {
+						if (model.getCurrentView().getSize().y > model.getWorldDimensions().height) {
+							model.getCurrentView().setSize(oldX, model.getWorldDimensions().height);
+						}
+					}
 				}
 			}
 			
