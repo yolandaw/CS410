@@ -2,11 +2,13 @@ package main;
 
 /**
  * An all in one place for static variables
- * 
- * @author Quinn
  *
  */
 public class StaticControls {
+	
+	StaticControls(){
+		//so it builds a one floor building and not a empty parcel of land. real estate ain't cheap.
+	}
 	
 	//if true, floor heights are randomized between 20 to 40
 	//else, floor heights are all set to 30
