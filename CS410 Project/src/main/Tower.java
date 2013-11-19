@@ -1,5 +1,6 @@
 package main;
 
+import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -7,10 +8,12 @@ import java.util.Random;
 
 import org.eclipse.jgit.revwalk.DepthWalk;
 import org.jsfml.graphics.Color;
+import org.jsfml.graphics.Font;
 import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.RectangleShape;
 import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTarget;
+import org.jsfml.graphics.Text;
 import org.jsfml.system.Vector2f;
 import org.jsfml.system.Vector2i;
 
@@ -23,7 +26,9 @@ public class Tower implements org.jsfml.graphics.Drawable {
         
         private String towerName;
         private int towerHeight;
+        private int towerUpperHeight;
         private int towerWidth;
+        private int towerXPos;
         private int numberOfFloors;
         private int floorHeight;
         private int towerDepth;
@@ -127,13 +132,34 @@ public class Tower implements org.jsfml.graphics.Drawable {
         return towerFloors.size()*floorHeight;
     }
     
+  //adding tower signs
+    private void addSigns(RenderTarget window){
+        Font defaultFont = new Font();
+  
+		try {
+			defaultFont.loadFromFile(FileSystems.getDefault().getPath("resources","arial.ttf"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        //adding tower name
+        RectangleShape towerSign = new RectangleShape(new Vector2f(towerWidth,30));
+        towerSign.setPosition(towerXPos, towerUpperHeight);
+
+        Text towerSignName = new Text(towerName, defaultFont , 16);
+		towerSignName.setColor(new Color(0,0,0));
+        towerSignName.setPosition(towerXPos, towerUpperHeight);
+        
+        window.draw(towerSign);
+        window.draw(towerSignName);
+    }
     
     
  // can add other floor updates in here
-    public void updateFloors(int split) {
+    public void updateFloors(int split, int xPos) {
             int below = pos.y + split + floorHeight;
             int above = pos.y;
             int numAbove = 0;
+            towerXPos = xPos;
             for (Floor f: towerFloors) {
                     f.updateNumOfLines();
                     f.setFloorDimensions(towerWidth, floorHeight);
@@ -156,6 +182,7 @@ public class Tower implements org.jsfml.graphics.Drawable {
             }
             
             towerHeight = numAbove*floorHeight;
+            towerUpperHeight = towerHeight;
     }
 
         

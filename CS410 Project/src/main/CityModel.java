@@ -54,6 +54,7 @@ public class CityModel {
 		
 		
 		int x = 400;
+		int x2;
 		towers = newTowers;
 		String currentPackage = newTowers.getFirst().getCityName();
 		
@@ -84,10 +85,11 @@ public class CityModel {
 			
 			//hack to see all towers
 			t.setTowerPosition(x, worldDimensions.height/2);	
+			x2=x;
 			x=x+t.getTowerWidth()+t.getTowerDepth();
 			//end hack to see all towers
 			
-			t.updateFloors(grassMidHeight);
+			t.updateFloors(grassMidHeight, x2);
 		}
 		
 		createGround();
