@@ -125,7 +125,7 @@ public class Main {
 		CityController controller = new CityController(city);
 		
 		Music music = new Music();
-		music.openFromFile(Paths.get("./resources/music.ogg"));
+		music.openFromFile(Paths.get("resources", "music.ogg"));
 		music.play();
 		
 		while (window.isOpen()) {
