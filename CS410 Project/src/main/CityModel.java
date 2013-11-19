@@ -141,8 +141,15 @@ public class CityModel {
 		int i = 0;
 		for (Author a: packageOwners) {
 			Sprite packageSign = packageSigns.get(i);
-			Text mayorText = new Text("Mayor " + a.getAuthorName(), defaultFont, 20);
-			mayorText.setColor(a.getAuthorColor());
+			Text mayorText;
+			if(a==null){
+				mayorText = new Text("Mayor Unknown", defaultFont, 20);
+				mayorText.setColor(new Color(220,220,220));
+			}
+			else{
+				mayorText = new Text("Mayor " + a.getAuthorName(), defaultFont, 20);
+				mayorText.setColor(a.getAuthorColor());
+			}
 			mayorText.setPosition(packageSign.getPosition().x + packageSign.getGlobalBounds().width/2 - mayorText.getLocalBounds().width/2, packageSign.getPosition().y + 85);
 			ownerTexts.add(mayorText);
 			i++;
@@ -173,7 +180,7 @@ public class CityModel {
 			}
 		 }
 		
-		System.out.println( owner.getAuthorName() + " is mayor of " + towers.peek().getCityName());
+		//System.out.println( owner.getAuthorName() + " is mayor of " + towers.peek().getCityName());
 		return owner;
 	}
 	

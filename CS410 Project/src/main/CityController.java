@@ -25,6 +25,7 @@ public class CityController {
 	boolean scrollRight;
 	boolean scrollUp;
 	boolean scrollDown;
+	double variableSpeed = StaticControls.directionScrollStartSpeed;
 	
 	CityController(CityModel city) {
 		model = city;
@@ -80,34 +81,24 @@ public class CityController {
 					scrollLeft = true;
 					scrollMode = false;
 					tearDownFloorMenu();
-					//moveModelView((float) -5, (float) 0);
 				}
 				
 				if (event.asKeyEvent().key == Key.RIGHT) {
 					scrollRight = true;
 					scrollMode = false;
 					tearDownFloorMenu();
-					//window.setMouseCursorVisible(true);
-					//scrollXVelocity = 5;
-					//moveModelView((float) 5, (float) 0);
 				}
 				
 				if (event.asKeyEvent().key == Key.UP) {
 					scrollUp = true;
 					scrollMode = false;
 					tearDownFloorMenu();
-					//window.setMouseCursorVisible(true);
-					//scrollYVelocity = -5;
-					//moveModelView((float) 0, (float) -5);
 				}
 				
 				if (event.asKeyEvent().key == Key.DOWN) {
 					scrollDown = true;
 					scrollMode = false;
 					tearDownFloorMenu();
-					//window.setMouseCursorVisible(true);
-					//scrollYVelocity = 5;
-					//moveModelView((float) 0, (float) 5);
 				}
 				
 				if (event.asKeyEvent().key == Key.I) {
@@ -143,30 +134,29 @@ public class CityController {
 				if (event.asKeyEvent().key == Key.LEFT) {
 					scrollMode = false;
 					scrollLeft = false;
-					//window.setMouseCursorVisible(true);
-					//moveModelView((float) -10, (float) 0);
 					scrollXVelocity = -5;
+					variableSpeed = StaticControls.directionScrollStartSpeed;
 				}
 				
 				if (event.asKeyEvent().key == Key.RIGHT) {
 					scrollMode = false;
 					scrollRight = false;
-					//window.setMouseCursorVisible(true);
 					scrollXVelocity = 5;
+					variableSpeed = StaticControls.directionScrollStartSpeed;				
 				}
 				
 				if (event.asKeyEvent().key == Key.UP) {
 					scrollMode = false;
 					scrollUp = false;
-					//window.setMouseCursorVisible(true);
 					scrollYVelocity = -5;
+					variableSpeed = StaticControls.directionScrollStartSpeed;
 				}
 				
 				if (event.asKeyEvent().key == Key.DOWN) {
 					scrollMode = false;
 					scrollDown = false;
-					//window.setMouseCursorVisible(true);
 					scrollYVelocity = 5;
+					variableSpeed = StaticControls.directionScrollStartSpeed;
 				}
 			}
 		}
@@ -174,19 +164,23 @@ public class CityController {
 		scrollModelView();
 		
 		if(scrollUp == true){
-			moveModelView((float) 0, (float) -5);
+			variableSpeed = variableSpeed * 1.01;
+			moveModelView((float) 0, (float) -variableSpeed);
 		}
 		
 		if(scrollDown == true){
-			moveModelView((float) 0, (float) 5);
+			variableSpeed = variableSpeed * 1.01;
+			moveModelView((float) 0, (float) variableSpeed);
 		}
 		
 		if(scrollRight == true){
-			moveModelView((float) 5, (float) 0);
+			variableSpeed = variableSpeed * 1.01;
+			moveModelView((float) variableSpeed, (float) 0);
 		}
 		
 		if(scrollLeft == true){
-			moveModelView((float) -5, (float) 0);
+			variableSpeed = variableSpeed * 1.01;
+			moveModelView((float) -variableSpeed, (float) 0);
 		}
 		
 		constrainModelViewToWorld();
