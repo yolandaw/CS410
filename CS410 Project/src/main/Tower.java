@@ -135,7 +135,7 @@ public class Tower implements org.jsfml.graphics.Drawable {
   //adding tower signs
     private void addSigns(RenderTarget window){
         Font defaultFont = new Font();
-        
+  
 		try {
 			defaultFont.loadFromFile(FileSystems.getDefault().getPath("resources","arial.ttf"));
 		} catch (IOException e) {
@@ -198,9 +198,6 @@ public class Tower implements org.jsfml.graphics.Drawable {
                 		belowFloors.push(f);
                 	}
                 }
-                
-                addSigns(window);
-
                 
                 //draw underground Floors
                 for (Floor f: belowFloors) {
