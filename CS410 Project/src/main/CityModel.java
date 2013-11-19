@@ -48,7 +48,7 @@ public class CityModel {
 		grassMidHeight = 30;
 		currentFloorDetails = null;
 		setUpFloorDetailsMenu();
-		cityDistance = 300;
+		cityDistance = 400;
 		currentView = new View();
 	}
 	
@@ -73,7 +73,7 @@ public class CityModel {
 		//quinnTest
 		Texture image = new Texture();
         try {
-			image.loadFromFile(Paths.get("./resources/billboard.png"));
+			image.loadFromFile(Paths.get("resources","billboard.png"));
 		} catch (IOException e) {
 			System.out.println("Error in package sign sprite load");
 		}
