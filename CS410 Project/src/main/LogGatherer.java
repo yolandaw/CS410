@@ -222,14 +222,22 @@ public class LogGatherer{
 		String[] entries;
 		repository = openDirectory(localGitFolder);
 		int indexEntryCount = DirCache.read(repository).getEntryCount();
-		if(firstXFiles<indexEntryCount){
-			indexEntryCount = firstXFiles;
-		}
-		entries = new String[indexEntryCount];
+		entries = new String[firstXFiles];
+		
+		int foundFiles = 0;
 		//System.out.println("index path entry count: " + indexEntryCount);
 		for(int i=0; i<indexEntryCount; i++){
 			//System.out.println("path " + i + ": " + DirCache.read(repository).getEntry(i).getPathString());
-			entries[i] = DirCache.read(repository).getEntry(i).getPathString();
+			String file = DirCache.read(repository).getEntry(i).getPathString();
+			if (file.endsWith(".java")) {
+				entries[foundFiles] = file;
+				foundFiles++;
+			}
+			
+			if (foundFiles == firstXFiles) {
+				break;
+			}
+			
 		}
 		repository.close();
 		return entries;
