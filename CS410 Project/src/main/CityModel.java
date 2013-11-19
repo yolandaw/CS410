@@ -141,7 +141,7 @@ public class CityModel {
 		int i = 0;
 		for (Author a: packageOwners) {
 			Sprite packageSign = packageSigns.get(i);
-			Text mayorText = new Text("Mayor: " + a.getAuthorName(), defaultFont, 20);
+			Text mayorText = new Text("Mayor " + a.getAuthorName(), defaultFont, 20);
 			mayorText.setColor(a.getAuthorColor());
 			mayorText.setPosition(packageSign.getPosition().x + packageSign.getGlobalBounds().width/2 - mayorText.getLocalBounds().width/2, packageSign.getPosition().y + 85);
 			ownerTexts.add(mayorText);
@@ -151,7 +151,7 @@ public class CityModel {
 	
 	private Author findPackageOwner(LinkedList<Tower> towers) {
 		
-		Author owner = new Author("Empty", "Empty");
+		Author owner = new Author("Ducky", "Ducky");
 		Map<Author, Integer> ownerships = new HashMap<Author, Integer>();
 		int mostTowers = 0;
 		
