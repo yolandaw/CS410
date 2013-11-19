@@ -2,14 +2,17 @@ package main;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
+import org.jsfml.audio.Music;
 import org.jsfml.graphics.*;
 import org.jsfml.window.VideoMode;
+import org.jsfml.window.event.Event;
 
 
 public class Main {
@@ -79,11 +82,6 @@ public class Main {
 		}
 		//quinn test end
 
-		// pass the each class from the list of existing classes: in this case just passing the 'Class' class
-		// repeat this using loop for each passed class:
-		// 1.start gathering the log for the class
-		
-		
 		//hack to see all towers
 		LinkedList<Tower> towers = new LinkedList<Tower>();
 		
@@ -107,10 +105,6 @@ public class Main {
 		}
 		//end hack to see all towers
 
-		// 2.pass the gathered log information for the class to be parsed
-		//parser.startParsingClass(lg);
-		// pass the class Object(s) (there could be nested classes, so it is Object(s)) parsed in the Parse class to the visualization class using  getParsedLog() in the Parse class
-		
 		if (towers.isEmpty()) {
 			System.out.println("Error! No Valid Files Entered!");
 			return;
@@ -118,7 +112,7 @@ public class Main {
 		
 		RenderWindow window = new RenderWindow();
 
-		VideoMode mode = new VideoMode(1280, 600); //can't change the height, breaks the ground
+		VideoMode mode = new VideoMode(1280, 600);
 
 		window.create(mode, "City Builder");
 
@@ -128,11 +122,15 @@ public class Main {
 		city.setTowers(towers);
 		CityController controller = new CityController(city);
 		
+		Music music = new Music();
+		music.openFromFile(Paths.get("./resources/music.ogg"));
+		music.play();
+		
 		while (window.isOpen()) {
 			controller.updateModel();
 			city.drawCity();
 			window.display();
 		} 
-	} 
-
+		
+	}
 }

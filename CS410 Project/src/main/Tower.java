@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
-
 import org.eclipse.jgit.revwalk.DepthWalk;
 import org.jsfml.graphics.Color;
 import org.jsfml.graphics.Font;

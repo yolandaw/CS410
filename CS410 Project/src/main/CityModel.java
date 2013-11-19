@@ -2,6 +2,7 @@ package main;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
@@ -13,7 +14,9 @@ import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.PrimitiveType;
 import org.jsfml.graphics.RectangleShape;
 import org.jsfml.graphics.RenderWindow;
+import org.jsfml.graphics.Sprite;
 import org.jsfml.graphics.Text;
+import org.jsfml.graphics.Texture;
 import org.jsfml.graphics.Vertex;
 import org.jsfml.graphics.VertexArray;
 import org.jsfml.graphics.View;
@@ -34,13 +37,14 @@ public class CityModel {
 	Font defaultFont;
 	int grassMidHeight;
 	int cityDistance;
-	LinkedList<RectangleShape> packageSigns;
+//	LinkedList<RectangleShape> packageSigns;
+	LinkedList<Sprite> packageSigns = new LinkedList<Sprite>();
 
 	CityModel(RenderWindow newWindow) {
 		setWindow(newWindow);
 		setCurrentView(newWindow.getDefaultView());
 		towers = new LinkedList<Tower>();
-		packageSigns = new LinkedList<RectangleShape>();
+//		packageSigns = new LinkedList<RectangleShape>();
 		setWorldDimensions(0, 0, 0, 0);
 		grassMidHeight = 30;
 		currentFloorDetails = null;
@@ -58,24 +62,44 @@ public class CityModel {
 		
 		calculateWorldDimensions();
 		
-		RectangleShape firstSign = new RectangleShape();
-		firstSign.setFillColor(new Color(154,136,81));
-		firstSign.setOutlineColor(new Color(114,100,60));
-		firstSign.setOutlineThickness(3);
-		firstSign.setSize(new Vector2f(100 ,100));
-		firstSign.setPosition(x - 3, worldDimensions.height/2 - firstSign.getSize().y - 3);
+//		RectangleShape firstSign = new RectangleShape();
+//		firstSign.setFillColor(new Color(154,136,81));
+//		firstSign.setOutlineColor(new Color(114,100,60));
+//		firstSign.setOutlineThickness(3);
+//		firstSign.setSize(new Vector2f(100 ,100));
+//		firstSign.setPosition(x - 3, worldDimensions.height/2 - firstSign.getSize().y - 3);
+//		packageSigns.push(firstSign);
+//		x = x + (int) firstSign.getSize().x;
+		
+		//quinnTest
+		Texture image = new Texture();
+        try {
+			image.loadFromFile(Paths.get("./resources/billboard.png"));
+		} catch (IOException e) {
+			System.out.println("Error in package sign sprite load");
+		}
+		Sprite firstSign = new Sprite(image);
+		firstSign.setPosition(x - 3, worldDimensions.height/2 - firstSign.getGlobalBounds().height - 3);
 		packageSigns.push(firstSign);
-		x = x + (int) firstSign.getSize().x;
+		x = x + (int) firstSign.getGlobalBounds().width;
+		//quinnTest end
+		
 		
 		for (Tower t: towers) {
 			if (!t.getCityName().equals(currentPackage)) {
-				RectangleShape newSign = new RectangleShape();
-				newSign.setFillColor(new Color(154,136,81));
-				newSign.setSize(new Vector2f(100 ,100));
-				newSign.setOutlineColor(new Color(114,100,60));
-				newSign.setOutlineThickness(3);
-				newSign.setPosition(x+cityDistance-newSign.getSize().x - 3, worldDimensions.height/2 - newSign.getSize().y - 3);
+//				RectangleShape newSign = new RectangleShape();
+//				newSign.setFillColor(new Color(154,136,81));
+//				newSign.setSize(new Vector2f(100 ,100));
+//				newSign.setOutlineColor(new Color(114,100,60));
+//				newSign.setOutlineThickness(3);
+//				newSign.setPosition(x+cityDistance-newSign.getSize().x - 3, worldDimensions.height/2 - newSign.getSize().y - 3);
+//				packageSigns.push(newSign);
+				
+				//quinnTest
+				Sprite newSign = new Sprite(image);
+				newSign.setPosition(x+cityDistance-newSign.getGlobalBounds().width - 3, worldDimensions.height/2 - newSign.getGlobalBounds().height - 3);
 				packageSigns.push(newSign);
+				//quinnTest end
 				
 				x = x + cityDistance;
 				currentPackage = t.getCityName();
@@ -314,9 +338,16 @@ public class CityModel {
 		for (Tower t: towers) {
 			window.draw(t);
 		}
-		for (RectangleShape p: packageSigns) {
-			window.draw(p);
+//		for (RectangleShape p: packageSigns) {
+//			window.draw(p);
+//		}
+		
+		//quinnTest
+		for (Sprite sign:packageSigns) {
+			window.draw(sign);
 		}
+		//quinnTest end
+		
 		window.draw(grassMid);
 
 		if (currentFloorDetails != null) {
