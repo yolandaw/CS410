@@ -31,7 +31,6 @@ public class Tower implements org.jsfml.graphics.Drawable {
         
         private String towerName;
         private int towerHeight;
-        private int towerUpperHeight;
         private int towerWidth;
         private int towerXPos;
         private int numberOfFloors;
@@ -159,7 +158,7 @@ public class Tower implements org.jsfml.graphics.Drawable {
 			System.out.println("Error in package sign sprite load");
 		}		
 		towerSign = new RectangleShape(new Vector2f(towerName.length()*10,30));
-        towerSign.setPosition(towerXPos, towerUpperHeight);
+        towerSign.setPosition(towerXPos, pos.y - towerHeight - towerSign.getSize().y - 5);
         towerSign.setFillColor(towerOwner.getAuthorColor());
         towerSign.setOutlineThickness(5);
         towerSign.setOutlineColor(new Color(52,40,44));
@@ -169,7 +168,7 @@ public class Tower implements org.jsfml.graphics.Drawable {
 
         Text towerSignName = new Text(towerName, defaultFont , 18);
 		towerSignName.setColor(new Color(255,255,255));
-        towerSignName.setPosition(towerXPos, towerUpperHeight);
+        towerSignName.setPosition(towerXPos, pos.y - towerHeight - towerSign.getSize().y - 5);
         
         window.draw(towerSign);
         window.draw(towerSignName);
@@ -241,7 +240,6 @@ public class Tower implements org.jsfml.graphics.Drawable {
             }
             
             towerHeight = numAbove*floorHeight;
-            towerUpperHeight = towerHeight;
     }
 
         
@@ -263,7 +261,7 @@ public class Tower implements org.jsfml.graphics.Drawable {
                 	window.draw(f);
                 }
                 
-                //addSigns(window, towerOwner);
+//                addSigns(window, towerOwner);
 
         }
     
