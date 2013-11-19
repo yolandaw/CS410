@@ -116,7 +116,7 @@ public class Main {
 		CityModel city = new CityModel(window);
 		city.setTowers(towers);
 		CityController controller = new CityController(city);
-
+		
 		while (window.isOpen()) {
 			controller.updateModel();
 			city.drawCity();

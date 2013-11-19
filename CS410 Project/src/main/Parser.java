@@ -39,6 +39,7 @@ public class Parser {
         // The name of the package that parsed class belongs to 
         private String cityName;
         
+        private boolean checkTest;
         
         /**
          * Basic constructor
@@ -118,10 +119,7 @@ public class Parser {
                         currentLineNum = i;
                         currentLine = parsedClass.rawCode(i);
                         parsingCodeLine(currentLine);
-                        
-                        //test
-                        //System.out.println(lineInMethod + " currentline: " + currentLine);
-                        
+                        System.out.println(currentLine + " lineinmethod: "+ lineInMethod + " methhand: "+ methodHandler);
                 }
                 
                 // parsing test
@@ -197,14 +195,17 @@ public class Parser {
                                         // filter the code line that is inside a method and contains no actual codes such as comment: line comment and block comment
                                         if(currentLine.contains("{") || currentLine.contains("}")) {
                                                 int result = 0;
-                                                        
+                                                  
                                                 // only check first most character and the last most character 
                                                 // case 1: both '{' and '}' can be in the same line
                                                 if(currentLine.contains("{") && currentLine.contains("}")) {
-                                                        
+                                                		StringTokenizer tokenizeri = null;
+                                                		boolean openParenthesis = false;
                                                         if(token.charAt(0) == '}') {
-                                                                result--;
+                                                        		result--;
                                                         }else if(token.charAt(0) == '{') {
+                                                        		openParenthesis = true;
+                                                        		tokenizeri = new StringTokenizer(currentLine, ")");
                                                                 result++;
                                                         }
                                                         
@@ -214,7 +215,19 @@ public class Parser {
                                                         
                                                         int lastIndex = token.length() - 1;
                                                         if (token.charAt(lastIndex) == '}') {
-                                                                result--;
+                                                        		if(!openParenthesis) {
+                                                        			result = 0;
+                                                        		}else {
+                                                        			tokenizeri.nextToken();
+                                                        			String theToken = tokenizeri.nextToken();
+                                                        			if(theToken.contains("{") && theToken.contains("}")) {
+                                                        				// do not change the 'result'
+                                                        			}else {
+                                                        				result--;
+                                                        			}
+                           
+                                                        		}
+                                                               
                                                         }else if(token.charAt(lastIndex) == '{') {
                                                                 result++;
                                                         }
@@ -239,7 +252,7 @@ public class Parser {
                                                 }
                                                 
                                                 methodHandler += result;
-                                                                
+                                                               
                                                 if(methodHandler == -1) {
                                                         lineInMethod = false;        
                                                         
@@ -314,16 +327,21 @@ public class Parser {
                                                         }
                                                         StringTokenizer tokenizer2 = new StringTokenizer(token, "(");
                                                         String methodName = tokenizer2.nextToken();
-                                                                
+                                                        
                                                         methodCreator(methodName);
+                                                        
+                                                    
                                                 }else {
                                                         token = tokenizer.nextToken();
                                                         if(token.contains("(")) {
                                                                 if(currentLine.contains("{") && currentLine.contains("}")) {
                                                                         isConstructor = true;
                                                                 }
-                                                                StringTokenizer tokenizer2 = new StringTokenizer(token, "(");                                                                
-                                                                String methodName = tokenizer2.nextToken();                                                                
+                                                                StringTokenizer tokenizer2 = new StringTokenizer(token, "(");
+                                                               
+                                                                // problem:
+                                                                String methodName = tokenizer2.nextToken();
+                                                                
                                                                 methodCreator(methodName);                                                                        
                                                         }else {
                                                                 String methodName = token;
@@ -354,6 +372,7 @@ public class Parser {
                 createdClassObjects.add(currentClass);
                 classHandler++;
                 classHandler += classFinishes;
+                System.out.println(currentLine + "classes created");
         }
         
         /**
@@ -362,7 +381,8 @@ public class Parser {
          * @param methodName: The name of the new method/floor object
          */
         private void methodCreator(String methodName) {
-                
+        	System.out.println(currentLine +" methodcreated");
+        		methodHandler = -1;
                 if(currentLine.contains("{")) {
                         methodHandler++;        
                 }
@@ -404,29 +424,29 @@ public class Parser {
         }
         
         private Author getUniqueAuthor(PersonIdent ownership) {
-                Author author = new Author("Empty", "Empty");
-                String uniqueEmail = "UnknownEmailAddr";
-                //System.out.println(ownership);
+            Author author = new Author("Empty", "Empty");
+            String uniqueEmail = "UnknownEmailAddr";
+            //System.out.println(ownership);
+            if(ownership != null){
+                    uniqueEmail = ownership.getEmailAddress();
+            }
+            
+            if (!allAuthors.containsKey(uniqueEmail)) {
+                    String uniqueName = "UnknownName";
                 if(ownership != null){
-                	uniqueEmail = ownership.getEmailAddress();
+                        uniqueName = ownership.getName();
                 }
-                
-                if (!allAuthors.containsKey(uniqueEmail)) {
-                	String uniqueName = "UnknownName";
-                    if(ownership != null){
-                    	uniqueName = ownership.getName();
+                    author = new Author(uniqueName, uniqueEmail);
+                    if (uniqueEmail == "") {
+                            author.setUnknownAuthorColor();
+                            allAuthors.put("UnknownEmailAddr", author);
+                    }else {
+                            allAuthors.put(uniqueEmail, author);
                     }
-                        author = new Author(uniqueName, uniqueEmail);
-                        if (uniqueEmail == "") {
-                                author.setUnknownAuthorColor();
-                                allAuthors.put("UnknownEmailAddr", author);
-                        }else {
-                        	allAuthors.put(uniqueEmail, author);
-                        }
-                } else {
-                	author = allAuthors.get(uniqueEmail);
-                }
-                
-                return author;
-        }
+            } else {
+                    author = allAuthors.get(uniqueEmail);
+            }
+            
+            return author;
+    }
 }
