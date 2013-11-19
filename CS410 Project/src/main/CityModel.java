@@ -51,11 +51,6 @@ public class CityModel {
 	
 	//need to place towers based on package
 	public void setTowers(LinkedList<Tower> newTowers) {
-		
-		if (newTowers == null) {
-			return;
-		}
-		
 		int x = 400;
 		int x2;
 		towers = newTowers;

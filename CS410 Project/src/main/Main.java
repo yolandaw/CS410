@@ -72,7 +72,7 @@ public class Main {
 		
 		//quinn test
 		//print out all the java file paths
-		List<String> paths = lg.getJavaFilePaths(gitPath,2);
+		List<String> paths = lg.getJavaFilePaths(gitPath,30);
 		
 		for(int i=0; i<paths.size(); i++){
 			System.out.println(paths.get(i));
@@ -110,6 +110,11 @@ public class Main {
 		// 2.pass the gathered log information for the class to be parsed
 		//parser.startParsingClass(lg);
 		// pass the class Object(s) (there could be nested classes, so it is Object(s)) parsed in the Parse class to the visualization class using  getParsedLog() in the Parse class
+		
+		if (towers.isEmpty()) {
+			System.out.println("Error! No Valid Files Entered!");
+			return;
+		}
 		
 		RenderWindow window = new RenderWindow();
 

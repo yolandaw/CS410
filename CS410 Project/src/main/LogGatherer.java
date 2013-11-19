@@ -210,9 +210,11 @@ public class LogGatherer{
 		List<String> paths = new ArrayList<String>();
 		String[] entries = getIndexedFilePaths(localGitFolder, firstXFiles);
 		for(String entry:entries){
-			if(entry.endsWith(".java")){
-				paths.add(entry);
-				System.out.println(entry);
+			if (entry != null) {
+				if(entry.endsWith(".java")){
+					paths.add(entry);
+					System.out.println(entry);
+				}
 			}
 		}
 		return paths;
