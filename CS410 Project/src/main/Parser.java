@@ -39,6 +39,8 @@ public class Parser {
         // The name of the package that parsed class belongs to 
         private String cityName;
         
+        private boolean classCreated;
+        
         private boolean checkTest;
         
         /**
@@ -112,6 +114,7 @@ public class Parser {
                 classFinishes = 0;
                 lineInMethod = false;
                 isConstructor = false;
+                classCreated = false;
                 
                 int codeLineNums = parsedClass.numLinesOfCode();
 
@@ -119,7 +122,7 @@ public class Parser {
                         currentLineNum = i;
                         currentLine = parsedClass.rawCode(i);
                         parsingCodeLine(currentLine);
-                        System.out.println(currentLine + " lineinmethod: "+ lineInMethod + " methhand: "+ methodHandler);
+                        System.out.println(currentLine + " lineinmethod: "+ lineInMethod + " methhand: "+ methodHandler + " classHandler: "+ classHandler);
                 }
                 
                 // parsing test
@@ -268,7 +271,7 @@ public class Parser {
                                         Author author = getUniqueAuthor(ownership);
                                         currentMethod.increOwnershipSize(author);        
                                                                 
-                                }else if(classHandler > -1 && currentLine.contains("}") && !currentLine.contains("{")) {
+                                }else if(classHandler > -1 && currentLine.contains("}") && !currentLine.contains("{") && classCreated) {
                                 	
                                 	classFinishes++;
                                 	
@@ -290,7 +293,11 @@ public class Parser {
                                         }
                                         
                                         if(token.equals("static")) {
-                                                token = tokenizer.nextToken();
+                                        	classCreated = false;
+                                        	if(tokenizer.hasMoreTokens()){
+                                        		token = tokenizer.nextToken();
+                                        	}
+                                        	else return;
                                         }
                                         
                                         if(token.equals("enum")) {
@@ -325,6 +332,9 @@ public class Parser {
                                                         if(currentLine.contains("{") && currentLine.contains("}")) {
                                                                 isConstructor = true;
                                                         }
+                                                        if(currentLine.contains(";") && !currentLine.contains("}") && !currentLine.contains("{")){
+                                                        	return;
+                                                        }
                                                         StringTokenizer tokenizer2 = new StringTokenizer(token, "(");
                                                         String methodName = tokenizer2.nextToken();
                                                         
@@ -332,10 +342,16 @@ public class Parser {
                                                         
                                                     
                                                 }else {
+                                                		if(!tokenizer.hasMoreTokens()){
+                                                			return;
+                                                		}
                                                         token = tokenizer.nextToken();
                                                         if(token.contains("(")) {
                                                                 if(currentLine.contains("{") && currentLine.contains("}")) {
                                                                         isConstructor = true;
+                                                                }
+                                                                if(currentLine.contains(";") && !currentLine.contains("}") && !currentLine.contains("{")){
+                                                                	return;
                                                                 }
                                                                 StringTokenizer tokenizer2 = new StringTokenizer(token, "(");
                                                                
@@ -373,6 +389,7 @@ public class Parser {
                 classHandler++;
                 classHandler += classFinishes;
                 System.out.println(currentLine + "classes created");
+                classCreated = true;
         }
         
         /**

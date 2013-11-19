@@ -213,9 +213,6 @@ public class LogGatherer{
 			if(entry.endsWith(".java")){
 				paths.add(entry);
 				System.out.println(entry);
-				if(paths.size() >= firstXFiles){
-					return paths;
-				}
 			}
 		}
 		return paths;
