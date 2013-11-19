@@ -90,8 +90,14 @@ public class Main {
 		for(String path:paths){
 			System.out.println(path.toString());
 			lg.startGatheringLog(gitPath, path);
+			//parser.startParsingClass(lg);
+			try{
 			parser.startParsingClass(lg);
+			}
+			catch (IndexOutOfBoundsException e){
+				System.out.println("IndexOutOfBoundsException, moving on..");
 			
+			}
 			// adds all the towers including nested towers
 			towers.addAll(parser.getParsedLog()); 
 		}
