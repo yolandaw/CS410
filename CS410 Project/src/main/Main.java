@@ -90,14 +90,18 @@ public class Main {
 		for(String path:paths){
 			System.out.println(path.toString());
 			lg.startGatheringLog(gitPath, path);
-			parser.startParsingClass(lg);
-			/*try{
-			parser.startParsingClass(lg);
+			if(StaticControls.continueFromExceptions == true){
+				try{
+				parser.startParsingClass(lg);
+				}
+				catch (IndexOutOfBoundsException e){
+					System.out.println("IndexOutOfBoundsException, moving on..");
+				}
+			}				
+			else{
+				parser.startParsingClass(lg);	
 			}
-			catch (IndexOutOfBoundsException e){
-				System.out.println("IndexOutOfBoundsException, moving on..");
-			
-			}*/
+
 			// adds all the towers including nested towers
 			towers.addAll(parser.getParsedLog()); 
 		}
@@ -124,9 +128,11 @@ public class Main {
 		city.setTowers(towers);
 		CityController controller = new CityController(city);
 		
-		Music music = new Music();
-		music.openFromFile(Paths.get("resources", "music.ogg"));
-		music.play();
+		if(StaticControls.music == true){
+			Music music = new Music();
+			music.openFromFile(Paths.get("resources", "music.ogg"));
+			music.play();
+		}
 		
 		while (window.isOpen()) {
 			controller.updateModel();

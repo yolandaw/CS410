@@ -22,4 +22,11 @@ public class StaticControls {
 	//else, tower depths are all the same
 	static boolean towerDepthRandom = true;
 	
+	//if true, program will continue to run after encountering errors
+	//else, program will break if exception encountered
+	static boolean continueFromExceptions = false;
+	
+	//if true, background music will load and play
+	//else, no music
+	static boolean music = true;
 }
