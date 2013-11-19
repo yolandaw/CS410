@@ -3,9 +3,11 @@ package main;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
+
 import org.jsfml.graphics.Color;
 import org.jsfml.graphics.ConstView;
 import org.jsfml.graphics.Font;
@@ -36,14 +38,18 @@ public class CityModel {
 	Font defaultFont;
 	int grassMidHeight;
 	int cityDistance;
-//	LinkedList<RectangleShape> packageSigns;
 	LinkedList<Sprite> packageSigns = new LinkedList<Sprite>();
+	LinkedList<Text> packageTexts;
+	LinkedList<Text> ownerTexts;
+	LinkedList<Author> packageOwners;
 
 	CityModel(RenderWindow newWindow) {
 		setWindow(newWindow);
 		setCurrentView(newWindow.getDefaultView());
 		towers = new LinkedList<Tower>();
-//		packageSigns = new LinkedList<RectangleShape>();
+		packageTexts = new LinkedList<Text>();
+		ownerTexts = new LinkedList<Text>();
+		packageOwners = new LinkedList<Author>();
 		setWorldDimensions(0, 0, 0, 0);
 		grassMidHeight = 30;
 		currentFloorDetails = null;
@@ -61,15 +67,6 @@ public class CityModel {
 		
 		calculateWorldDimensions();
 		
-//		RectangleShape firstSign = new RectangleShape();
-//		firstSign.setFillColor(new Color(154,136,81));
-//		firstSign.setOutlineColor(new Color(114,100,60));
-//		firstSign.setOutlineThickness(3);
-//		firstSign.setSize(new Vector2f(100 ,100));
-//		firstSign.setPosition(x - 3, worldDimensions.height/2 - firstSign.getSize().y - 3);
-//		packageSigns.push(firstSign);
-//		x = x + (int) firstSign.getSize().x;
-		
 		//quinnTest
 		Texture image = new Texture();
         try {
@@ -79,30 +76,43 @@ public class CityModel {
 		}
 		Sprite firstSign = new Sprite(image);
 		firstSign.setPosition(x - 3, worldDimensions.height/2 - firstSign.getGlobalBounds().height - 3);
-		packageSigns.push(firstSign);
-		x = x + (int) firstSign.getGlobalBounds().width;
+		packageSigns.add(firstSign);
 		//quinnTest end
 		
+		Text firstPackageText = new Text(currentPackage, defaultFont, 16);
+		firstPackageText.setStyle(Text.BOLD|Text.UNDERLINED);
+		firstPackageText.setColor(new Color(0,0,0));
+		firstPackageText.setPosition(firstSign.getPosition().x + firstSign.getGlobalBounds().width/2 - firstPackageText.getLocalBounds().width/2, firstSign.getPosition().y + 30);
+		packageTexts.add(firstPackageText);
+		
+		LinkedList<Tower> packageTowers = new LinkedList<Tower>();
+		
+		x = x + (int) firstSign.getGlobalBounds().width;
 		
 		for (Tower t: towers) {
 			if (!t.getCityName().equals(currentPackage)) {
-//				RectangleShape newSign = new RectangleShape();
-//				newSign.setFillColor(new Color(154,136,81));
-//				newSign.setSize(new Vector2f(100 ,100));
-//				newSign.setOutlineColor(new Color(114,100,60));
-//				newSign.setOutlineThickness(3);
-//				newSign.setPosition(x+cityDistance-newSign.getSize().x - 3, worldDimensions.height/2 - newSign.getSize().y - 3);
-//				packageSigns.push(newSign);
+				currentPackage = t.getCityName();
 				
 				//quinnTest
 				Sprite newSign = new Sprite(image);
 				newSign.setPosition(x+cityDistance-newSign.getGlobalBounds().width - 3, worldDimensions.height/2 - newSign.getGlobalBounds().height - 3);
-				packageSigns.push(newSign);
+				packageSigns.add(newSign);
 				//quinnTest end
 				
+				Text newPackageText = new Text(currentPackage, defaultFont, 16);
+				newPackageText.setColor(new Color(0,0,0));
+				newPackageText.setStyle(Text.BOLD|Text.UNDERLINED);
+				newPackageText.setPosition(newSign.getPosition().x + newSign.getGlobalBounds().width/2 - newPackageText.getLocalBounds().width/2, newSign.getPosition().y + 35);
+				packageTexts.add(newPackageText);
+				
 				x = x + cityDistance;
-				currentPackage = t.getCityName();
+				Author owner = findPackageOwner(packageTowers);
+				
+				packageOwners.add(owner);
+				packageTowers.clear();
 			}
+			
+			packageTowers.push(t);
 			
 			//hack to see all towers
 			t.setTowerPosition(x, worldDimensions.height/2);	
@@ -116,10 +126,55 @@ public class CityModel {
 //			t.addSigns(window, t.getTowerOwner());
 		}
 		
+		Author lastOwner = findPackageOwner(packageTowers);
+		packageOwners.add(lastOwner);
+		
+		addPackageSignText();
+		
 		createGround();
 		createGrassTop();
 		createGrassMid();
 		createSky();
+	}
+	
+	private void addPackageSignText() {
+		int i = 0;
+		for (Author a: packageOwners) {
+			Sprite packageSign = packageSigns.get(i);
+			Text mayorText = new Text("Mayor " + a.getAuthorName(), defaultFont, 20);
+			mayorText.setColor(a.getAuthorColor());
+			mayorText.setPosition(packageSign.getPosition().x + packageSign.getGlobalBounds().width/2 - mayorText.getLocalBounds().width/2, packageSign.getPosition().y + 85);
+			ownerTexts.add(mayorText);
+			i++;
+		}
+	}
+	
+	private Author findPackageOwner(LinkedList<Tower> towers) {
+		
+		Author owner = new Author("Ducky", "Ducky");
+		Map<Author, Integer> ownerships = new HashMap<Author, Integer>();
+		int mostTowers = 0;
+		
+		for (Tower t: towers) {
+			owner = t.getTowerOwner();
+			if (ownerships.containsKey(owner)) {
+				int value = ownerships.get(owner) + 1;
+				ownerships.put(owner, value);
+			} else {
+				ownerships.put(owner, 1);
+			}
+		}
+		
+		 for (Map.Entry<Author, Integer> entry: ownerships.entrySet()) {
+			 System.out.println(entry);
+			if (entry.getValue() > mostTowers) {
+				mostTowers = entry.getValue();
+				owner = entry.getKey();
+			}
+		 }
+		
+		System.out.println( owner.getAuthorName() + " is mayor of " + towers.peek().getCityName());
+		return owner;
 	}
 	
 	private void calculateWorldDimensions() {
@@ -145,6 +200,8 @@ public class CityModel {
 		
 		if (totalWidth < window.getSize().x*2) {
 			totalWidth = window.getSize().x*2;
+		} else {
+			totalWidth = totalWidth + 400;
 		}
 		
 		setWorldDimensions(0, 0, totalWidth, tallestTower);
@@ -167,14 +224,14 @@ public class CityModel {
 		t.setFloorHeight(randomHeight);
 		
 		if(StaticControls.floorHeightRandom == false){
-			t.setFloorHeight(30);	//unrandomize height. all height = 30
-		}
-		if(StaticControls.towerWidthRandom == false){
-			t.setTowerWidth(125);	//unrandomize width. all width = 125
-		}
-		if(StaticControls.towerDepthRandom == false){
-			t.setTowerDepth(15);	//unrandomize depth. all depth = 15
-		}
+            t.setFloorHeight(30);        //unrandomize height. all height = 30
+	    }
+	    if(StaticControls.towerWidthRandom == false){
+	            t.setTowerWidth(125);        //unrandomize width. all width = 125
+	    }
+	    if(StaticControls.towerDepthRandom == false){
+	            t.setTowerDepth(15);        //unrandomize depth. all depth = 15
+	    }
 	}
 	
 	public LinkedList<Tower> getTowers() {
@@ -347,16 +404,17 @@ public class CityModel {
 		for (Tower t: towers) {
 			window.draw(t);
 		}
-//		for (RectangleShape p: packageSigns) {
-//			window.draw(p);
-//		}
-		
 		//quinnTest
 		for (Sprite sign:packageSigns) {
 			window.draw(sign);
 		}
-		//quinnTest end
-		
+				//quinnTest end
+		for (Text t: packageTexts) {
+			window.draw(t);
+		}
+		for (Text o: ownerTexts) {
+			window.draw(o);
+		}
 		window.draw(grassMid);
 
 		if (currentFloorDetails != null) {

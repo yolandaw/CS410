@@ -257,13 +257,13 @@ public class Tower implements org.jsfml.graphics.Drawable {
                 		belowFloors.push(f);
                 	}
                 }
-                                
+                                 
                 //draw underground Floors
                 for (Floor f: belowFloors) {
                 	window.draw(f);
                 }
                 
-                addSigns(window, towerOwner);
+                //addSigns(window, towerOwner);
 
         }
     

@@ -5,15 +5,17 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.jsfml.audio.Music;
 import org.jsfml.graphics.*;
 import org.jsfml.window.VideoMode;
+import org.jsfml.window.Window;
 import org.jsfml.window.event.Event;
-
 
 public class Main {
 
@@ -88,14 +90,14 @@ public class Main {
 		for(String path:paths){
 			System.out.println(path.toString());
 			lg.startGatheringLog(gitPath, path);
-			//parser.startParsingClass(lg);
-			try{
+			parser.startParsingClass(lg);
+			/*try{
 			parser.startParsingClass(lg);
 			}
 			catch (IndexOutOfBoundsException e){
 				System.out.println("IndexOutOfBoundsException, moving on..");
 			
-			}
+			}*/
 			// adds all the towers including nested towers
 			towers.addAll(parser.getParsedLog()); 
 		}
@@ -114,7 +116,7 @@ public class Main {
 
 		VideoMode mode = new VideoMode(1280, 600);
 
-		window.create(mode, "City Builder");
+		window.create(mode, "City Builder", Window.CLOSE|Window.TITLEBAR);
 
 		window.setFramerateLimit(60);
 
