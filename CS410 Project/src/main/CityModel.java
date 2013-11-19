@@ -222,6 +222,16 @@ public class CityModel {
 		t.setTowerDepth(randomDepth);
 		randomHeight = randInt.nextInt(20) + 20;
 		t.setFloorHeight(randomHeight);
+		
+		if(StaticControls.floorHeightRandom == false){
+            t.setFloorHeight(30);        //unrandomize height. all height = 30
+	    }
+	    if(StaticControls.towerWidthRandom == false){
+	            t.setTowerWidth(125);        //unrandomize width. all width = 125
+	    }
+	    if(StaticControls.towerDepthRandom == false){
+	            t.setTowerDepth(15);        //unrandomize depth. all depth = 15
+	    }
 	}
 	
 	public LinkedList<Tower> getTowers() {
