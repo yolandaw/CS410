@@ -2,6 +2,7 @@ package main;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,7 +16,9 @@ import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.RectangleShape;
 import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTarget;
+import org.jsfml.graphics.Sprite;
 import org.jsfml.graphics.Text;
+import org.jsfml.graphics.Texture;
 import org.jsfml.system.Vector2f;
 import org.jsfml.system.Vector2i;
 
@@ -144,17 +147,28 @@ public class Tower implements org.jsfml.graphics.Drawable {
         Font defaultFont = new Font();
   
 		try {
-			defaultFont.loadFromFile(FileSystems.getDefault().getPath("resources","arial.ttf"));
+			defaultFont.loadFromFile(FileSystems.getDefault().getPath("resources","arialbd.ttf"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
 		
-		towerSign = new RectangleShape(new Vector2f(towerWidth,30));
+		Texture metalBG = new Texture();
+        try {
+			metalBG.loadFromFile(Paths.get("resources","metal.png"));
+		} catch (IOException e) {
+			System.out.println("Error in package sign sprite load");
+		}		
+		towerSign = new RectangleShape(new Vector2f(towerName.length()*10,30));
         towerSign.setPosition(towerXPos, towerUpperHeight);
         towerSign.setFillColor(towerOwner.getAuthorColor());
+        towerSign.setOutlineThickness(5);
+        towerSign.setOutlineColor(new Color(52,40,44));
+        towerSign.setTexture(metalBG);
+        
+        
 
-        Text towerSignName = new Text(towerName, defaultFont , 16);
-		towerSignName.setColor(new Color(0,0,0));
+        Text towerSignName = new Text(towerName, defaultFont , 18);
+		towerSignName.setColor(new Color(255,255,255));
         towerSignName.setPosition(towerXPos, towerUpperHeight);
         
         window.draw(towerSign);
