@@ -242,16 +242,8 @@ public class Parser {
                                                         }else if (token.charAt(0) == '{') {
                                                                 result++;
                                                         }else {
-                                                        		StringTokenizer tokenizerz = null;
-                                                        		if(currentLine.contains("//")){
-                                                        			tokenizerz = new StringTokenizer(currentLine, "//");
-                                                        			tokenizerz.nextToken();
-                                                        		}
-                                                        		else{
-                                                        			tokenizerz = tokenizer;
-                                                        		}
-                                                                while(tokenizerz.hasMoreTokens()) {
-                                                                        token = tokenizerz.nextToken();
+                                                                while(tokenizer.hasMoreTokens()) {
+                                                                        token = tokenizer.nextToken();
                                                                 }
                                                                 int lastIndex = token.length() - 1;
                                                                 if(token.charAt(lastIndex) == '}') {

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
-
 import org.eclipse.jgit.revwalk.DepthWalk;
 import org.jsfml.graphics.Color;
 import org.jsfml.graphics.Font;
@@ -41,6 +40,9 @@ public class Tower implements org.jsfml.graphics.Drawable {
         private String cityName;
         private Author towerOwner;
         private Map<Author, Integer> ownerList = new HashMap<Author, Integer>(); 
+        private RectangleShape towerSign;
+
+
         
         //constructing a new Tower/Class
         public Tower(String className) {
@@ -147,8 +149,7 @@ public class Tower implements org.jsfml.graphics.Drawable {
 			e.printStackTrace();
 		}		
 		
-        //adding tower name
-        RectangleShape towerSign = new RectangleShape(new Vector2f(towerWidth,30));
+		towerSign = new RectangleShape(new Vector2f(towerWidth,30));
         towerSign.setPosition(towerXPos, towerUpperHeight);
         towerSign.setFillColor(towerOwner.getAuthorColor());
 
@@ -242,13 +243,14 @@ public class Tower implements org.jsfml.graphics.Drawable {
                 		belowFloors.push(f);
                 	}
                 }
-                
-                addSigns(window, towerOwner);
-                
+                                 
                 //draw underground Floors
                 for (Floor f: belowFloors) {
                 	window.draw(f);
                 }
+                
+                //addSigns(window, towerOwner);
+
         }
     
     public void setCityName(String packageName) {
