@@ -38,7 +38,6 @@ public class CityModel {
 	Font defaultFont;
 	int grassMidHeight;
 	int cityDistance;
-//	LinkedList<RectangleShape> packageSigns;
 	LinkedList<Sprite> packageSigns = new LinkedList<Sprite>();
 	LinkedList<Text> packageTexts;
 	LinkedList<Text> ownerTexts;
@@ -48,7 +47,6 @@ public class CityModel {
 		setWindow(newWindow);
 		setCurrentView(newWindow.getDefaultView());
 		towers = new LinkedList<Tower>();
-//		packageSigns = new LinkedList<RectangleShape>();
 		packageTexts = new LinkedList<Text>();
 		ownerTexts = new LinkedList<Text>();
 		packageOwners = new LinkedList<Author>();
