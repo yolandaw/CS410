@@ -69,7 +69,9 @@ public class CityController {
 				MouseEvent mEvent = event.asMouseEvent();
 				
 				if (!Keyboard.isKeyPressed(Key.I) && !Keyboard.isKeyPressed(Key.O)) {
-					updateHoveredOverFloor(mEvent);
+					if (!scrollLeft && !scrollRight && !scrollUp && !scrollDown) {
+						updateHoveredOverFloor(mEvent);
+					}
 				}
 			}
 			
@@ -77,12 +79,14 @@ public class CityController {
 				if (event.asKeyEvent().key == Key.LEFT) {
 					scrollLeft = true;
 					scrollMode = false;
+					tearDownFloorMenu();
 					//moveModelView((float) -5, (float) 0);
 				}
 				
 				if (event.asKeyEvent().key == Key.RIGHT) {
 					scrollRight = true;
 					scrollMode = false;
+					tearDownFloorMenu();
 					//window.setMouseCursorVisible(true);
 					//scrollXVelocity = 5;
 					//moveModelView((float) 5, (float) 0);
@@ -91,6 +95,7 @@ public class CityController {
 				if (event.asKeyEvent().key == Key.UP) {
 					scrollUp = true;
 					scrollMode = false;
+					tearDownFloorMenu();
 					//window.setMouseCursorVisible(true);
 					//scrollYVelocity = -5;
 					//moveModelView((float) 0, (float) -5);
@@ -99,6 +104,7 @@ public class CityController {
 				if (event.asKeyEvent().key == Key.DOWN) {
 					scrollDown = true;
 					scrollMode = false;
+					tearDownFloorMenu();
 					//window.setMouseCursorVisible(true);
 					//scrollYVelocity = 5;
 					//moveModelView((float) 0, (float) 5);
@@ -110,7 +116,8 @@ public class CityController {
 					if (model.getCurrentFloorDetails() != null) {
 						model.getCurrentFloorDetails().setHighlighted(false);
 					}
-					model.setCurrentFloorDetails(null);
+					
+					tearDownFloorMenu();
 				}
 				
 				if (event.asKeyEvent().key == Key.O) {
