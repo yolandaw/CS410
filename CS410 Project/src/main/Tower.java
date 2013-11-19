@@ -2,8 +2,11 @@ package main;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Random;
 
 import org.eclipse.jgit.revwalk.DepthWalk;
@@ -36,7 +39,9 @@ public class Tower implements org.jsfml.graphics.Drawable {
         String[] arrayOfContributors;
         private LinkedList<Floor> towerFloors = new LinkedList<Floor>();
         private String cityName;
-
+        private Author towerOwner;
+        private Map<Author, Integer> ownerList = new HashMap<Author, Integer>(); 
+        
         //constructing a new Tower/Class
         public Tower(String className) {
                 setTowerName(className);
@@ -133,17 +138,19 @@ public class Tower implements org.jsfml.graphics.Drawable {
     }
     
   //adding tower signs
-    private void addSigns(RenderTarget window){
+    public void addSigns(RenderTarget window, Author towerOwner){
         Font defaultFont = new Font();
   
 		try {
 			defaultFont.loadFromFile(FileSystems.getDefault().getPath("resources","arial.ttf"));
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}		
+		
         //adding tower name
         RectangleShape towerSign = new RectangleShape(new Vector2f(towerWidth,30));
         towerSign.setPosition(towerXPos, towerUpperHeight);
+        towerSign.setFillColor(towerOwner.getAuthorColor());
 
         Text towerSignName = new Text(towerName, defaultFont , 16);
 		towerSignName.setColor(new Color(0,0,0));
@@ -153,6 +160,42 @@ public class Tower implements org.jsfml.graphics.Drawable {
         window.draw(towerSignName);
     }
     
+    
+    //find tower owner
+    public void setTowerOwner(){
+    	
+    	int floorCnt;
+    	int maxNumFloor = 0;
+    	Author tempOwner = null;
+    	
+    	for(Floor f: towerFloors){
+            	if(ownerList.containsKey(f.getFloorOwner())){
+            		floorCnt = ownerList.get(f.getFloorOwner());
+            		ownerList.put(f.getFloorOwner(), floorCnt +1);
+        		}else{
+        			ownerList.put(f.getFloorOwner(), 1);
+        		}
+          
+    	}
+    	
+    	for(Map.Entry<Author, Integer> entry: ownerList.entrySet()){
+
+    		if(entry.getValue()>maxNumFloor){
+    			maxNumFloor = entry.getValue();
+    			tempOwner = entry.getKey();
+    		}
+    	
+    	}
+    	towerOwner = tempOwner;    	    	
+    	System.out.println("Tower Class - Tower Owner: " + towerOwner);
+
+    
+    }
+    
+    //get towner owner
+    public Author getTowerOwner(){
+    	return towerOwner;
+    }
     
  // can add other floor updates in here
     public void updateFloors(int split, int xPos) {
@@ -179,6 +222,7 @@ public class Tower implements org.jsfml.graphics.Drawable {
                     
                     f.setTexture(FileSystems.getDefault().getPath("resources","texture.png"),new IntRect(0, 0, 32, 24));
                     f.splitFloorOwnership();
+                    f.setFloorOwnership();
             }
             
             towerHeight = numAbove*floorHeight;
@@ -198,6 +242,8 @@ public class Tower implements org.jsfml.graphics.Drawable {
                 		belowFloors.push(f);
                 	}
                 }
+                
+                addSigns(window, towerOwner);
                 
                 //draw underground Floors
                 for (Floor f: belowFloors) {

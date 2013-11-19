@@ -70,6 +70,8 @@ public class CityModel {
 			//end hack to see all towers
 			
 			t.updateFloors(grassMidHeight, x2);
+			t.setTowerOwner();
+//			t.addSigns(window, t.getTowerOwner());
 		}
 		
 		createGround();

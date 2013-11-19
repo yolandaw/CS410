@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
@@ -28,6 +29,7 @@ public class Floor implements org.jsfml.graphics.Drawable {
         private IntRect tilePosition;
         // 0 = public, 1 = private, 2 = protected
         private int accessModifierType;
+        private Author floorAuthor;
         
         
         public Floor(String functionName) {
@@ -178,6 +180,27 @@ public class Floor implements org.jsfml.graphics.Drawable {
                 
                 // create highlighted version of floor, move to Tower updateFloors method
 				highlightFloor();
+        }
+        
+        //sets the ownership of the floor 
+        public void setFloorOwnership(){
+
+        	Author newOwner = null;
+        	int newMax=0;
+        	
+        	for(Map.Entry<Author, Integer> entry: ownerships.entrySet()){
+        		if(entry.getValue()>newMax){
+        			newOwner = entry.getKey();
+        			newMax = entry.getValue();
+        		}
+        	}
+        
+        	floorAuthor = newOwner;
+        }
+        
+        //returns owner of the floor
+        public Author getFloorOwner(){
+        	return floorAuthor;
         }
         
         private void addTopOfFloor(Color authorColor, float leftSideX, float widthPercent) {
