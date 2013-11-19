@@ -34,16 +34,19 @@ public class CityModel {
 	Font defaultFont;
 	int grassMidHeight;
 	int cityDistance;
+	LinkedList<RectangleShape> packageSigns;
 
 	CityModel(RenderWindow newWindow) {
 		setWindow(newWindow);
 		setCurrentView(newWindow.getDefaultView());
 		towers = new LinkedList<Tower>();
+		packageSigns = new LinkedList<RectangleShape>();
 		setWorldDimensions(0, 0, 0, 0);
 		grassMidHeight = 30;
 		currentFloorDetails = null;
 		setUpFloorDetailsMenu();
 		cityDistance = 300;
+		currentView = new View();
 	}
 	
 	//need to place towers based on package
@@ -51,23 +54,42 @@ public class CityModel {
 		
 		
 		int x = 400;
+		int x2;
 		towers = newTowers;
 		String currentPackage = newTowers.getFirst().getCityName();
 		
 		calculateWorldDimensions();
 		
+		RectangleShape firstSign = new RectangleShape();
+		firstSign.setFillColor(new Color(154,136,81));
+		firstSign.setOutlineColor(new Color(114,100,60));
+		firstSign.setOutlineThickness(3);
+		firstSign.setSize(new Vector2f(100 ,100));
+		firstSign.setPosition(x - 3, worldDimensions.height/2 - firstSign.getSize().y - 3);
+		packageSigns.push(firstSign);
+		x = x + (int) firstSign.getSize().x;
+		
 		for (Tower t: towers) {
 			if (!t.getCityName().equals(currentPackage)) {
+				RectangleShape newSign = new RectangleShape();
+				newSign.setFillColor(new Color(154,136,81));
+				newSign.setSize(new Vector2f(100 ,100));
+				newSign.setOutlineColor(new Color(114,100,60));
+				newSign.setOutlineThickness(3);
+				newSign.setPosition(x+cityDistance-newSign.getSize().x - 3, worldDimensions.height/2 - newSign.getSize().y - 3);
+				packageSigns.push(newSign);
+				
 				x = x + cityDistance;
 				currentPackage = t.getCityName();
 			}
 			
 			//hack to see all towers
 			t.setTowerPosition(x, worldDimensions.height/2);	
+			x2=x;
 			x=x+t.getTowerWidth()+t.getTowerDepth();
 			//end hack to see all towers
 			
-			t.updateFloors(grassMidHeight);
+			t.updateFloors(grassMidHeight, x2);
 		}
 		
 		createGround();
@@ -91,7 +113,7 @@ public class CityModel {
 			
 			totalWidth = totalWidth + t.getTowerWidth();
 			
-			if (!t.getCityName().equals(currentPackage)) {
+			if (!t.getCityName().equals(currentPackage)) {				
 				totalWidth = totalWidth + cityDistance;
 				currentPackage = t.getCityName();
 			}
@@ -102,6 +124,9 @@ public class CityModel {
 		}
 		
 		setWorldDimensions(0, 0, totalWidth, tallestTower);
+		currentView.setCenter(worldDimensions.width/2, worldDimensions.height/2);
+		currentView.setSize(window.getSize().x*2, window.getSize().y*2);
+		
 	}
 	
 	private void setRandomTowerSize(Tower t) {
@@ -190,6 +215,9 @@ public class CityModel {
 	}
 	
 	private void drawFloorDetailsMenu() {
+		//draw to window's default view
+		window.setView(window.getDefaultView());
+		
 		Map<Author, Integer> ownerships = currentFloorDetails.getOwnerships();
 		int numOfFloorAuthors = ownerships.size();
 		Vector2f menuPos = floorDetailsMenu.getPosition();
@@ -231,6 +259,7 @@ public class CityModel {
 			}
 		
 		window.draw(separator);
+		window.setView(currentView);
 	}
 	
 	private void createGround() {
@@ -283,6 +312,9 @@ public class CityModel {
 		window.draw(grassTop);
 		for (Tower t: towers) {
 			window.draw(t);
+		}
+		for (RectangleShape p: packageSigns) {
+			window.draw(p);
 		}
 		window.draw(grassMid);
 

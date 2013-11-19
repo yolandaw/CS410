@@ -5,6 +5,7 @@ import org.jsfml.graphics.RenderWindow;
 import org.jsfml.graphics.View;
 import org.jsfml.system.Vector2f;
 import org.jsfml.system.Vector2i;
+import org.jsfml.window.Keyboard;
 import org.jsfml.window.Keyboard.Key;
 import org.jsfml.window.Mouse;
 import org.jsfml.window.Mouse.Button;
@@ -66,19 +67,26 @@ public class CityController {
 			
 			if (event.type == Event.Type.MOUSE_MOVED) {
 				MouseEvent mEvent = event.asMouseEvent();
-				updateHoveredOverFloor(mEvent);
+				
+				if (!Keyboard.isKeyPressed(Key.I) && !Keyboard.isKeyPressed(Key.O)) {
+					if (!scrollLeft && !scrollRight && !scrollUp && !scrollDown) {
+						updateHoveredOverFloor(mEvent);
+					}
+				}
 			}
 			
 			if (event.type == Event.Type.KEY_PRESSED) {
 				if (event.asKeyEvent().key == Key.LEFT) {
 					scrollLeft = true;
 					scrollMode = false;
+					tearDownFloorMenu();
 					//moveModelView((float) -5, (float) 0);
 				}
 				
 				if (event.asKeyEvent().key == Key.RIGHT) {
 					scrollRight = true;
 					scrollMode = false;
+					tearDownFloorMenu();
 					//window.setMouseCursorVisible(true);
 					//scrollXVelocity = 5;
 					//moveModelView((float) 5, (float) 0);
@@ -87,6 +95,7 @@ public class CityController {
 				if (event.asKeyEvent().key == Key.UP) {
 					scrollUp = true;
 					scrollMode = false;
+					tearDownFloorMenu();
 					//window.setMouseCursorVisible(true);
 					//scrollYVelocity = -5;
 					//moveModelView((float) 0, (float) -5);
@@ -95,6 +104,7 @@ public class CityController {
 				if (event.asKeyEvent().key == Key.DOWN) {
 					scrollDown = true;
 					scrollMode = false;
+					tearDownFloorMenu();
 					//window.setMouseCursorVisible(true);
 					//scrollYVelocity = 5;
 					//moveModelView((float) 0, (float) 5);
@@ -103,6 +113,11 @@ public class CityController {
 				if (event.asKeyEvent().key == Key.I) {
 					scrollMode = false;
 					model.getCurrentView().zoom((float)0.98);
+					if (model.getCurrentFloorDetails() != null) {
+						model.getCurrentFloorDetails().setHighlighted(false);
+					}
+					
+					tearDownFloorMenu();
 				}
 				
 				if (event.asKeyEvent().key == Key.O) {
@@ -119,6 +134,8 @@ public class CityController {
 							model.getCurrentView().setSize(oldX, model.getWorldDimensions().height);
 						}
 					}
+					
+					tearDownFloorMenu();
 				}
 			}
 			
@@ -175,6 +192,13 @@ public class CityController {
 		constrainModelViewToWorld();
 	}
 	
+	private void tearDownFloorMenu() {
+		if (model.getCurrentFloorDetails() != null) {
+			model.getCurrentFloorDetails().setHighlighted(false);
+		}
+		model.setCurrentFloorDetails(null);
+	}
+	
 	private void scrollModelView() {
 		if (scrollXVelocity > 0) {
 			scrollXVelocity = scrollXVelocity - (scrollXVelocity * 0.1);
@@ -218,7 +242,7 @@ public class CityController {
 							}
 							f.setHighlighted(true);
 							model.setCurrentFloorDetails(f);
-							model.setPosFloorDetailsMenu(worldCoord.x + 15, worldCoord.y);
+							model.setPosFloorDetailsMenu(mEvent.position.x + 15, mEvent.position.y);
 						}
 					}
 				}
@@ -226,17 +250,11 @@ public class CityController {
 			
 			//wasn't hovered over anything, so tear down
 			if (!hoveredOver) {
-				if (model.getCurrentFloorDetails() != null) {
-					model.getCurrentFloorDetails().setHighlighted(false);
-				}
-				model.setCurrentFloorDetails(null);
+				tearDownFloorMenu();
 			}
 		} else {
 			//in scrollmode, so tear down
-			if (model.getCurrentFloorDetails() != null) {
-				model.getCurrentFloorDetails().setHighlighted(false);
-			}
-			model.setCurrentFloorDetails(null);
+			tearDownFloorMenu();
 		}
 	}
 	
