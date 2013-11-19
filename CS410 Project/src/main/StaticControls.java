@@ -5,9 +5,9 @@ package main;
  *
  */
 public class StaticControls {
-	
-	StaticControls(){
+	private StaticControls(){
 		//so it builds a one floor building and not a empty parcel of land. real estate ain't cheap.
+		//it's now an underground bunker, you're all welcome to stay over
 	}
 	
 	//if true, floor heights are randomized between 20 to 40
