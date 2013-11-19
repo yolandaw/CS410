@@ -182,7 +182,7 @@ public class Floor implements org.jsfml.graphics.Drawable {
 				highlightFloor();
         }
         
-        //sets the ownership of the floor 
+        //sets the ownership of the floor  
         public void setFloorOwnership(){
 
         	Author newOwner = null;

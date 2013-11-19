@@ -89,6 +89,7 @@ public class CityModel {
 			
 			t.updateFloors(grassMidHeight, x2);
 			t.setTowerOwner();
+			
 //			t.addSigns(window, t.getTowerOwner());
 		}
 		

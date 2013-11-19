@@ -137,7 +137,7 @@ public class Tower implements org.jsfml.graphics.Drawable {
         return towerFloors.size()*floorHeight;
     }
     
-  //adding tower signs
+  //adding tower signs - need to add text alignment
     public void addSigns(RenderTarget window, Author towerOwner){
         Font defaultFont = new Font();
   
