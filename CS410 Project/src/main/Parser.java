@@ -48,6 +48,10 @@ public class Parser {
          */
         public Parser(){}
         
+        public Map<String,Author> getAllAuthors() {
+        	return allAuthors;
+        }
+        
      
         
         // testing for the nested class for parsing 

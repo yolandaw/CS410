@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import javax.management.modelmbean.ModelMBean;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -125,9 +127,11 @@ public class Main {
 		window.setFramerateLimit(60);
 
 		CityModel city = new CityModel(window);
+		Map<String,Author> authors = parser.getAllAuthors();
+        city.setAllAuthors(authors);
 		city.setTowers(towers);
 		CityController controller = new CityController(city);
-		
+        
 		if(StaticControls.music == true){
 			Music music = new Music();
 			music.openFromFile(Paths.get("resources", "music.ogg"));
@@ -137,6 +141,8 @@ public class Main {
 		while (window.isOpen()) {
 			controller.updateModel();
 			city.drawCity();
+			window.setView(window.getDefaultView());
+			window.setView(city.getCurrentView());
 			window.display();
 		} 
 		

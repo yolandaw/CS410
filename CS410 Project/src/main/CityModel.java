@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import org.jsfml.graphics.Color;
@@ -42,6 +43,7 @@ public class CityModel {
 	LinkedList<Text> packageTexts;
 	LinkedList<Text> ownerTexts;
 	LinkedList<Author> packageOwners;
+	Map<String, Author> allAuthors;
 
 	CityModel(RenderWindow newWindow) {
 		setWindow(newWindow);
@@ -50,6 +52,7 @@ public class CityModel {
 		packageTexts = new LinkedList<Text>();
 		ownerTexts = new LinkedList<Text>();
 		packageOwners = new LinkedList<Author>();
+		allAuthors = new HashMap<String, Author>();
 		setWorldDimensions(0, 0, 0, 0);
 		grassMidHeight = 30;
 		currentFloorDetails = null;
@@ -131,10 +134,35 @@ public class CityModel {
 		
 		addPackageSignText();
 		
+		Texture authorImage = new Texture();
+        try {
+        	authorImage.loadFromFile(Paths.get("resources","author.png"));
+		} catch (IOException e) {
+			System.out.println("Error in package sign sprite load");
+		}
+        
+        int authorYPosition = 10;
+        for (Map.Entry<String, Author> entry: allAuthors.entrySet()) {
+        	Author author = entry.getValue();
+        	Text authorNameText = new Text(author.getAuthorName(), defaultFont, 12);
+        	Sprite authorSprite = author.getAuthorSprite();
+        	authorSprite.setPosition(10, authorYPosition);
+        	authorSprite.setColor(author.getAuthorColor());
+        	authorSprite.setTexture(authorImage);
+        	authorNameText.setPosition(authorSprite.getPosition().x, authorSprite.getPosition().y + authorNameText.getLocalBounds().height + 3);
+        	authorNameText.setColor(author.getAuthorColor());
+        	author.setAuthorNameText(authorNameText);
+        	authorYPosition=(int) (authorYPosition+authorSprite.getLocalBounds().height + authorNameText.getLocalBounds().height + 5);
+        }
+		
 		createGround();
 		createGrassTop();
 		createGrassMid();
 		createSky();
+	}
+	
+	public void setAllAuthors(Map<String,Author> newAuthors) {
+		allAuthors = newAuthors;
 	}
 	
 	private void addPackageSignText() {
@@ -423,6 +451,12 @@ public class CityModel {
 			window.draw(o);
 		}
 		window.draw(grassMid);
+		
+		window.setView(window.getDefaultView());
+		for (Map.Entry<String, Author> entry: allAuthors.entrySet()) {
+			window.draw(entry.getValue());
+		}
+		window.setView(currentView);
 
 		if (currentFloorDetails != null) {
 			drawFloorDetailsMenu();
