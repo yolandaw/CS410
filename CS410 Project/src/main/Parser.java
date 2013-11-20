@@ -126,7 +126,7 @@ public class Parser {
                         currentLineNum = i;
                         currentLine = parsedClass.rawCode(i);
                         parsingCodeLine(currentLine);
-                        System.out.println(currentLine + " lineinmethod: "+ lineInMethod + " methhand: "+ methodHandler + " classHandler: "+ classHandler);
+                        //System.out.println(currentLine + " lineinmethod: "+ lineInMethod + " methhand: "+ methodHandler + " classHandler: "+ classHandler);
                 }
                 
                 // parsing test
@@ -402,7 +402,7 @@ public class Parser {
          * @param methodName: The name of the new method/floor object
          */
         private void methodCreator(String methodName) {
-        	System.out.println(currentLine +" methodcreated");
+        	//System.out.println(currentLine +" methodcreated");
         		methodHandler = -1;
                 if(currentLine.contains("{")) {
                         methodHandler++;        

@@ -101,7 +101,10 @@ public class Main {
 				}
 			}				
 			else{
-				parser.startParsingClass(lg);	
+				parser.startParsingClass(lg);
+				for(int i =0; i<lg.numLinesOfCode();i++){
+					System.out.println(lg.rawCode(i) + " : " + lg.getAuthor(i).getName());
+				}
 			}
 
 			// adds all the towers including nested towers
