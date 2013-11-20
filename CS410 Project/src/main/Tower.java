@@ -1,16 +1,24 @@
 package main;
 
+import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Random;
-
 import org.eclipse.jgit.revwalk.DepthWalk;
 import org.jsfml.graphics.Color;
+import org.jsfml.graphics.Font;
 import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.RectangleShape;
 import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTarget;
+import org.jsfml.graphics.Sprite;
+import org.jsfml.graphics.Text;
+import org.jsfml.graphics.Texture;
 import org.jsfml.system.Vector2f;
 import org.jsfml.system.Vector2i;
 
@@ -24,6 +32,7 @@ public class Tower implements org.jsfml.graphics.Drawable {
         private String towerName;
         private int towerHeight;
         private int towerWidth;
+        private int towerXPos;
         private int numberOfFloors;
         private int floorHeight;
         private int towerDepth;
@@ -31,7 +40,12 @@ public class Tower implements org.jsfml.graphics.Drawable {
         String[] arrayOfContributors;
         private LinkedList<Floor> towerFloors = new LinkedList<Floor>();
         private String cityName;
+        private Author towerOwner;
+        private Map<Author, Integer> ownerList = new HashMap<Author, Integer>(); 
+        private RectangleShape towerSign;
 
+
+        
         //constructing a new Tower/Class
         public Tower(String className) {
                 setTowerName(className);
@@ -127,13 +141,82 @@ public class Tower implements org.jsfml.graphics.Drawable {
         return towerFloors.size()*floorHeight;
     }
     
+  //adding tower signs - need to add text alignment
+    public void addSigns(RenderTarget window, Author towerOwner){
+        Font defaultFont = new Font();
+  
+		try {
+			defaultFont.loadFromFile(FileSystems.getDefault().getPath("resources","arialbd.ttf"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
+		
+		Texture metalBG = new Texture();
+        try {
+			metalBG.loadFromFile(Paths.get("resources","metal.png"));
+		} catch (IOException e) {
+			System.out.println("Error in package sign sprite load");
+		}		
+		towerSign = new RectangleShape(new Vector2f(towerName.length()*10,30));
+        towerSign.setPosition(towerXPos, pos.y - towerHeight - towerSign.getSize().y - 5);
+        towerSign.setFillColor(towerOwner.getAuthorColor());
+        towerSign.setOutlineThickness(5);
+        towerSign.setOutlineColor(new Color(52,40,44));
+        towerSign.setTexture(metalBG);
+        
+        
+
+        Text towerSignName = new Text(towerName, defaultFont , 18);
+		towerSignName.setColor(new Color(255,255,255));
+        towerSignName.setPosition(towerXPos, pos.y - towerHeight - towerSign.getSize().y - 5);
+        
+        window.draw(towerSign);
+        window.draw(towerSignName);
+    }
     
+    
+    //find tower owner
+    public void setTowerOwner(){
+    	
+    	int floorCnt;
+    	int maxNumFloor = 0;
+    	Author tempOwner = null;
+    	
+    	for(Floor f: towerFloors){
+            	if(ownerList.containsKey(f.getFloorOwner())){
+            		floorCnt = ownerList.get(f.getFloorOwner());
+            		ownerList.put(f.getFloorOwner(), floorCnt +1);
+        		}else{
+        			ownerList.put(f.getFloorOwner(), 1);
+        		}
+          
+    	}
+    	
+    	for(Map.Entry<Author, Integer> entry: ownerList.entrySet()){
+
+    		if(entry.getValue()>maxNumFloor){
+    			maxNumFloor = entry.getValue();
+    			tempOwner = entry.getKey();
+    		}
+    	
+    	}
+    	towerOwner = tempOwner;    	    	
+    	System.out.println("Tower Class - Tower Owner: " + towerOwner);
+
+    
+    }
+    
+    //get towner owner
+    public Author getTowerOwner(){
+    	return towerOwner;
+    }
     
  // can add other floor updates in here
-    public void updateFloors(int split) {
+    public void updateFloors(int split, int xPos) {
             int below = pos.y + split + floorHeight;
             int above = pos.y;
             int numAbove = 0;
+            towerXPos = xPos;
             for (Floor f: towerFloors) {
                     f.updateNumOfLines();
                     f.setFloorDimensions(towerWidth, floorHeight);
@@ -153,6 +236,7 @@ public class Tower implements org.jsfml.graphics.Drawable {
                     
                     f.setTexture(FileSystems.getDefault().getPath("resources","texture.png"),new IntRect(0, 0, 32, 24));
                     f.splitFloorOwnership();
+                    f.setFloorOwnership();
             }
             
             towerHeight = numAbove*floorHeight;
@@ -171,11 +255,14 @@ public class Tower implements org.jsfml.graphics.Drawable {
                 		belowFloors.push(f);
                 	}
                 }
-                
+                                 
                 //draw underground Floors
                 for (Floor f: belowFloors) {
                 	window.draw(f);
                 }
+                
+//                addSigns(window, towerOwner);
+
         }
     
     public void setCityName(String packageName) {

@@ -196,5 +196,53 @@ public class LogGatherer{
 		}
 		return paths;
 	}
+	
+	/**
+	 * 
+	 * @param localGitFolder path to the local .git repository
+	 * @param firstXNumberOfFiles the limit for max number of files to return
+	 * @return a String ArrayList of the first X java file paths from the git index
+	 * @throws NoHeadException
+	 * @throws IOException
+	 * @throws GitAPIException
+	 */
+	public List<String> getJavaFilePaths(String localGitFolder, int firstXFiles) throws NoHeadException, IOException, GitAPIException{
+		List<String> paths = new ArrayList<String>();
+		String[] entries = getIndexedFilePaths(localGitFolder, firstXFiles);
+		for(String entry:entries){
+			if (entry != null) {
+				if(entry.endsWith(".java")){
+					paths.add(entry);
+					System.out.println(entry);
+				}
+			}
+		}
+		return paths;
+	}
+	
+	public String[] getIndexedFilePaths(String localGitFolder, int firstXFiles) throws NoHeadException, IOException, GitAPIException{
+		String[] entries;
+		repository = openDirectory(localGitFolder);
+		int indexEntryCount = DirCache.read(repository).getEntryCount();
+		entries = new String[firstXFiles];
+		
+		int foundFiles = 0;
+		//System.out.println("index path entry count: " + indexEntryCount);
+		for(int i=0; i<indexEntryCount; i++){
+			//System.out.println("path " + i + ": " + DirCache.read(repository).getEntry(i).getPathString());
+			String file = DirCache.read(repository).getEntry(i).getPathString();
+			if (file.endsWith(".java")) {
+				entries[foundFiles] = file;
+				foundFiles++;
+			}
+			
+			if (foundFiles == firstXFiles) {
+				break;
+			}
+			
+		}
+		repository.close();
+		return entries;
+	}
 }
 
