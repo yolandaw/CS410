@@ -123,6 +123,9 @@ public class Main {
 		VideoMode mode = new VideoMode(1280, 600);
 
 		window.create(mode, "City Builder", Window.CLOSE|Window.TITLEBAR);
+		Image icon = new Image();
+		icon.loadFromFile(Paths.get("resources", "icon.jpg"));
+		window.setIcon(icon);
 
 		window.setFramerateLimit(60);
 
