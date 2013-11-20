@@ -131,9 +131,10 @@ public class Main {
         city.setAllAuthors(authors);
 		city.setTowers(towers);
 		CityController controller = new CityController(city);
-        
+		
+		Music music = new Music();
+		
 		if(StaticControls.music == true){
-			Music music = new Music();
 			music.openFromFile(Paths.get("resources", "music.ogg"));
 			music.play();
 		}
