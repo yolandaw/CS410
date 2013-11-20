@@ -242,7 +242,7 @@ public class CityModel {
 		sky.add(new Vertex(new Vector2f(worldDimensions.left + worldDimensions.width, worldDimensions.top), darkSkyColor));
 		sky.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.top), darkSkyColor));
 	}
-	
+
 	public void drawCity() {
 		window.clear(new Color(0,0,0));
 		updateDisplayedView();

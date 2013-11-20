@@ -38,7 +38,8 @@ public class Parser {
         private boolean isConstructor;
         // The name of the package that parsed class belongs to 
         private String cityName;
-        
+    
+        private boolean classCreated;
         
         /**
          * Basic constructor
@@ -111,6 +112,7 @@ public class Parser {
                 classFinishes = 0;
                 lineInMethod = false;
                 isConstructor = false;
+                classCreated = false;
                 
                 int codeLineNums = parsedClass.numLinesOfCode();
 
@@ -118,10 +120,20 @@ public class Parser {
                         currentLineNum = i;
                         currentLine = parsedClass.rawCode(i);
                         parsingCodeLine(currentLine);
+                    /*    System.out.println(currentLine);
+                        System.out.println("LineInMethod: " + lineInMethod);
+                        System.out.println("Method Handler: " + methodHandler);
+                        System.out.println("Class Handler: " + classHandler);
+                        System.out.println("Class Created: " + classCreated);
+                        System.out.println("blockCommentHandler: " + blockCommentHandler);
+                        System.out.println(" "); */
+                        
+                        
+                        
                 }
                 
                 // parsing test
-                int check = createdClassObjects.size();
+           /*     int check = createdClassObjects.size();
                 System.out.println(check);
                 int a = 0;
                 while(a < check) {
@@ -141,7 +153,7 @@ public class Parser {
                                 System.out.println(" ");
                         }
                     a++;
-                } // parsing test end
+                } // parsing test end */
         }
         
 
@@ -171,37 +183,75 @@ public class Parser {
                         }else if (token.contains("import") && !lineInMethod) {
                                 return;
                         }
+                        
+                        if (currentLine.contains("/*") && currentLine.contains("*/")){
+                        		if(token.charAt(0) == '/' && token.charAt(1) == '*') {
+                        			StringTokenizer tempTokenizer = tokenizer;
+                        			String tempToken = null;
+                        			while(tempTokenizer.hasMoreTokens()) {
+                        				tempToken = tempTokenizer.nextToken();
+                        			}
+                        			int lastIndex = tempToken.length() - 1;
+                        			if(tempToken.charAt(lastIndex - 1) == '*' && tempToken.charAt(lastIndex) == '/') {
+                        				return;
+                        			}
+                        			
+                        		}
+                        }
                         // filter the code line that is outside a method and contains no actual codes such as comments: line comment, block comment, and documentation comment
-                        else if(currentLine.contains("*/") && blockCommentHandler == 1) {
+                        if(currentLine.contains("*/") && blockCommentHandler == 1) {
                                 blockCommentHandler = -1;
                                 return;
-                        }else if(token.contains("/*")) {
-                                blockCommentHandler = 1;
-                                return;
-                        }else if(token.contains("//")) {  
+                        }else if(currentLine.contains("/*") && !currentLine.contains("*/")) {
+                        		if(token.contains("/*")) {
+                        			blockCommentHandler = 1;
+                        			return;
+                        		}
+                        		blockCommentHandler = 1;
+                        }
+                        
+                        if(token.contains("//") && !lineInMethod) {  
                                 return;
                         }else if(blockCommentHandler == 1) {
                                 return;
-                        }else if(currentLine.contains("@")) {
+                        
+                        }else if(currentLine.contains("@") && !tokenizer.hasMoreTokens()) {
                         		return;
                         }else {
+                        		
+                        		
+                        		
+                        		
                                 // the line will contain one of these: method contents, class name, variable name.
-                                
+                        	
+                        	
+                        		if(token.charAt(0) == '/') {
+                        			return;
+                        		}
+                        		
                                 // checks whether the code line is related to a method
                                 if(lineInMethod) {
                                                 
                                         // filter the code line that is inside a method and contains no actual codes such as comment: line comment and block comment
                                         if(currentLine.contains("{") || currentLine.contains("}")) {
                                                 int result = 0;
-                                                        
+                                                  
                                                 // only check first most character and the last most character 
                                                 // case 1: both '{' and '}' can be in the same line
                                                 if(currentLine.contains("{") && currentLine.contains("}")) {
-                                                        
+                                                		StringTokenizer tokenizeri = null;
+                                                		boolean openParenthesis = false;
                                                         if(token.charAt(0) == '}') {
-                                                                result--;
+                                                        		result--;
                                                         }else if(token.charAt(0) == '{') {
+                                                        		openParenthesis = true;
+                                                        		tokenizeri = new StringTokenizer(currentLine, ")");
                                                                 result++;
+                                                        }
+                                                        if(currentLine.contains("//") && !currentLine.contains("'//'")) {
+                                                        	StringTokenizer tokenizera = new StringTokenizer(token, "//");
+                                                        	tokenizer = tokenizera;
+                                                        	
                                                         }
                                                         
                                                         while(tokenizer.hasMoreTokens()) {
@@ -210,32 +260,84 @@ public class Parser {
                                                         
                                                         int lastIndex = token.length() - 1;
                                                         if (token.charAt(lastIndex) == '}') {
-                                                                result--;
+                                                        		if(!openParenthesis) {
+                                                        			result = 0;
+                                                        		}else {
+                                                        			tokenizeri.nextToken();
+                                                        			String theToken = tokenizeri.nextToken();
+                                                        			if(theToken.contains("{") && theToken.contains("}")) {
+                                                        				// do not change the 'result'
+                                                        			}else {
+                                                        				result--;
+                                                        			}
+                           
+                                                        		}
+                                                               
                                                         }else if(token.charAt(lastIndex) == '{') {
                                                                 result++;
                                                         }
                                                                 
                                                 // case2: only one of '{' and '}' is in the line  
                                                 }else {
-                                                        if(token.charAt(0) == '}') {
+                                                        if(token.charAt(0) == '}') { 
                                                                 result--;
                                                         }else if (token.charAt(0) == '{') {
                                                                 result++;
-                                                        }else {
-                                                                while(tokenizer.hasMoreTokens()) {
-                                                                        token = tokenizer.nextToken();
-                                                                }
-                                                                int lastIndex = token.length() - 1;
-                                                                if(token.charAt(lastIndex) == '}') {
-                                                                        result--;
-                                                                }else if(token.charAt(lastIndex) == '{') {
+                                                        }else { 
+                                                        		
+                                                       
+                                                        		if(currentLine.contains("//") && !currentLine.contains("'//'")) {
+                                                        			String token3 = null;
+                                                        			StringTokenizer tokenizerz = new StringTokenizer(currentLine, "//");
+                                                        			token3 = tokenizerz.nextToken();
+                                                        		//	System.out.println("abcdefghidjisafjo: " + token3);
+                                                        			StringTokenizer tokenizerf = new StringTokenizer(token3);
+                                                        			while(tokenizerf.hasMoreTokens()) {
+                                                        				token3 = tokenizerf.nextToken();
+                                                        			}
+                                                        			int lastIndex = token3.length() - 1;
+                                                        			if(token3.charAt(lastIndex) == '}') {
+                                                        				result--;
+                                                        			}else if(token3.charAt(lastIndex) == '{') {
                                                                         result++;
-                                                                }
+                                                        			}else if(currentLine.contains("{")) {
+                                                        				if(!currentLine.contains("'{'")) {
+                                                        					result++;
+                                                        				}
+                                                        			}else if(currentLine.contains("}")) {
+                                                        				if(!currentLine.contains("'}'")) {
+                                                        					result--;
+                                                        				}
+                                                        			}
+                                                        		}else {
+                                                        		//	System.out.println("test okokokk");
+                                                        			while(tokenizer.hasMoreTokens()) {
+                                                        				token = tokenizer.nextToken();
+                                                        			}
+                                                        		    
+                                                        			int lastIndex = token.length() - 1; 
+                                                                    if(token.charAt(lastIndex) == '}') {
+                                                                    	result--;
+                                                                    }else if(token.charAt(lastIndex) == '{') {
+                                                                        result++;
+                                                                    }else if(currentLine.contains("{")) {
+                                                        				if(!currentLine.contains("'{'")) {
+                                                        					result++;
+                                                        				}
+                                                        			}else if(currentLine.contains("}")) {
+                                                        				if(!currentLine.contains("'}'")) {
+                                                        					result--;
+                                                        				}
+                                                        			}
+                                                        		}
                                                         }
+                                                        
+                                                        
                                                 }
-                                                
+                                        
+                                       
                                                 methodHandler += result;
-                                                                
+                                                               
                                                 if(methodHandler == -1) {
                                                         lineInMethod = false;        
                                                         
@@ -251,29 +353,70 @@ public class Parser {
                                         Author author = getUniqueAuthor(ownership);
                                         currentMethod.increOwnershipSize(author);        
                                                                 
-                                }else if(classHandler > -1 && currentLine.contains("}") && !currentLine.contains("{")) {
+                                }else if(classHandler > -1 && currentLine.contains("}") && !currentLine.contains("{") && classCreated && !currentLine.contains("},") && !currentLine.contains("};")&& !currentLine.contains(");")) {
                                 	
                                 	classFinishes++;
                                 	
-                                	if(classHandler == 1) {
+                               	if(classHandler == 1) {
                                 		classHandler = 0;
+                                	}else
+                                	if(classHandler == 0) {
+                                		classHandler = -1;
                                 	}else {
                                     	classHandler -= classFinishes;
                                 	}
                                 	
                         
                                 }else {
+                                	
+                                		if(token.contains("@")) {
+                                			if(token.contains("Override") || token.contains("SuppressWarnings") || token.contains("ExportAttribute")) {
+                                				token = tokenizer.nextToken();
+                                			}else {
+                                				tokenizer.nextToken();
+                                				token = tokenizer.nextToken();
+                                			}
+                                		}
                                                                         
                                         if(token.equals("public") || token.equals("private") || token.equals("protected")) {
                                                 token = tokenizer.nextToken();
                                         }
                                         
+                                  
+                                        
                                         if(token.equals("final")) {
                                                 token = tokenizer.nextToken();
+                                                
+                                                if(token.contains("public")) {
+                                                	token = tokenizer.nextToken();
+                                                }
                                         }
                                         
                                         if(token.equals("static")) {
-                                                token = tokenizer.nextToken();
+                                        		if(!currentLine.contains("(")) {
+                                        			classCreated = false;
+                                        		}
+                                        		
+                                        		if(tokenizer.hasMoreTokens()) {
+                                        			token = tokenizer.nextToken();
+                                        			
+                                        			if(token.equals("public") || token.equals("private")) {
+                                        				token = tokenizer.nextToken();
+                                        			}
+                                        			if(token.equals("final")) {
+                                        				token = tokenizer.nextToken();
+                                        			}
+                                        		}else {
+                                        			return;
+                                        		}
+                                        }
+                                        
+                                        if(token.equals("native")) {
+                                        	token = tokenizer.nextToken();
+                                        }
+                                        
+                                        if(token.equals("synchronized")) {
+                                        	token = tokenizer.nextToken();
                                         }
                                         
                                         if(token.equals("enum")) {
@@ -287,38 +430,152 @@ public class Parser {
                                                 }        
                                         }
                                         
+                                                           	
+                                        
+
+                                        
                                         if(token.equals("class") || token.equals("interface")) {
                                                 token = tokenizer.nextToken();
-                                                StringTokenizer tokenizer2 = new StringTokenizer(token, "{");
-                                                String className = tokenizer2.nextToken();
-                                                        
+                                                String className = null;
+                                             /*   if(currentLine.contains("implements")) {
+                                                	className = tokenizer.nextToken();
+                                                }else { */
+                                                	StringTokenizer tokenizer2 = new StringTokenizer(token, "{");
+                                                	className = tokenizer2.nextToken();
+                                           //     }
                                                 classCreator(className);
                                                         
-                                        }else if(token.equals("abstract")) {
+                                        }else if(token.equals("abstract") && !currentLine.contains("(")) {
                                                 tokenizer.nextToken();
                                                 token = tokenizer.nextToken();
                                                 StringTokenizer tokenizer2 = new StringTokenizer(token, "{");
                                                 String className = tokenizer2.nextToken();
                                                         
                                                 classCreator(className);
-                                        }else {
-                                                // the line will contain one of these: method contents, variable name
+                                                                                                             	
+                                        	
+                                        } else {
+                                        		// the line contains only variable
+                                        		if(!currentLine.contains("(") || currentLine.contains("),")) {
+                                        			return;
+                                        		}
+                                        	
+                                                // the line will contain method contents
                                                 // the method could be the constructor
-                                                if(token.contains("(")) {
+                                        		String currentTowerName = createdClassObjects.get(classHandler).getTowerName();
+                                        		String methodType = null;
+                                        		 if(token.contains("(")) {
+                                        			  StringTokenizer tokenizer2 = new StringTokenizer(token, "(");
+                                                                                                          
+                                                      methodType = tokenizer2.nextToken();
+                                        		 }else {
+                                        			 methodType = token;
+                                        		 }
+                                        		 
+                                        		 if(currentTowerName.contains("<")) {
+                                        			 StringTokenizer tokenizer2 = new StringTokenizer(currentTowerName, "<");
+                                        			 currentTowerName = tokenizer2.nextToken();
+                                        		 }
+                                        		
+                                                if(methodType.equals(currentTowerName)) {
                                                         if(currentLine.contains("{") && currentLine.contains("}")) {
                                                                 isConstructor = true;
                                                         }
-                                                        StringTokenizer tokenizer2 = new StringTokenizer(token, "(");
-                                                        String methodName = tokenizer2.nextToken();
-                                                                
+                                                        
+                                                        if(currentLine.contains(";") && !currentLine.contains("{") && !currentLine.contains("}")) {
+                                                        	return;
+                                                        }
+                                                        
+                                                        
+                                                        String methodName = methodType;
+                                                        
+                                                     
                                                         methodCreator(methodName);
+                                                        
+                                                    
                                                 }else {
-                                                        token = tokenizer.nextToken();
+                                                		if(!tokenizer.hasMoreTokens()) {
+                                                			return;
+                                                		}
+                                                		
+                                                		String tempToken = null;
+                                                		StringTokenizer tempTokenizer = new StringTokenizer(currentLine);
+                                                		tempToken = tempTokenizer.nextToken();
+                                                		if(tempToken.equals("public") || tempToken.equals("private")) {
+                                                			tempToken = tempTokenizer.nextToken();
+                                                		}
+                                                		
+                                                		
+                                                			if(token.contains("<")) {
+                                                				if(token.charAt(0) == '<') {
+                                                					if(!token.contains(">")) {
+                                                						token = tokenizer.nextToken();
+                                                						tempToken = tempTokenizer.nextToken();
+                                                						while(!token.contains(">")) {
+                                                							token = tokenizer.nextToken();
+                                                							tempToken = tempTokenizer.nextToken();
+                                                						}
+                                                						
+                                                					}
+                                                				
+                                                					
+                                                					
+                                                					
+                                                					
+                                                					
+                                                					
+                                                					tempToken = tempTokenizer.nextToken();
+                                                					if(!tempToken.contains("(")) {
+                                                						token = tokenizer.nextToken();
+                                                						
+                                                					}
+                                                					
+                                                					
+                                                					if(token.contains("<")) {
+                                                						if(!token.contains(">")) {
+                                                							while(!token.contains(">")) {
+                                                								token = tokenizer.nextToken();
+                                                							}
+                                                						}
+                                                						
+                                                					}
+                                                					
+                                                				}else {
+                                                					int lastIndex = token.length() - 1;
+                                                					while(token.charAt(lastIndex) != '>') {
+                                                						token = tokenizer.nextToken();
+                                                						lastIndex = token.length() - 1;
+                                                					}
+                                                				}
+                                                			}/*else {
+                                                				tokenizer.nextToken();
+                                                				while(!token.contains(">")) {
+                                                					tokenizer.nextToken();
+                                                				}
+                                                			}		*/
+                                                			
+                                                		
+                                                				
+                                                /*
+                                                		if(token.charAt(0) == '<') {
+                                                			token = tokenizer.nextToken();
+                                                		
+                                                		}*/
+                                                	//	if (!token.contains("(")) {	
+                                                			token = tokenizer.nextToken();
+                                                	//	}
+                                                		
                                                         if(token.contains("(")) {
                                                                 if(currentLine.contains("{") && currentLine.contains("}")) {
                                                                         isConstructor = true;
                                                                 }
+                                                                if(currentLine.contains(";") && !currentLine.contains("}") && !currentLine.contains("}")) {
+                                                                	return;
+                                                                }
+                                                                
                                                                 StringTokenizer tokenizer2 = new StringTokenizer(token, "(");
+                                                               
+                                                            
                                                                 String methodName = tokenizer2.nextToken();
                                                                 
                                                                 methodCreator(methodName);                                                                        
@@ -326,7 +583,10 @@ public class Parser {
                                                                 String methodName = token;
                                                                 if(tokenizer.hasMoreTokens()) {
                                                                         token = tokenizer.nextToken();
-                                                                        if(        token.contains("(")) {
+                                                                        if(token.contains("(")) {
+                                                                        	 	if(currentLine.contains("{") && currentLine.contains("}")) {
+                                                                        	 		isConstructor = true;
+                                                                        	 	}
                                                                                 methodCreator(methodName);
                                                                         }else {
                                                                                 return;
@@ -349,8 +609,16 @@ public class Parser {
                 Tower currentClass = new Tower(className);
                 currentClass.setCityName(cityName);
                 createdClassObjects.add(currentClass);
-                classHandler++;
-                classHandler += classFinishes;
+                if(classHandler == -1 ) {
+                	classHandler++;
+                }else  {
+                	classHandler = createdClassObjects.size() - 1;
+                }
+                classCreated = true;
+                System.out.println(currentLine);
+                
+                
+        //        System.out.println(className);
         }
         
         /**
@@ -359,10 +627,9 @@ public class Parser {
          * @param methodName: The name of the new method/floor object
          */
         private void methodCreator(String methodName) {
-                
-                if(currentLine.contains("{")) {
-                        methodHandler++;        
-                }
+        	
+        		methodHandler = -1;
+           
                 currentMethod= new Floor(methodName);
                 lineInMethod = true;
                 currentMethod.setAccessType(3);
@@ -390,6 +657,17 @@ public class Parser {
                         // method type in this case is public
                         currentMethod.setAccessType(0);        
                 }
+                
+                if(currentLine.contains("{")) {
+                    methodHandler++;        
+                }else if (currentLine.contains(";")) {
+                	// method is ended
+                	lineInMethod = false;
+                	createdClassObjects.get(classHandler).addFloor(currentMethod);
+                }
+                
+                
+                
         }
         
         /**
@@ -402,10 +680,18 @@ public class Parser {
         
         private Author getUniqueAuthor(PersonIdent ownership) {
                 Author author = new Author("Empty", "Empty");
-                String uniqueEmail = ownership.getEmailAddress();
-                
+                String uniqueEmail = "UnknownEmailAddr";
+                if(ownership != null) {
+                	uniqueEmail = ownership.getEmailAddress();
+                }
+                        
                 if (!allAuthors.containsKey(uniqueEmail)) {
-                        author = new Author(ownership.getName(), uniqueEmail);
+                	String uniqueName = "UnknownName";
+                	 if(ownership != null){
+                	 uniqueName = ownership.getName();
+                	 }
+                	 author = new Author(uniqueName, uniqueEmail);
+                       
                         if (uniqueEmail == "") {
                                 author.setUnknownAuthorColor();
                                 allAuthors.put("UnknownEmailAddr", author);
