@@ -15,16 +15,14 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 public class LogGatherer{
-
+		
 	private Repository repository;
 	private BlameResult rawBlameResult;
-
 	
 	/**
 	 * Basic constructor
 	 */
 	public LogGatherer() {}
-	
 	
 	/**
 	 * 
@@ -39,7 +37,6 @@ public class LogGatherer{
 		closeRepository(repository);
 	}
 	
-
 	/**
 	 * 
 	 * @param localGitFolderPath the path to the local .git repository ex: "C:/Users/Quinn/Documents/Homework/CPSC 410/CS410/test/.git"
@@ -168,9 +165,9 @@ public class LogGatherer{
 		repository = openDirectory(localGitFolder);
 		int indexEntryCount = DirCache.read(repository).getEntryCount();
 		entries = new String[indexEntryCount];
-		//System.out.println("index path entry count: " + indexEntryCount);
+		System.out.println("index path entry count: " + indexEntryCount);
 		for(int i=0; i<indexEntryCount; i++){
-			//System.out.println("path " + i + ": " + DirCache.read(repository).getEntry(i).getPathString());
+			System.out.println("path " + i + ": " + DirCache.read(repository).getEntry(i).getPathString());
 			entries[i] = DirCache.read(repository).getEntry(i).getPathString();
 		}
 		repository.close();
@@ -227,9 +224,9 @@ public class LogGatherer{
 		entries = new String[firstXFiles];
 		
 		int foundFiles = 0;
-		//System.out.println("index path entry count: " + indexEntryCount);
+		System.out.println("index path entry count: " + indexEntryCount);
 		for(int i=0; i<indexEntryCount; i++){
-			//System.out.println("path " + i + ": " + DirCache.read(repository).getEntry(i).getPathString());
+			System.out.println("path " + i + ": " + DirCache.read(repository).getEntry(i).getPathString());
 			String file = DirCache.read(repository).getEntry(i).getPathString();
 			if (file.endsWith(".java")) {
 				entries[foundFiles] = file;

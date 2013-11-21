@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.management.modelmbean.ModelMBean;
 import javax.swing.JFileChooser;
@@ -73,6 +74,7 @@ public class Main {
 			}
 		}        
 		System.out.println("Git Path: " + gitPath);
+		System.out.println(" ");
 		
 		LogGatherer lg = new LogGatherer();
 		Parser parser = new Parser();
@@ -81,28 +83,28 @@ public class Main {
 		//print out all the java file paths
 		List<String> paths = lg.getJavaFilePaths(gitPath);
 		
-		for(int i=0; i<paths.size(); i++){
-			System.out.println(paths.get(i));
-		}
+	//	for(int i=0; i<paths.size(); i++){
+	//		System.out.println(paths.get(i));
+	//	}
 		//quinn test end
 
 		//hack to see all towers
 		LinkedList<Tower> towers = new LinkedList<Tower>();
 		
 		for(String path:paths){
-			System.out.println(path.toString());
+			System.out.println(path);
 			lg.startGatheringLog(gitPath, path);
-			if(StaticControls.continueFromExceptions == true){
-				try{
+//			if(StaticControls.continueFromExceptions == true){
+//				try{
 				parser.startParsingClass(lg);
-				}
-				catch (IndexOutOfBoundsException e){
-					System.out.println("IndexOutOfBoundsException, moving on..");
-				}
-			}				
-			else{
-				parser.startParsingClass(lg);	
-			}
+//				}
+//				catch (IndexOutOfBoundsException e){
+//					System.out.println("IndexOutOfBoundsException, moving on..");
+//				}
+//			}				
+//			else{
+				parser.startParsingClass(lg);
+//			}
 
 			// adds all the towers including nested towers
 			towers.addAll(parser.getParsedLog()); 
@@ -112,7 +114,8 @@ public class Main {
 			System.out.println(t.getTowerName());
 		}
 		//end hack to see all towers
-
+		
+		
 		if (towers.isEmpty()) {
 			System.out.println("Error! No Valid Files Entered!");
 			return;
@@ -130,8 +133,8 @@ public class Main {
 		window.setFramerateLimit(60);
 
 		CityModel city = new CityModel(window);
-		Map<String,Author> authors = parser.getAllAuthors();
-        city.setAllAuthors(authors);
+//		Map<String,Author> authors = parser.getAllAuthors();
+ //       city.setAllAuthors(authors);
 		city.setTowers(towers);
 		CityController controller = new CityController(city);
 		

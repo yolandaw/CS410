@@ -201,7 +201,7 @@ public class CityModel {
 		}
 		
 		 for (Map.Entry<Author, Integer> entry: ownerships.entrySet()) {
-			 System.out.println(entry);
+			System.out.println(entry);
 			if (entry.getValue() > mostTowers) {
 				mostTowers = entry.getValue();
 				owner = entry.getKey();
