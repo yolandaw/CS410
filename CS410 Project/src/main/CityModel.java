@@ -88,7 +88,7 @@ public class CityModel {
 		towers = newTowers;
 		String currentPackage = newTowers.getFirst().getCityName();
 		if(currentPackage.contains(".")){
-			currentPackage = currentPackage.substring(currentPackage.lastIndexOf("."), currentPackage.length());
+			currentPackage = currentPackage.substring(currentPackage.lastIndexOf(".")+1, currentPackage.length());
 		}
 		
 		calculateWorldDimensions();
@@ -137,13 +137,13 @@ public class CityModel {
 		for (Tower t: towers) {
 			String compareName = t.getCityName();
 			if(compareName.contains(".")){
-				compareName = compareName.substring(compareName.lastIndexOf("."), compareName.length());
+				compareName = compareName.substring(compareName.lastIndexOf(".")+1, compareName.length());
 			}
 			
 			if (!compareName.equals(currentPackage)) {
 				currentPackage = t.getCityName();
 				if(currentPackage.contains(".")){
-					currentPackage = currentPackage.substring(currentPackage.lastIndexOf("."), currentPackage.length());
+					currentPackage = currentPackage.substring(currentPackage.lastIndexOf(".")+1, currentPackage.length());
 				}
 				
 				//quinnTest
