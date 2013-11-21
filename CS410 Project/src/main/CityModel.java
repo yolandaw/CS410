@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import org.eclipse.jgit.api.CreateBranchCommand.SetupUpstreamMode;
 import org.jsfml.graphics.Color;
 import org.jsfml.graphics.ConstView;
 import org.jsfml.graphics.Font;
@@ -29,6 +30,8 @@ public class CityModel {
 	LinkedList<Tower> towers;
 	RenderWindow window;
 	View currentView;
+	View legendView;
+	RectangleShape legendBar;
 	Floor currentFloorDetails;
 	RectangleShape floorDetailsMenu;
 	IntRect worldDimensions;
@@ -43,6 +46,8 @@ public class CityModel {
 	LinkedList<Text> packageTexts;
 	LinkedList<Text> ownerTexts;
 	LinkedList<Author> packageOwners;
+	LinkedList<RectangleShape> towerSigns = new LinkedList<RectangleShape>();
+	LinkedList<Text> signNames = new LinkedList<Text>();
 	Map<String, Author> allAuthors;
 
 	CityModel(RenderWindow newWindow) {
@@ -61,12 +66,30 @@ public class CityModel {
 		currentView = new View();
 	}
 	
+	private void setupLegendView(float maxLength) {
+		View newView = new View(window.getDefaultView().getCenter(), window.getDefaultView().getSize());
+		legendView = newView;
+		
+		legendBar = new RectangleShape();
+		legendBar.setSize(new Vector2f(maxLength, legendView.getSize().y));
+		legendBar.setPosition(0,0);
+		legendBar.setOutlineThickness(1);
+		legendBar.setFillColor(new Color(240, 240, 240, 100));
+	}
+	
+	public View getLegendView() {
+		return legendView;
+	}
+	
 	//need to place towers based on package
 	public void setTowers(LinkedList<Tower> newTowers) {
 		int x = 400;
 		int x2;
 		towers = newTowers;
 		String currentPackage = newTowers.getFirst().getCityName();
+		if(currentPackage.contains(".")){
+			currentPackage = currentPackage.substring(currentPackage.lastIndexOf(".")+1, currentPackage.length());
+		}
 		
 		calculateWorldDimensions();
 		
@@ -92,9 +115,36 @@ public class CityModel {
 		
 		x = x + (int) firstSign.getGlobalBounds().width;
 		
+        
+        Font defaultFont = new Font();
+        
+		try {
+			defaultFont.loadFromFile(FileSystems.getDefault().getPath("resources","arialbd.ttf"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
+		
+		Texture metalBG = new Texture();
+        try {
+			metalBG.loadFromFile(Paths.get("resources","metal.png"));
+		} catch (IOException e) {
+			System.out.println("Error in package sign sprite load");
+		}		
+        
+        RectangleShape towerSign;
+        Text signName;
+		
 		for (Tower t: towers) {
-			if (!t.getCityName().equals(currentPackage)) {
+			String compareName = t.getCityName();
+			if(compareName.contains(".")){
+				compareName = compareName.substring(compareName.lastIndexOf(".")+1, compareName.length());
+			}
+			
+			if (!compareName.equals(currentPackage)) {
 				currentPackage = t.getCityName();
+				if(currentPackage.contains(".")){
+					currentPackage = currentPackage.substring(currentPackage.lastIndexOf(".")+1, currentPackage.length());
+				}
 				
 				//quinnTest
 				Sprite newSign = new Sprite(image);
@@ -112,21 +162,37 @@ public class CityModel {
 				Author owner = findPackageOwner(packageTowers);
 				
 				packageOwners.add(owner);
+		        
 				packageTowers.clear();
+
 			}
 			
 			packageTowers.push(t);
 			
 			//hack to see all towers
-			t.setTowerPosition(x, worldDimensions.height/2);	
-			x2=x;
+			t.setTowerPosition(x, worldDimensions.height/2);
+			x2 = x;
 			x=x+t.getTowerWidth()+t.getTowerDepth();
 			//end hack to see all towers
 			
-			t.updateFloors(grassMidHeight, x2);
+			
+			t.updateFloors(grassMidHeight);
 			t.setTowerOwner();
 			
-//			t.addSigns(window, t.getTowerOwner());
+			signName  = new Text(t.getTowerName(), defaultFont , 18);
+	        signName.setColor(new Color(255,255,255));
+	        signName.setPosition(x2 + t.getTowerWidth()/2 - signName.getLocalBounds().width/2, worldDimensions.height/2 -  (t.getTowerHeightAbove() + 30 + 5));   
+	        
+	        signNames.add(signName);
+
+			towerSign = new RectangleShape(new Vector2f(signName.getLocalBounds().width,30));
+	        towerSign.setPosition(signName.getPosition().x,worldDimensions.height/2 -  (t.getTowerHeightAbove() + towerSign.getSize().y + 5));
+	        towerSign.setFillColor(t.getTowerOwner().getAuthorColor());
+	        towerSign.setOutlineThickness(5);
+	        towerSign.setOutlineColor(new Color(52,40,44));
+	        towerSign.setTexture(metalBG);
+	        
+	        towerSigns.add(towerSign);
 		}
 		
 		Author lastOwner = findPackageOwner(packageTowers);
@@ -134,6 +200,15 @@ public class CityModel {
 		
 		addPackageSignText();
 		
+		setUpLegend();
+		
+		createGround();
+		createGrassTop();
+		createGrassMid();
+		createSky();
+	}
+	
+	private void setUpLegend() {
 		Texture authorImage = new Texture();
         try {
         	authorImage.loadFromFile(Paths.get("resources","author.png"));
@@ -141,7 +216,8 @@ public class CityModel {
 			System.out.println("Error in package sign sprite load");
 		}
         
-        int authorYPosition = 10;
+        float maxLength = 0;
+		int authorYPosition = 10;
         for (Map.Entry<String, Author> entry: allAuthors.entrySet()) {
         	Author author = entry.getValue();
         	Text authorNameText = new Text(author.getAuthorName(), defaultFont, 12);
@@ -153,12 +229,16 @@ public class CityModel {
         	authorNameText.setColor(author.getAuthorColor());
         	author.setAuthorNameText(authorNameText);
         	authorYPosition=(int) (authorYPosition+authorSprite.getLocalBounds().height + authorNameText.getLocalBounds().height + 5);
-        }
-		
-		createGround();
-		createGrassTop();
-		createGrassMid();
-		createSky();
+        	
+        	if (author.getAuthorNameText().getLocalBounds().width > maxLength) {
+        		maxLength = author.getAuthorNameText().getLocalBounds().width;
+        	}
+        }   
+
+        
+     	
+        
+        setupLegendView(maxLength + 15);
 	}
 	
 	public void setAllAuthors(Map<String,Author> newAuthors) {
@@ -214,7 +294,7 @@ public class CityModel {
 	
 	private void calculateWorldDimensions() {
 		int tallestTower = window.getSize().y*2;
-		int totalWidth = window.getSize().x;
+		int totalWidth = 400;
 		String currentPackage = towers.getFirst().getCityName();
 		
 		for (Tower t: towers) {
@@ -228,7 +308,7 @@ public class CityModel {
 			totalWidth = totalWidth + t.getTowerWidth();
 			
 			if (!t.getCityName().equals(currentPackage)) {				
-				totalWidth = totalWidth + cityDistance;
+				totalWidth = totalWidth + cityDistance + 500;
 				currentPackage = t.getCityName();
 			}
 		}
@@ -236,7 +316,7 @@ public class CityModel {
 		if (totalWidth < window.getSize().x*2) {
 			totalWidth = window.getSize().x*2;
 		} else {
-			totalWidth = totalWidth + 400;
+			totalWidth = totalWidth + window.getSize().x;
 		}
 		
 		setWorldDimensions(0, 0, totalWidth, tallestTower);
@@ -430,6 +510,41 @@ public class CityModel {
 		sky.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.top), darkSkyColor));
 	}
 
+	private void drawLegend() {
+		window.setView(window.getDefaultView());
+		window.draw(legendBar);
+		
+		int lastAuthor = allAuthors.size() - 1;
+		int i = 0;
+		window.setView(legendView);
+		for (Map.Entry<String, Author> entry: allAuthors.entrySet()) {
+			Author author = entry.getValue();
+			float y = author.getAuthorSprite().getPosition().y;
+			
+			if (i == lastAuthor && y < legendView.getSize().y) {
+				legendView.setCenter(window.getDefaultView().getCenter());
+			} else {
+			
+				if (i == 0 && y > legendView.getCenter().y - legendView.getSize().y/2 + 10) {
+					legendView.setCenter(window.getDefaultView().getCenter());
+				}
+				
+				float spriteHeight = author.getAuthorSprite().getLocalBounds().height;
+				float textHeight = author.getAuthorNameText().getLocalBounds().height;
+				
+				if (i == lastAuthor && y + spriteHeight + textHeight + 10 < legendView.getCenter().y + legendView.getSize().y/2) {
+					legendView.setCenter(legendView.getCenter().x, y + spriteHeight + textHeight + 10 - legendView.getSize().y/2);
+				}
+			}
+			
+			window.draw(entry.getValue());
+			i++;
+		}
+		
+		window.setView(currentView);
+	}
+	
+
 	public void drawCity() {
 		window.clear(new Color(0,0,0));
 		updateDisplayedView();
@@ -450,13 +565,16 @@ public class CityModel {
 		for (Text o: ownerTexts) {
 			window.draw(o);
 		}
+		for(RectangleShape r: towerSigns){
+	        window.draw(r);
+		}
+		for(Text t: signNames){
+	        window.draw(t);
+
+		}
 		window.draw(grassMid);
 		
-		window.setView(window.getDefaultView());
-		for (Map.Entry<String, Author> entry: allAuthors.entrySet()) {
-			window.draw(entry.getValue());
-		}
-		window.setView(currentView);
+		drawLegend();
 
 		if (currentFloorDetails != null) {
 			drawFloorDetailsMenu();

@@ -19,18 +19,21 @@ public class CityController {
 	Boolean scrollMode;
 	double scrollXVelocity;
 	double scrollYVelocity;
+	double scrollLegendYVelocity;
 	Vector2i leftClickedMousePos;
 	
 	boolean scrollLeft;
 	boolean scrollRight;
 	boolean scrollUp;
 	boolean scrollDown;
+	boolean legendScroll;
 	double variableSpeed = StaticControls.directionScrollStartSpeed;
 	
 	CityController(CityModel city) {
 		model = city;
 		window = city.getWindow();
 		scrollMode = false;
+		legendScroll = false;
 	}
 	
 	public void updateModel() {
@@ -128,6 +131,16 @@ public class CityController {
 					
 					tearDownFloorMenu();
 				}
+				
+				if (event.asKeyEvent().key == Key.W) {
+					legendScroll = true;
+					scrollLegendYVelocity = 5;
+				}
+				
+				if (event.asKeyEvent().key == Key.S) {
+					legendScroll = true;
+					scrollLegendYVelocity = -5;
+				}
 			}
 			
 			if (event.type == Event.Type.KEY_RELEASED) {
@@ -158,10 +171,19 @@ public class CityController {
 					scrollYVelocity = 5;
 					variableSpeed = StaticControls.directionScrollStartSpeed;
 				}
+				
+				if (event.asKeyEvent().key == Key.W) {
+					legendScroll = false;
+				}
+				
+				if (event.asKeyEvent().key == Key.S) {
+					legendScroll = false;
+				}
 			}
 		}
 		
 		scrollModelView();
+		scrollLegendView();
 		
 		if(scrollUp == true){
 			variableSpeed = variableSpeed * 1.01;
@@ -186,6 +208,22 @@ public class CityController {
 		constrainModelViewToWorld();
 	}
 	
+	private void scrollLegendView() {
+		
+		if (!legendScroll) {
+			if (scrollLegendYVelocity > 0) {
+				scrollLegendYVelocity = scrollLegendYVelocity - (scrollLegendYVelocity * 0.1);
+			} else {
+				if (scrollLegendYVelocity < 0) {
+					scrollLegendYVelocity = scrollLegendYVelocity + (scrollLegendYVelocity * -0.1);
+				}
+			}
+		}
+		
+		moveModelLegendViewY((float) scrollLegendYVelocity);
+		
+	}
+
 	private void tearDownFloorMenu() {
 		if (model.getCurrentFloorDetails() != null) {
 			model.getCurrentFloorDetails().setHighlighted(false);
@@ -260,6 +298,10 @@ public class CityController {
 	
 	private void moveModelView(float x, float y) {
 		model.getCurrentView().move(x, y);
+	}
+	
+	private void moveModelLegendViewY(float y) {
+		model.getLegendView().move(0, y);
 	}
 	
 	private void constrainModelViewToWorld() {

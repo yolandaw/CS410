@@ -104,7 +104,7 @@ public class Main {
 //			}				
 //			else{
 				parser.startParsingClass(lg);
-//			}
+
 
 			// adds all the towers including nested towers
 			towers.addAll(parser.getParsedLog()); 
@@ -133,8 +133,8 @@ public class Main {
 		window.setFramerateLimit(60);
 
 		CityModel city = new CityModel(window);
-//		Map<String,Author> authors = parser.getAllAuthors();
- //       city.setAllAuthors(authors);
+		Map<String,Author> authors = parser.getAllAuthors();
+        city.setAllAuthors(authors);
 		city.setTowers(towers);
 		CityController controller = new CityController(city);
 		
