@@ -79,7 +79,7 @@ public class Main {
 		
 		//quinn test
 		//print out all the java file paths
-		List<String> paths = lg.getJavaFilePaths(gitPath);
+		List<String> paths = lg.getJavaFilePaths(gitPath,100);
 		
 		for(int i=0; i<paths.size(); i++){
 			System.out.println(paths.get(i));
