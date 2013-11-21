@@ -168,21 +168,21 @@ public class CityModel {
 			
 			t.updateFloors(grassMidHeight);
 			t.setTowerOwner();
+			
+			signName  = new Text(t.getTowerName(), defaultFont , 18);
+	        signName.setColor(new Color(255,255,255));
+	        signName.setPosition(x2 + t.getTowerWidth()/2 - signName.getLocalBounds().width/2, worldDimensions.height/2 -  (t.getTowerHeightAbove() + 30 + 5));   
+	        
+	        signNames.add(signName);
 
-			towerSign = new RectangleShape(new Vector2f(t.getTowerName().length()*10,30));
-	        towerSign.setPosition(x2,worldDimensions.height/2 -  (t.getTowerHeightAbove() + towerSign.getSize().y + 5));
+			towerSign = new RectangleShape(new Vector2f(signName.getLocalBounds().width,30));
+	        towerSign.setPosition(signName.getPosition().x,worldDimensions.height/2 -  (t.getTowerHeightAbove() + towerSign.getSize().y + 5));
 	        towerSign.setFillColor(t.getTowerOwner().getAuthorColor());
 	        towerSign.setOutlineThickness(5);
 	        towerSign.setOutlineColor(new Color(52,40,44));
 	        towerSign.setTexture(metalBG);
 	        
 	        towerSigns.add(towerSign);
-
-	        signName  = new Text(t.getTowerName(), defaultFont , 18);
-	        signName.setColor(new Color(255,255,255));
-	        signName.setPosition(x2, worldDimensions.height/2 -  (t.getTowerHeightAbove() + towerSign.getSize().y + 5));   
-	        
-	        signNames.add(signName);
 		}
 		
 		Author lastOwner = findPackageOwner(packageTowers);
