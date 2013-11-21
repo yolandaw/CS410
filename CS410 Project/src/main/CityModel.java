@@ -87,6 +87,9 @@ public class CityModel {
 		int x2;
 		towers = newTowers;
 		String currentPackage = newTowers.getFirst().getCityName();
+		if(currentPackage.contains(".")){
+			currentPackage = currentPackage.substring(currentPackage.lastIndexOf("."), currentPackage.length());
+		}
 		
 		calculateWorldDimensions();
 		
@@ -132,9 +135,16 @@ public class CityModel {
         Text signName;
 		
 		for (Tower t: towers) {
-//			t.setTowerOwner();
-			if (!t.getCityName().equals(currentPackage)) {
+			String compareName = t.getCityName();
+			if(compareName.contains(".")){
+				compareName = compareName.substring(compareName.lastIndexOf("."), compareName.length());
+			}
+			
+			if (!compareName.equals(currentPackage)) {
 				currentPackage = t.getCityName();
+				if(currentPackage.contains(".")){
+					currentPackage = currentPackage.substring(currentPackage.lastIndexOf("."), currentPackage.length());
+				}
 				
 				//quinnTest
 				Sprite newSign = new Sprite(image);
