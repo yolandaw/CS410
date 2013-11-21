@@ -24,7 +24,7 @@ public class StaticControls {
 	
 	//if true, program will continue to run after encountering errors
 	//else, program will break if exception encountered
-	static boolean continueFromExceptions = false;
+	static boolean continueFromExceptions = true;
 	
 	//if true, background music will load and play
 	//else, no music
