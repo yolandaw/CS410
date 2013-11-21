@@ -109,6 +109,7 @@ public class Parser {
     */
    public void startParsingClass(LogGatherer gatheredLog) throws IOException, GitAPIException {
       
+	   
 	   parsedClass = gatheredLog;
        currentLineNum = 0;
        createdClassObjects = new LinkedList<Tower>();
