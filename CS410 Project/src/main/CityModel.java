@@ -284,7 +284,7 @@ public class CityModel {
 	
 	private void calculateWorldDimensions() {
 		int tallestTower = window.getSize().y*2;
-		int totalWidth = window.getSize().x;
+		int totalWidth = 400;
 		String currentPackage = towers.getFirst().getCityName();
 		
 		for (Tower t: towers) {
@@ -298,7 +298,7 @@ public class CityModel {
 			totalWidth = totalWidth + t.getTowerWidth();
 			
 			if (!t.getCityName().equals(currentPackage)) {				
-				totalWidth = totalWidth + cityDistance;
+				totalWidth = totalWidth + cityDistance + 500;
 				currentPackage = t.getCityName();
 			}
 		}
@@ -306,7 +306,7 @@ public class CityModel {
 		if (totalWidth < window.getSize().x*2) {
 			totalWidth = window.getSize().x*2;
 		} else {
-			totalWidth = totalWidth + 400;
+			totalWidth = totalWidth + window.getSize().x;
 		}
 		
 		setWorldDimensions(0, 0, totalWidth, tallestTower);
