@@ -46,6 +46,8 @@ public class CityModel {
 	LinkedList<Text> packageTexts;
 	LinkedList<Text> ownerTexts;
 	LinkedList<Author> packageOwners;
+	LinkedList<RectangleShape> towerSigns = new LinkedList<RectangleShape>();
+	LinkedList<Text> signNames = new LinkedList<Text>();
 	Map<String, Author> allAuthors;
 
 	CityModel(RenderWindow newWindow) {
@@ -110,7 +112,27 @@ public class CityModel {
 		
 		x = x + (int) firstSign.getGlobalBounds().width;
 		
+        
+        Font defaultFont = new Font();
+        
+		try {
+			defaultFont.loadFromFile(FileSystems.getDefault().getPath("resources","arialbd.ttf"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
+		
+		Texture metalBG = new Texture();
+        try {
+			metalBG.loadFromFile(Paths.get("resources","metal.png"));
+		} catch (IOException e) {
+			System.out.println("Error in package sign sprite load");
+		}		
+        
+        RectangleShape towerSign;
+        Text signName;
+		
 		for (Tower t: towers) {
+//			t.setTowerOwner();
 			if (!t.getCityName().equals(currentPackage)) {
 				currentPackage = t.getCityName();
 				
@@ -130,21 +152,37 @@ public class CityModel {
 				Author owner = findPackageOwner(packageTowers);
 				
 				packageOwners.add(owner);
+		        
 				packageTowers.clear();
+
 			}
 			
 			packageTowers.push(t);
 			
 			//hack to see all towers
-			t.setTowerPosition(x, worldDimensions.height/2);	
-			x2=x;
+			t.setTowerPosition(x, worldDimensions.height/2);
+			x2 = x;
 			x=x+t.getTowerWidth()+t.getTowerDepth();
 			//end hack to see all towers
 			
-			t.updateFloors(grassMidHeight, x2);
-			t.setTowerOwner();
 			
-//			t.addSigns(window, t.getTowerOwner());
+			t.updateFloors(grassMidHeight);
+			t.setTowerOwner();
+
+			towerSign = new RectangleShape(new Vector2f(t.getTowerName().length()*10,30));
+	        towerSign.setPosition(x2,worldDimensions.height/2 -  (t.getTowerHeightAbove() + towerSign.getSize().y + 5));
+	        towerSign.setFillColor(t.getTowerOwner().getAuthorColor());
+	        towerSign.setOutlineThickness(5);
+	        towerSign.setOutlineColor(new Color(52,40,44));
+	        towerSign.setTexture(metalBG);
+	        
+	        towerSigns.add(towerSign);
+
+	        signName  = new Text(t.getTowerName(), defaultFont , 18);
+	        signName.setColor(new Color(255,255,255));
+	        signName.setPosition(x2, worldDimensions.height/2 -  (t.getTowerHeightAbove() + towerSign.getSize().y + 5));   
+	        
+	        signNames.add(signName);
 		}
 		
 		Author lastOwner = findPackageOwner(packageTowers);
@@ -185,7 +223,10 @@ public class CityModel {
         	if (author.getAuthorNameText().getLocalBounds().width > maxLength) {
         		maxLength = author.getAuthorNameText().getLocalBounds().width;
         	}
-        }
+        }   
+
+        
+     	
         
         setupLegendView(maxLength + 15);
 	}
@@ -512,6 +553,13 @@ public class CityModel {
 		}
 		for (Text o: ownerTexts) {
 			window.draw(o);
+		}
+		for(RectangleShape r: towerSigns){
+	        window.draw(r);
+		}
+		for(Text t: signNames){
+	        window.draw(t);
+
 		}
 		window.draw(grassMid);
 		

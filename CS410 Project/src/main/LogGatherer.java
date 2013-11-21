@@ -18,13 +18,11 @@ public class LogGatherer{
 
 	private Repository repository;
 	private BlameResult rawBlameResult;
-
 	
 	/**
 	 * Basic constructor
 	 */
 	public LogGatherer() {}
-	
 	
 	/**
 	 * 
@@ -39,7 +37,6 @@ public class LogGatherer{
 		closeRepository(repository);
 	}
 	
-
 	/**
 	 * 
 	 * @param localGitFolderPath the path to the local .git repository ex: "C:/Users/Quinn/Documents/Homework/CPSC 410/CS410/test/.git"
