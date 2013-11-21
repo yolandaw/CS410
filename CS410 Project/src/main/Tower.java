@@ -185,7 +185,7 @@ public class Tower implements org.jsfml.graphics.Drawable {
     	
     	int floorCnt;
     	int maxNumFloor = 0;
-    	Author tempOwner = new Author("No Owner", "No Owner");
+  	 	Author tempOwner = new Author("UnknownName","UnknownEmailAddr");
     	
     	for(Floor f: towerFloors){
             	if(ownerList.containsKey(f.getFloorOwner())){
