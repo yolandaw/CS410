@@ -134,7 +134,7 @@ public class Main {
 
 		CityModel city = new CityModel(window);
 		Map<String,Author> authors = parser.getAllAuthors();
-        city.setAllAuthors(authors);
+		city.setAllAuthors(authors);
 		city.setTowers(towers);
 		CityController controller = new CityController(city);
 		
