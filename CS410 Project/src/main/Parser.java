@@ -710,6 +710,8 @@ public class Parser {
     	   String uniqueName = "UnknownName";
     	   if(ownership != null){
     		   uniqueName = ownership.getName();
+    	   }else {
+    		   System.out.println("NULL");
     	   }
     	   
     	   author = new Author(uniqueName, uniqueEmail);
