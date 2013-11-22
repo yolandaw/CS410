@@ -48,10 +48,8 @@ public class Parser {
     public Parser(){}
     
     
-    public Map<String, Author> getAllAuthors() {
-    	
+    public Map<String, Author> getAllAuthors() {   	
     	return allAuthors;
-    
     }
     
     
