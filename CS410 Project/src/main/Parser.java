@@ -49,7 +49,9 @@ public class Parser {
     
     
     public Map<String, Author> getAllAuthors() {
+    	
     	return allAuthors;
+    
     }
     
     
