@@ -380,6 +380,9 @@ public class Parser {
             			   lineInMethod = false;        
                            
                            PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
+                           if (ownership == null) {
+                        	   int a = 0;
+                           }
                            Author author = getUniqueAuthor(ownership);
                            currentMethod.increOwnershipSize(author);
                            
@@ -655,6 +658,9 @@ public class Parser {
         currentMethod.setAccessType(3);
            
         PersonIdent ownership = parsedClass.getAuthor(currentLineNum);
+        if (ownership == null) {
+     	   int a = 0;
+        }
         Author author = getUniqueAuthor(ownership);
         
         currentMethod.adjustOwnership(author, 1);
