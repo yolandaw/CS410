@@ -698,22 +698,19 @@ public class Parser {
 
         
            
-   private Author getUniqueAuthor(PersonIdent ownership) {
-	   
+   private Author getUniqueAuthor(PersonIdent tempOwnership) {
+	   PersonIdent ownership = tempOwnership;
        Author author = new Author("Empty", "Empty");
        String uniqueEmail = "UnknownEmailAddr";
        if(ownership != null) {
     	   uniqueEmail = ownership.getEmailAddress();
        }
-               
+
        if (!allAuthors.containsKey(uniqueEmail)) {
     	   String uniqueName = "UnknownName";
     	   if(ownership != null){
     		   uniqueName = ownership.getName();
-    	   }else {
-    		   System.out.println("NULL");
     	   }
-    	   
     	   author = new Author(uniqueName, uniqueEmail);
               
     	   if (uniqueEmail == "") {
