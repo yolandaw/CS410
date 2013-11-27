@@ -31,7 +31,13 @@ public class Floor implements org.jsfml.graphics.Drawable {
         private int accessModifierType;
         private Author floorAuthor;
         
-        
+        /**
+    	 * 
+    	 * Sets default values upon construction
+    	 * 
+    	 * @param functionName: The name of the floor
+    	 * 
+    	 */
         public Floor(String functionName) {
                 setFloorName(functionName);
                 floorBoundaries = new IntRect(0, 0, 0, 0);
@@ -43,56 +49,123 @@ public class Floor implements org.jsfml.graphics.Drawable {
                 tilePosition = new IntRect(0,0,0,0);
         }
         
+        /**
+    	 * 
+    	 * @param left, top, width, height: The rectangular dimensions of the floor
+    	 * 
+    	 */
         public void setFloorBoundaries(int left, int top, int width, int height) {
                 floorBoundaries = new IntRect(left, top, width, height);
         }
         
+        /**
+    	 * 
+    	 * @param left, top: The new position of the floor
+    	 * 
+    	 */
         public void setFloorPosition(int left, int top) {
                 floorBoundaries = new IntRect(left, top, floorBoundaries.width, floorBoundaries.height);
         }
         
+        /**
+    	 * 
+    	 * @param width, height: The new width and height of the floor
+    	 * 
+    	 */
         public void setFloorDimensions(int width, int height) {
                 floorBoundaries = new IntRect(floorBoundaries.left, floorBoundaries.top, width, height);
         }
         
+        /**
+    	 * 
+    	 * @return the floor's boundaries
+    	 * 
+    	 */
         public IntRect getFloorBoundaries() {
                 return floorBoundaries;
         }
         
+        /**
+    	 * 
+    	 * @return the number of owners of the floor
+    	 * 
+    	 */
         public void getNumOfOwners() {
                 ownerships.size();
         }
         
+        /**
+    	 * 
+    	 * @return the total number of lines of the floor (code wise)
+    	 * 
+    	 */
         public int getNumOfLines() {
                 return numOfLines;
         }
         
+        /**
+    	 * 
+    	 * Updates the total number of lines of the floor based on how many lines each author owns
+    	 * 
+    	 */
         public void updateNumOfLines() {
                 for (Map.Entry<Author, Integer> entry: ownerships.entrySet()) {
                         numOfLines = numOfLines + entry.getValue();
                 }
         }
         
+        /**
+    	 * 
+    	 * @return the floor's name
+    	 * 
+    	 */
         public String getFloorName() {
                 return floorName;
         }
         
+        /**
+    	 * 
+    	 * @return the ownerships map
+    	 * 
+    	 */
         public Map<Author,Integer> getOwnerships() {
         	return ownerships;
         }
         
+        /**
+    	 * 
+    	 * @param functionName: the floors new name
+    	 * 
+    	 */
         private void setFloorName(String functionName) {
                 floorName = functionName;
         }
         
+        /**
+    	 * 
+    	 * @param newDepth: The new depth of the floor
+    	 * 
+    	 */
         public void setDepth(int newDepth) {
                 depth = newDepth;
         }
         
+        /**
+    	 * 
+    	 * @param author: new author to be added
+    	 * @param size: new number of lines for the author
+    	 * 
+    	 */
         public void adjustOwnership(Author author, int size) {
                 ownerships.put(author, size);
         }
         
+        /**
+    	 * 
+    	 * @param path: the file path of the texture
+    	 * @param position: the position of the tile in the texture
+    	 * 
+    	 */
         public void setTexture(Path path, IntRect position) {
                 try {
                         texture.loadFromFile(path,position);
@@ -102,10 +175,22 @@ public class Floor implements org.jsfml.graphics.Drawable {
                 }
         }
         
+        /**
+    	 * 
+    	 * @param position: the new position of the tile in the texture
+    	 * 
+    	 */
         private void setTilePosition(IntRect position) {
                 tilePosition = position;
         }
         
+        /**
+    	 * 
+    	 * Increment ownership for an author by 1
+    	 * 
+    	 * @param author: the author which is getting an increase in ownership
+    	 * 
+    	 */
         public void increOwnershipSize(Author author) {        
                 Iterator<Author> itr = ownerships.keySet().iterator();
                 Author existAuthor;
@@ -121,14 +206,30 @@ public class Floor implements org.jsfml.graphics.Drawable {
                 adjustOwnership(author, 1);
         }
         
+        /**
+    	 * 
+    	 * Set's whether a floor is drawn as highlighted or not
+    	 * @param isHighlighted: Set's whether the floor is highlighted or not
+    	 * 
+    	 */
         public void setHighlighted(boolean isHighlighted) {
 			highlighted = isHighlighted;
 		}
 	
+        /**
+    	 * 
+    	 * @return whether a floor is highlighted or not
+    	 * 
+    	 */
 		public boolean getHighlighted() {
 			return highlighted;
 		}
 	
+		/**
+    	 * 
+    	 * Create the highlighted version of the floor
+    	 * 
+    	 */
 		public void highlightFloor() {
 			for (int i = 0; i<floorVertices.size(); i++) {
 				Vertex vertex = floorVertices.get(i);
@@ -139,6 +240,11 @@ public class Floor implements org.jsfml.graphics.Drawable {
 			}
 		}
         
+		/**
+    	 * 
+    	 * Creates the floor drawable and splits it up baed on authors and ownership sizes
+    	 * 
+    	 */
         public void splitFloorOwnership() {
                 floorVertices.clear();
                 
@@ -203,6 +309,13 @@ public class Floor implements org.jsfml.graphics.Drawable {
         	return floorAuthor;
         }
         
+        /**
+    	 * 
+    	 * @param authorColor: The author's color that is associated with this section of the floor
+    	 * @param leftSideX: The left side of the front portion of the floor
+    	 * @param widthPercent: The percentage of the total width of the floor that this section takes up
+    	 * 
+    	 */
         private void addTopOfFloor(Color authorColor, float leftSideX, float widthPercent) {
                 float lighten = (float) 1.3;
                 Color lighterColor = new Color((int) (authorColor.r * lighten),(int) (authorColor.g * lighten),(int) (authorColor.b * lighten), 255);
@@ -220,6 +333,12 @@ public class Floor implements org.jsfml.graphics.Drawable {
                 floorVertices.add(new Vertex(new Vector2f((float) (leftSideX+(floorBoundaries.width*widthPercent)), floorBoundaries.top - floorBoundaries.height),lighterColor,bottomRight));
         }
         
+        /**
+    	 * 
+    	 * @param authorColor: The author's color that is associated with this section of the floor
+    	 * @param rightSideX: The right side of the front portion of the floor
+    	 * 
+    	 */
         private void addSideOfFloor(Color authorColor, float rightSideX) {
                 float darken = (float) 0.8;
                 Color darkerColor = new Color((int) (authorColor.r * darken),(int) (authorColor.g * darken),(int) (authorColor.b * darken), 255);
@@ -237,6 +356,11 @@ public class Floor implements org.jsfml.graphics.Drawable {
                 floorVertices.add(new Vertex(new Vector2f(rightSideX + depth, floorBoundaries.top - depth),darkerColor,bottomRight));
         }
         
+        /**
+    	 * 
+    	 * @return the texture coordinates based on the floor's overall size
+    	 * 
+    	 */
         private Vector2f calculateTextureCoords() {
                 float xMapping = 0;
                 float yMapping = 0;
@@ -268,7 +392,13 @@ public class Floor implements org.jsfml.graphics.Drawable {
                 }
         }
         
-        
+        /**
+    	 * 
+    	 * Draw floor to the window based on whether it is highlighted or not
+    	 * @param window: The window to be drawn to
+    	 * @param renderStates: The renderstates to be added upon drawing
+    	 * 
+    	 */
         public void draw(RenderTarget target, RenderStates states) {
                 RenderStates state = new RenderStates(states, texture);
 				if (highlighted) {
@@ -278,10 +408,20 @@ public class Floor implements org.jsfml.graphics.Drawable {
 				}
         }
         
+        /**
+    	 * 
+    	 * @param accessType: set floors access type, private(1) or public(0)
+    	 * 
+    	 */
         public void setAccessType(int accessType) {
                 accessModifierType = accessType;
         }
         
+        /**
+    	 * 
+    	 * @return the floors access type
+    	 * 
+    	 */
         public int getAccessType() {
                 return accessModifierType;
         }

@@ -75,39 +75,79 @@ public class Tower implements org.jsfml.graphics.Drawable {
                 
         }
         
+        /**
+    	 * 
+    	 * @param newDepth: The new depth of the tower
+    	 * 
+    	 */
         public void setTowerDepth(int newDepth) {
         	towerDepth = newDepth;
         }
         
+        /**
+    	 * 
+    	 * @param newWidth: The new width of the tower
+    	 * 
+    	 */
         public void setTowerWidth(int newWidth) {
         	towerWidth = newWidth;
         }
         
+        /**
+    	 * 
+    	 * @param newHeight: The new height of the tower
+    	 * 
+    	 */
         public void setFloorHeight(int newHeight) {
         	floorHeight = newHeight;
         }
         
+        /**
+    	 * 
+    	 * @param x: The new x position of the tower
+    	 * @param y: the new y position of the tower
+    	 * 
+    	 */
         public void setTowerPosition(int x, int y) {
         	pos = new Vector2i(x, y);
         }
         
+        /**
+    	 * 
+    	 * @return the tower's position
+    	 * 
+    	 */
         public Vector2i getTowerPosition() {
         	return pos;
         }
         
+        /**
+    	 * 
+    	 * @return the tower's width
+    	 * 
+    	 */
         public int getTowerWidth() {
         	return towerWidth;
         }
         
+        /**
+    	 * 
+    	 * @return the tower's height
+    	 * 
+    	 */
         public int getFloorHeight() {
         	return floorHeight;
         }
         
+        /**
+    	 * 
+    	 * @return the tower's depth
+    	 * 
+    	 */
         public int getTowerDepth() {
         	return towerDepth;
         }
 
-        //function that takes location x and y to build from city builder
         
         //sets the Tower Name to be drawn
         public void setTowerName(String className){
@@ -126,25 +166,50 @@ public class Tower implements org.jsfml.graphics.Drawable {
                 numberOfFloors++;
         }
         
-    public void addFloor(Floor methodName) {
-            towerFloors.add(methodName);
-    }
-    
-    public LinkedList<Floor> getListOfFloor() {
-            return towerFloors;
-    }
-    
-    public String getTowerName() {
-            return towerName;
-    }
-    
-    public int getTowerHeight() {
-        return towerFloors.size()*floorHeight;
-    }
-    
-    public int getTowerHeightAbove(){
-    	return towerHeight;
-    }
+        /**
+    	 * 
+    	 * @param methodName: new floor to be added to the tower
+    	 * 
+    	 */    
+	    public void addFloor(Floor methodName) {
+	            towerFloors.add(methodName);
+	    }
+	    
+	    /**
+    	 * 
+    	 * @return the list of the tower's floors
+    	 * 
+    	 */
+	    public LinkedList<Floor> getListOfFloor() {
+	            return towerFloors;
+	    }
+	    
+	    /**
+    	 * 
+    	 * @return the tower's name
+    	 * 
+    	 */
+	    public String getTowerName() {
+	            return towerName;
+	    }
+	    
+	    /**
+    	 * 
+    	 * @return the tower's total height, including underground and above ground floors
+    	 * 
+    	 */
+	    public int getTowerHeight() {
+	        return towerFloors.size()*floorHeight;
+	    }
+	    
+	    /**
+    	 * 
+    	 * @return the tower's height only including above ground floors
+    	 * 
+    	 */
+	    public int getTowerHeightAbove(){
+	    	return towerHeight;
+	    }
     
   //adding tower signs - need to add text alignment
 //    public void addSigns(RenderTarget window){
@@ -247,7 +312,14 @@ public class Tower implements org.jsfml.graphics.Drawable {
             towerHeight = numAbove*floorHeight;
     }
 
-        
+	    /**
+		 * 
+		 * Draws the tower which subsequently means drawing all of the tower's floors
+		 * 
+		 * @param window: The window to be drawn to
+		 * @param renderStates: The renderstates to be applied when drawn
+		 * 
+		 */
         public void draw(RenderTarget window, RenderStates renderStates) {
         	LinkedList<Floor> belowFloors = new LinkedList<Floor>();
         		//draw above ground Floors
@@ -270,11 +342,21 @@ public class Tower implements org.jsfml.graphics.Drawable {
 
         }
     
-    public void setCityName(String packageName) {
-            cityName = packageName;
-    }
-    
-    public String getCityName() {
-            return cityName;
-    }
+        /**
+    	 * 
+    	 * @param packageName: The name of the city that the tower belongs to
+    	 * 
+    	 */
+	    public void setCityName(String packageName) {
+	            cityName = packageName;
+	    }
+	    
+	    /**
+    	 * 
+    	 * @return the name of the city that the tower belongs to
+    	 * 
+    	 */
+	    public String getCityName() {
+	            return cityName;
+	    }
 }

@@ -1,5 +1,8 @@
 package main;
 
+import java.io.IOException;
+
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.RenderWindow;
 import org.jsfml.graphics.View;
@@ -29,6 +32,13 @@ public class CityController {
 	boolean legendScroll;
 	double variableSpeed = StaticControls.directionScrollStartSpeed;
 	
+	
+	/**
+	 * 
+	 * Sets all default values on creation
+	 * @param city the CityModel associated with the controller
+	 * 
+	 */
 	CityController(CityModel city) {
 		model = city;
 		window = city.getWindow();
@@ -36,6 +46,12 @@ public class CityController {
 		legendScroll = false;
 	}
 	
+	
+	/**
+	 * 
+	 * Polls for input events and updates the city model based on the events
+	 * 
+	 */
 	public void updateModel() {
 		
 		for (Event event : window.pollEvents()) {
@@ -208,6 +224,12 @@ public class CityController {
 		constrainModelViewToWorld();
 	}
 	
+	
+	/**
+	 * 
+	 * Updates the author color legend's y velocity and moves the legend view
+	 * 
+	 */
 	private void scrollLegendView() {
 		
 		if (!legendScroll) {
@@ -223,7 +245,13 @@ public class CityController {
 		moveModelLegendViewY((float) scrollLegendYVelocity);
 		
 	}
-
+	
+	
+	/**
+	 * 
+	 * Set city models current floor details menu to null and removes any selection highlighting
+	 * 
+	 */
 	private void tearDownFloorMenu() {
 		if (model.getCurrentFloorDetails() != null) {
 			model.getCurrentFloorDetails().setHighlighted(false);
@@ -231,6 +259,11 @@ public class CityController {
 		model.setCurrentFloorDetails(null);
 	}
 	
+	/**
+	 * 
+	 * Updates scroll x and y velocities and moves the model view's x and y directions with the new velocities
+	 * 
+	 */
 	private void scrollModelView() {
 		if (scrollXVelocity > 0) {
 			scrollXVelocity = scrollXVelocity - (scrollXVelocity * 0.1);
@@ -253,6 +286,13 @@ public class CityController {
 		resetMousePosition();
 	}
 	
+	/**
+	 * 
+	 * Updates city model's current floor details menu to what the mouse is currently hovering over
+	 *      
+	 * @param mEvent: the mouse event used to get the mouse's position
+	 * 
+	 */
 	private void updateHoveredOverFloor(MouseEvent mEvent) {
 		boolean hoveredOver = false;
 		Vector2f worldCoord = window.mapPixelToCoords(mEvent.position);
@@ -290,20 +330,46 @@ public class CityController {
 		}
 	}
 	
+	/**
+	 * 
+	 * Sets mouse position back to middle of the screen
+	 * 
+	 */
 	private void resetMousePosition() {
 		if (Mouse.isButtonPressed(Button.LEFT) && scrollMode) {
 			Mouse.setPosition(new Vector2i(window.getSize().x/2, window.getSize().y/2), window);
 		}
 	}
 	
+	/**
+	 * 
+	 * Move model's current view 
+	 *     
+	 * @param x: x direction to move
+	 * @param y: y direction to move
+	 * 
+	 */
 	private void moveModelView(float x, float y) {
 		model.getCurrentView().move(x, y);
 	}
 	
+	/**
+	 * 
+	 * Move model's legend view 
+	 * 
+	 * @param y: y direction to move
+	 * 
+	 */
 	private void moveModelLegendViewY(float y) {
 		model.getLegendView().move(0, y);
 	}
 	
+	
+	/**
+	 * 
+	 * Reset model's current view to stay within the model's world dimensions
+	 * 
+	 */
 	private void constrainModelViewToWorld() {
 		View resetView = model.getCurrentView();
 		Vector2f resetCenter = resetView.getCenter();

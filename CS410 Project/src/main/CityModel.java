@@ -50,6 +50,13 @@ public class CityModel {
 	LinkedList<Text> signNames = new LinkedList<Text>();
 	Map<String, Author> allAuthors;
 
+	/**
+	 * 
+	 * Sets default values upon construction
+	 * 
+	 * @param newWindow: the window that this city model will be associated with
+	 * 
+	 */
 	CityModel(RenderWindow newWindow) {
 		setWindow(newWindow);
 		setCurrentView(newWindow.getDefaultView());
@@ -66,6 +73,11 @@ public class CityModel {
 		currentView = new View();
 	}
 	
+	/**
+	 * 
+	 * Initializes the author color legend view
+	 * 
+	 */
 	private void setupLegendView(float maxLength) {
 		View newView = new View(window.getDefaultView().getCenter(), window.getDefaultView().getSize());
 		legendView = newView;
@@ -77,11 +89,21 @@ public class CityModel {
 		legendBar.setFillColor(new Color(240, 240, 240, 100));
 	}
 	
+	/**
+	 * 
+	 * @return the view for the author color legend
+	 * 
+	 */
 	public View getLegendView() {
 		return legendView;
 	}
 	
-	//need to place towers based on package
+	/**
+	 * 
+	 * Sets the towers of the city model and sets up any other static drawables for the city model
+	 * @param newTowers: The towers of the city model
+	 * 
+	 */
 	public void setTowers(LinkedList<Tower> newTowers) {
 		int x = 400;
 		int x2;
@@ -208,6 +230,11 @@ public class CityModel {
 		createSky();
 	}
 	
+	/**
+	 * 
+	 * initializes the author color legend
+	 * 
+	 */
 	private void setUpLegend() {
 		Texture authorImage = new Texture();
         try {
@@ -245,6 +272,11 @@ public class CityModel {
 		allAuthors = newAuthors;
 	}
 	
+	/**
+	 * 
+	 * Stores text drawables for package signs for every package in the city model
+	 * 
+	 */
 	private void addPackageSignText() {
 		int i = 0;
 		for (Author a: packageOwners) {
@@ -264,6 +296,13 @@ public class CityModel {
 		}
 	}
 	
+	/**
+	 * 
+	 * Finds the author with the most owned towers in a package
+	 * 
+	 * @param towers: the towers of a package
+	 * 
+	 */
 	private Author findPackageOwner(LinkedList<Tower> towers) {
 		
 		Author owner = new Author("Ducky", "Ducky");
@@ -292,6 +331,11 @@ public class CityModel {
 		return owner;
 	}
 	
+	/**
+	 * 
+	 * determine and set the world dimensions based on tower sizes, city distance and package sign sizes
+	 * 
+	 */
 	private void calculateWorldDimensions() {
 		int tallestTower = window.getSize().y*2;
 		int totalWidth = 400;
@@ -325,6 +369,11 @@ public class CityModel {
 		
 	}
 	
+	/**
+	 * 
+	 * set a tower's size to random values
+	 * 
+	 */
 	private void setRandomTowerSize(Tower t) {
 		Random randInt = new Random();
 		int randomWidth;
@@ -349,10 +398,20 @@ public class CityModel {
 	    }
 	}
 	
+	/**
+	 * 
+	 * return the towers of this city model
+	 * 
+	 */
 	public LinkedList<Tower> getTowers() {
 		return towers;
 	}
 	
+	/**
+	 * 
+	 * initialize the floor details menu
+	 * 
+	 */
 	private void setUpFloorDetailsMenu() {
 		floorDetailsMenu = new RectangleShape();
 		floorDetailsMenu.setFillColor(new Color(255,255,255,200));
@@ -365,46 +424,105 @@ public class CityModel {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param newWindow: the new window that this city model is associated with
+	 * 
+	 */
 	private void setWindow(RenderWindow newWindow) {
 		window = newWindow;
 	}
 	
+	/**
+	 * 
+	 * @return the current window this city model is associated with
+	 * 
+	 */
 	public RenderWindow getWindow() {
 		return window;
 	}
 	
+	/**
+	 * 
+	 * @return the current world dimensions
+	 * 
+	 */
 	public IntRect getWorldDimensions() {
 		return worldDimensions;
 	}
 	
+	/**
+	 * 
+	 * @param left,top,width,height: the new world dimensions
+	 * 
+	 */
 	public void setWorldDimensions(int left, int top, int width, int height) {
 		worldDimensions = new IntRect(left, top, width, height);
 	}
 	
+	/**
+	 * 
+	 * @param constView: The new view for the model
+	 * 
+	 */
 	public void setCurrentView(ConstView constView) {
 		currentView = (View) constView;
 	}
 	
+	/**
+	 * 
+	 * Sets the window's view to the models current view
+	 * 
+	 */
 	public void updateDisplayedView() {
 		window.setView(currentView);
 	}
 	
+	/**
+	 * 
+	 * @return the current view for the model
+	 * 
+	 */
 	public View getCurrentView() {
 		return currentView;
 	}
 	
+	/**
+	 * 
+	 * @param newFloor: the new floor that is hovered over
+	 * 
+	 */
 	public void setCurrentFloorDetails(Floor newFloor) {
 		currentFloorDetails = newFloor;
 	}
 	
+	/**
+	 * 
+	 * @return currentFloorDetails, the current floor that is being hovered over
+	 * 
+	 */
 	public Floor getCurrentFloorDetails() {
 		return currentFloorDetails;
 	}
 	
+	/**
+	 * 
+	 * Set the floor details menu position
+	 * @param x: The new x position
+	 * @param y: The new y position
+	 * 
+	 */
 	public void setPosFloorDetailsMenu(float x, float y) {
 		floorDetailsMenu.setPosition(x, y);
 	}
 	
+	/**
+	 * 
+	 * Determines the author with the longest name, or the floor name if it is the longest
+	 * 
+	 * @return the length of the longest name
+	 * 
+	 */
 	private int findMaxStringLength() {
 		Map<Author, Integer> ownerships = currentFloorDetails.getOwnerships();
 		
@@ -420,6 +538,11 @@ public class CityModel {
 		return maxLength;
 	}
 	
+	/**
+	 * 
+	 * Draw the floor details menu for currentFloorDetails (currently set floor)
+	 * 
+	 */
 	private void drawFloorDetailsMenu() {
 		//draw to window's default view
 		window.setView(window.getDefaultView());
@@ -468,6 +591,11 @@ public class CityModel {
 		window.setView(currentView);
 	}
 	
+	/**
+	 * 
+	 * Initializes the ground based on world dimensions
+	 * 
+	 */
 	private void createGround() {
 		ground = new VertexArray(PrimitiveType.QUADS);
 		Color lightGroundColor = new Color(166, 152, 110, 255);
@@ -479,6 +607,11 @@ public class CityModel {
 		ground.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.height/2), lightGroundColor));
 	}
 	
+	/**
+	 * 
+	 * Initializes the top of the grass based on world dimensions
+	 * 
+	 */
 	private void createGrassTop() {
 		grassTop = new VertexArray(PrimitiveType.QUADS);
 		Color grassTopColor = new Color(106, 190, 137, 255);
@@ -489,6 +622,11 @@ public class CityModel {
 		grassTop.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.height/2 - grassMidHeight), grassTopColor));
 	}
 	
+	/**
+	 * 
+	 * Initializes the front of the grass based on world dimensions
+	 * 
+	 */
 	private void createGrassMid() {
 		grassMid = new VertexArray(PrimitiveType.QUADS);
 		Color grassMidColor = new Color(81, 158, 110, 255);
@@ -499,6 +637,11 @@ public class CityModel {
 		grassMid.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.height/2 + grassMidHeight), grassMidColor));
 	}
 	
+	/**
+	 * 
+	 * Initializes the sky drawable based on world dimensions
+	 * 
+	 */
 	private void createSky() {
 		sky = new VertexArray(PrimitiveType.QUADS);
 		Color lightSkyColor = Color.WHITE;
@@ -510,6 +653,11 @@ public class CityModel {
 		sky.add(new Vertex(new Vector2f(worldDimensions.left, worldDimensions.top), darkSkyColor));
 	}
 
+	/**
+	 * 
+	 * Draw the author color legend
+	 * 
+	 */
 	private void drawLegend() {
 		window.setView(window.getDefaultView());
 		window.draw(legendBar);
@@ -544,7 +692,11 @@ public class CityModel {
 		window.setView(currentView);
 	}
 	
-
+	/**
+	 * 
+	 * Draw the entirety of the city
+	 * 
+	 */
 	public void drawCity() {
 		window.clear(new Color(0,0,0));
 		updateDisplayedView();
